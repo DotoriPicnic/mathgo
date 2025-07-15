@@ -1,0 +1,442 @@
+import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import { QRCodeCanvas } from 'qrcode.react';
+
+interface Problem {
+  question: string;
+  answer: number;
+}
+
+function encodeData(data: any) {
+  return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+}
+
+// [분수 표시용 컴포넌트 추가]
+function Fraction({ value }: { value: string }) {
+  const match = value.match(/^(\d+)\/(\d+)$/);
+  if (!match) return value;
+  return (
+    <span className="fraction" style={{ display: 'inline-block', verticalAlign: 'middle', fontSize: '1em', margin: '0 2px' }}>
+      <span className="top" style={{ display: 'block', textAlign: 'center', fontSize: '0.95em' }}>{match[1]}</span>
+      <span className="line" style={{ display: 'block', borderTop: '2px solid #222', width: '100%', margin: '0 0', height: 2 }}></span>
+      <span className="bottom" style={{ display: 'block', textAlign: 'center', fontSize: '0.95em' }}>{match[2]}</span>
+    </span>
+  );
+}
+
+// [문제 문자열에서 분수 자동 변환 함수]
+function renderWithFraction(str: string) {
+  // 1개 이상 분수(3/4) 패턴을 찾아 Fraction으로 변환
+  const parts = str.split(/(\d+\/\d+)/g);
+  return parts.map((part, idx) =>
+    /^\d+\/\d+$/.test(part) ? <Fraction key={idx} value={part} /> : part
+  );
+}
+
+const ProblemPage: React.FC = () => {
+  const [problems, setProblems] = useState<Problem[]>([]);
+  // answers: 나눗셈은 {q, r}, 나머지는 string
+  const [answers, setAnswers] = useState<any[]>([]);
+  const [timeLeft, setTimeLeft] = useState<number | null>(null); // 제한시간(초)
+  const [includeAnswer, setIncludeAnswer] = useState(false); // 정답 포함 체크박스 상태
+  const timerRef = useRef<number | null>(null);
+  const navigate = useNavigate();
+  const pdfRef = useRef<HTMLDivElement>(null);
+  const pdfAnswerRef = useRef<HTMLDivElement>(null); // 정답용 PDF 영역
+
+  // 제한시간 초기화 및 타이머 시작
+  useEffect(() => {
+    const data = localStorage.getItem('problems');
+    if (data) {
+      const arr = JSON.parse(data) as Problem[];
+      setProblems(arr);
+      setAnswers(arr.map(p => p.question.includes('÷') ? { q: '', r: '' } : ''));
+    }
+    const limitStr = localStorage.getItem('limit');
+    if (limitStr && !isNaN(Number(limitStr)) && Number(limitStr) > 0) {
+      setTimeLeft(Number(limitStr));
+      // 시작 시각 기록
+      localStorage.setItem('startTime', String(Date.now()));
+    } else {
+      // 제한시간이 없으면 기존 기록 삭제
+      localStorage.removeItem('startTime');
+    }
+  }, []);
+
+  // 타이머 동작
+  useEffect(() => {
+    if (timeLeft === null) return;
+    if (timeLeft <= 0) {
+      // 시간 종료 시 자동 채점 및 이동
+      localStorage.setItem('userAnswers', JSON.stringify(answers));
+      navigate('/elem/result');
+      return;
+    }
+    timerRef.current = window.setTimeout(() => {
+      setTimeLeft(t => (t !== null ? t - 1 : null));
+    }, 1000);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+    // eslint-disable-next-line
+  }, [timeLeft]);
+
+  // mm:ss 포맷 변환 함수
+  const formatTime = (sec: number | null) => {
+    if (sec === null) return '';
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  // 입력 핸들러: 나눗셈은 answers[idx] = {q, r}, 빈칸 나눗셈은 string, 나머지는 string
+  const handleInput = (idx: number, value: string, field?: 'q' | 'r') => {
+    setAnswers(prev => {
+      const copy = [...prev];
+      // 빈칸 나눗셈 문제(÷ □)는 string으로 저장
+      if (problems[idx]?.question.includes('÷ □')) {
+        copy[idx] = value;
+      } else if (typeof copy[idx] === 'object' && copy[idx] !== null && field) {
+        copy[idx] = { ...copy[idx], [field]: value };
+      } else {
+        copy[idx] = value;
+      }
+      return copy;
+    });
+  };
+
+  // 2개씩 묶어서 row로 변환
+  const rows: Problem[][] = [];
+  for (let i = 0; i < problems.length; i += 2) {
+    rows.push(problems.slice(i, i + 2));
+  }
+
+  // PDF 저장 기능 (문제만/정답 포함)
+  const handlePdf = async () => {
+    if (!pdfRef.current) return;
+    // 문제 페이지 캡처
+    const element = pdfRef.current;
+    const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#fff' });
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({ unit: 'mm', format: 'a4' });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pageWidth;
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    if (includeAnswer && pdfAnswerRef.current) {
+      // 정답 페이지 캡처
+      const answerCanvas = await html2canvas(pdfAnswerRef.current, { scale: 2, backgroundColor: '#fff' });
+      const answerImg = answerCanvas.toDataURL('image/png');
+      pdf.addPage();
+      pdf.addImage(answerImg, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    }
+    pdf.save('mathgo.pdf');
+  };
+
+  // QR코드 데이터(문제 정보 인코딩, base64)
+  const qrData = encodeData({ problems: problems.map(p => p.question), type: 'mathgo', t: Date.now() });
+  const qrUrl = `${window.location.origin}/qr-answer?data=${qrData}`;
+
+  // PDF용 문제 rows (2열 10행, 입력란 없이)
+  const pdfRows: Problem[][] = [];
+  for (let i = 0; i < problems.length; i += 2) {
+    pdfRows.push(problems.slice(i, i + 2));
+  }
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f7fafd' }}>
+      {/* 제한시간 타이머 상단 고정 */}
+      {timeLeft !== null && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          background: '#fff',
+          color: '#2563eb',
+          fontWeight: 900,
+          fontSize: 22,
+          textAlign: 'center',
+          padding: '14px 0 10px 0',
+          zIndex: 1000,
+          boxShadow: '0 2px 8px rgba(37,99,235,0.08)',
+          letterSpacing: 2,
+        }}>
+          ⏰ 남은 시간: {formatTime(timeLeft)}
+        </div>
+      )}
+      {/* 좌측 상단 이동 버튼 */}
+      <button
+        style={{ position: 'absolute', left: 32, top: 24, zIndex: 10, fontSize: 15, fontWeight: 700, background: '#fff', border: '2px solid #2563eb', color: '#2563eb', borderRadius: 8, padding: '8px 18px', cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,0.08)' }}
+        onClick={() => navigate('/elem')}
+      >
+        ← 초등학교 연산 문제 생성
+      </button>
+      <div className="card" style={{ width: '100%', maxWidth: 800, margin: '40px auto' }}>
+        <h2 style={{ textAlign: 'center', marginBottom: 32 }}>연산 문제</h2>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+          {/* 1. 채점하기 버튼 */}
+          <button style={{ background: '#22c55e', marginRight: 12 }} onClick={() => {
+            localStorage.setItem('userAnswers', JSON.stringify(answers));
+            navigate('/elem/result');
+          }}>채점하기</button>
+          {/* 2. PDF 저장 버튼 */}
+          <button style={{ marginRight: 12 }} onClick={handlePdf}>PDF 저장</button>
+          {/* 3. 정답 포함 체크박스 */}
+          <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <input type="checkbox" style={{ marginLeft: 8 }} checked={includeAnswer} onChange={e => setIncludeAnswer(e.target.checked)} /> 정답 포함
+          </label>
+        </div>
+        {/* 기존 문제 풀이 화면 (입력란 포함) */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+          {rows.map((row, rowIdx) => (
+            <div key={rowIdx} style={{ display: 'flex', gap: 32, justifyContent: 'center', width: '100%' }}>
+              {row.map((p, i) => {
+                const idx = rowIdx * 2 + i;
+                const isDiv = p.question.includes('÷');
+                return (
+                  <div key={i} style={{
+                    background: '#f9fafb',
+                    borderRadius: 10,
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                    padding: '14px 12px', // 여백 축소
+                    minWidth: 180, // 최소 너비 축소
+                    display: 'flex',
+                    alignItems: 'center',
+                    fontWeight: 600,
+                    fontSize: 18,
+                    maxWidth: 320, // 최대 너비 제한
+                    width: '100%',
+                    overflow: 'hidden'
+                  }}>
+                    <span style={{ fontWeight: 700, color: '#2563eb', marginRight: 6, whiteSpace: 'nowrap', fontSize: 16 }}>Q{idx + 1}.</span>
+                    {isDiv && p.question.includes('÷ □') ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                        {/* 첫 줄: 식과 힌트 */}
+                        <div style={{ fontSize: 17, marginBottom: 6, textAlign: 'center', width: '100%' }}>
+                          {(() => {
+                            // 예: '72 ÷ □ = (몫: 8, 나머지: 4) (빈칸 문제)'
+                            const match = p.question.match(/([0-9]+) ÷ □ = \(몫: ([0-9]+), 나머지: ([0-9]+)\)/);
+                            if (match) {
+                              return `${match[1]} ÷ □ =   몫 ${match[2]}, 나머지 ${match[3]}`;
+                            }
+                            return p.question;
+                          })()}
+                        </div>
+                        {/* 두 번째 줄: 입력란만 크게 */}
+                        <input
+                          type="text"
+                          placeholder=""
+                          style={{ width: 60, height: 20, fontSize: 22, textAlign: 'center', border: '2px solid #2563eb', borderRadius: 8, marginTop: 2 }}
+                          value={typeof answers[idx] === 'string' ? answers[idx] : ''}
+                          onChange={e => handleInput(idx, e.target.value)}
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        <span
+                          style={isDiv ? {
+                            marginRight: 8,
+                            whiteSpace: 'nowrap',
+                            minWidth: 100,
+                            display: 'inline-block',
+                            fontSize: 18,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            maxWidth: 180
+                          } : {
+                            marginRight: 6,
+                            whiteSpace: 'nowrap',
+                            minWidth: 60,
+                            display: 'inline-block',
+                            fontSize: p.question.length > 18 ? 16 : 18,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            maxWidth: 240
+                          }}
+                        >
+                          {renderWithFraction(p.question)}
+                        </span>
+                        {isDiv ? (
+                          <div style={{ display: 'flex', gap: 16 }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                              <span style={{ fontSize: 15, color: '#888', marginBottom: 2 }}>몫</span>
+                              <input
+                                type="text"
+                                placeholder=""
+                                style={{ width: 36, height: 32, fontSize: 18, textAlign: 'center', border: '1.5px solid #bcd0f7', borderRadius: 6 }}
+                                value={answers[idx]?.q || ''}
+                                onChange={e => handleInput(idx, e.target.value, 'q')}
+                              />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                              <span style={{ fontSize: 15, color: '#888', marginBottom: 2 }}>나머지</span>
+                              <input
+                                type="text"
+                                placeholder=""
+                                style={{ width: 36, height: 32, fontSize: 18, textAlign: 'center', border: '1.5px solid #bcd0f7', borderRadius: 6 }}
+                                value={answers[idx]?.r || ''}
+                                onChange={e => handleInput(idx, e.target.value, 'r')}
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <input
+                            type="text"
+                            style={{ width: 48, height: 32, fontSize: 18, textAlign: 'center', border: '1.5px solid #bcd0f7', borderRadius: 6 }}
+                            value={answers[idx] || ''}
+                            onChange={e => handleInput(idx, e.target.value)}
+                          />
+                        )}
+                      </>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+        {/* PDF용 영역 (화면에는 보이지 않음) */}
+        <div ref={pdfRef} style={{
+          width: 794,
+          height: 1123,
+          background: '#fff',
+          position: 'absolute',
+          left: -9999,
+          top: 0,
+          zIndex: -1,
+          padding: '32px 32px 0 32px',
+          boxSizing: 'border-box',
+        }}>
+          {/* 상단 제목/입력란 */}
+          <div style={{ display: 'flex', alignItems: 'center', borderBottom: '3px solid #bbb', paddingBottom: 10, marginBottom: 18 }}>
+            <div style={{ fontWeight: 900, fontSize: 18, background: '#eee', borderRadius: 6, padding: '2px 10px', marginRight: 12 }}>MATHGO</div>
+            <div style={{ fontWeight: 800, fontSize: 28, marginRight: 12 }}>연산학습지</div>
+            <div style={{ fontWeight: 600, fontSize: 18, color: '#2563eb', marginRight: 12 }}>- {problems.length > 0 && problems[0].question.includes('-') ? '뺄셈' : problems[0]?.question.includes('×') ? '곱셈' : problems[0]?.question.includes('÷') ? '나눗셈' : '덧셈'}</div>
+            <div style={{ flex: 1 }} />
+            <div style={{ fontSize: 16, marginRight: 12 }}>월 <span style={{ borderBottom: '1px solid #bbb', minWidth: 24, display: 'inline-block' }}>&nbsp;&nbsp;&nbsp;</span></div>
+            <div style={{ fontSize: 16, marginRight: 12 }}>일 <span style={{ borderBottom: '1px solid #bbb', minWidth: 24, display: 'inline-block' }}>&nbsp;&nbsp;&nbsp;</span></div>
+            <div style={{ fontSize: 16 }}>이름 <span style={{ borderBottom: '1px solid #bbb', minWidth: 48, display: 'inline-block' }}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+          </div>
+          {/* 문제 2열 10행, 균등 분할 */}
+          <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: 850, marginTop: 8, marginBottom: 0 }}>
+            {[0, 1].map(col => (
+              <div key={col} style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
+                {pdfRows.map((row, rowIdx) => (
+                  row[col] ? (
+                    <div key={rowIdx} style={{ display: 'flex', alignItems: 'center', fontSize: 22, fontWeight: 600, minHeight: 36 }}>
+                      <span style={{ fontSize: 20, fontWeight: 700, marginRight: 10 }}>{col === 0 ? rowIdx + 1 : rowIdx + 11}.</span>
+                      {row[col].question.includes('÷ □') ? (
+                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: '100%' }}>
+                          <span style={{ fontSize: 16, marginBottom: 2 }}>
+                            {(() => {
+                              const match = row[col].question.match(/([0-9]+) ÷ □ = \(몫: ([0-9]+), 나머지: ([0-9]+)\)/);
+                              if (match) {
+                                return `${match[1]} ÷ □ = 몫 ${match[2]}, 나머지 ${match[3]}`;
+                              }
+                              return row[col].question;
+                            })()}
+                          </span>
+                          <span style={{ display: 'inline-block', borderBottom: '2px solid #222', minWidth: 60, maxWidth: 80, height: 1, marginLeft: 12, marginTop: 12, verticalAlign: 'bottom' }}>&nbsp;</span>
+                        </div>
+                      ) : (
+                        <span style={{ letterSpacing: 2 }}>
+                          {renderWithFraction(row[col].question)}
+                        </span>
+                      )}
+                    </div>
+                  ) : <div key={rowIdx} style={{ minHeight: 36 }} />
+                ))}
+              </div>
+            ))}
+          </div>
+          {/* 하단 저작권/QR코드 */}
+          <div style={{
+            position: 'absolute',
+            left: 0,
+            bottom: 24,
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            fontSize: 14,
+            color: '#888',
+            padding: '0 16px',
+            boxSizing: 'border-box',
+          }}>
+            <div style={{ flex: 1, textAlign: 'center' }}>저작권 문구 자리</div>
+            <div style={{ marginLeft: 'auto' }}>
+              <QRCodeCanvas value={qrUrl} size={64} level="M" includeMargin={false} />
+            </div>
+          </div>
+        </div>
+        {/* 정답용 PDF 영역 (화면에는 보이지 않음) */}
+        {includeAnswer && (
+          <div ref={pdfAnswerRef} style={{
+            width: 794,
+            height: 1123,
+            background: '#fff',
+            position: 'absolute',
+            left: -9999,
+            top: 0,
+            zIndex: -2,
+            padding: '32px 32px 0 32px',
+            boxSizing: 'border-box',
+          }}>
+            {/* 상단 제목/입력란 */}
+            <div style={{ display: 'flex', alignItems: 'center', borderBottom: '3px solid #bbb', paddingBottom: 10, marginBottom: 18 }}>
+              <div style={{ fontWeight: 900, fontSize: 18, background: '#eee', borderRadius: 6, padding: '2px 10px', marginRight: 12 }}>MATHGO</div>
+              <div style={{ fontWeight: 800, fontSize: 28, marginRight: 12 }}>정답지</div>
+              <div style={{ fontWeight: 600, fontSize: 18, color: '#2563eb', marginRight: 12 }}>- {problems.length > 0 && problems[0].question.includes('-') ? '뺄셈' : problems[0]?.question.includes('×') ? '곱셈' : problems[0]?.question.includes('÷') ? '나눗셈' : '덧셈'}</div>
+              <div style={{ flex: 1 }} />
+            </div>
+            {/* 정답 2열 10행 */}
+            <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: 850, marginTop: 8, marginBottom: 0 }}>
+              {[0, 1].map(col => (
+                <div key={col} style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
+                  {pdfRows.map((row, rowIdx) => (
+                    row[col] ? (
+                      <div key={rowIdx} style={{ display: 'flex', alignItems: 'center', fontSize: 22, fontWeight: 600, minHeight: 36 }}>
+                        <span style={{ fontSize: 20, fontWeight: 700, marginRight: 10 }}>{col === 0 ? rowIdx + 1 : rowIdx + 11}.</span>
+                        <span style={{ letterSpacing: 2, color: '#2563eb', fontWeight: 900 }}>
+                          {/* 정답 표시 */}
+                          {row[col].question.includes('÷') && typeof (row[col].answer as any) === 'object'
+                            ? `몫: ${(row[col].answer as any).q}, 나머지: ${(row[col].answer as any).r}`
+                            : renderWithFraction(row[col].answer?.toString() ?? '')}
+                        </span>
+                      </div>
+                    ) : <div key={rowIdx} style={{ minHeight: 36 }} />
+                  ))}
+                </div>
+              ))}
+            </div>
+            {/* 하단 저작권/QR코드 */}
+            <div style={{
+              position: 'absolute',
+              left: 0,
+              bottom: 24,
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              fontSize: 14,
+              color: '#888',
+              padding: '0 16px',
+              boxSizing: 'border-box',
+            }}>
+              <div style={{ flex: 1, textAlign: 'center' }}>저작권 문구 자리</div>
+              <div style={{ marginLeft: 'auto' }}>
+                <QRCodeCanvas value={qrUrl} size={64} level="M" includeMargin={false} />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ProblemPage; 

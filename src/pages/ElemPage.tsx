@@ -1,0 +1,801 @@
+import React, { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+// 문제 생성 함수 (연산별, 올림 옵션별)
+function generateProblems(
+  op: string,
+  type: string,
+  carry: 'all' | 'with' | 'without',
+): { question: string; answer: any }[] {
+  const problems = [];
+  const problemSet = new Set(); // 중복 방지용
+  let tryCount = 0;
+  while (problems.length < 20 && tryCount < 200) {
+    tryCount++;
+    let a = 0, b = 0, q = '', ans: any = 0, hasCarry = false;
+    if (type === '한자릿수 + 한자릿수') {
+      do {
+        a = Math.floor(Math.random() * 9) + 1;
+        b = Math.floor(Math.random() * 9) + 1;
+        if (op === '덧셈') {
+          ans = a + b;
+          hasCarry = a + b >= 10;
+          q = `${a} + ${b} =`;
+        } else if (op === '뺄셈') {
+          if (a < b) [a, b] = [b, a];
+          ans = a - b;
+          hasCarry = a < 10 && b > 0 && a - b < 0;
+          q = `${a} - ${b} =`;
+        } else if (op === '곱셈') {
+          ans = a * b;
+          hasCarry = a * b >= 10;
+          q = `${a} × ${b} =`;
+        } else if (op === '나눗셈') {
+          ans = a;
+          q = `${a * b} ÷ ${b} =`;
+          hasCarry = false;
+        }
+      } while (
+        (carry === 'with' && !hasCarry) ||
+        (carry === 'without' && hasCarry)
+      );
+    } else if (type === '두자릿수 + 한자릿수') {
+      do {
+        a = Math.floor(Math.random() * 90) + 10;
+        b = Math.floor(Math.random() * 9) + 1;
+        if (op === '덧셈') {
+          ans = a + b;
+          hasCarry = (a % 10) + b >= 10;
+          q = `${a} + ${b} =`;
+        } else if (op === '뺄셈') {
+          if (a < b) [a, b] = [b, a];
+          ans = a - b;
+          hasCarry = (a % 10) - b < 0;
+          q = `${a} - ${b} =`;
+        } else if (op === '곱셈') {
+          ans = a * b;
+          hasCarry = a * b >= 100;
+          q = `${a} × ${b} =`;
+        } else if (op === '나눗셈') {
+          ans = a;
+          q = `${a * b} ÷ ${b} =`;
+          hasCarry = false;
+        }
+      } while (
+        (carry === 'with' && !hasCarry) ||
+        (carry === 'without' && hasCarry)
+      );
+    } else if (type === '두자릿수 + 두자릿수') {
+      do {
+        a = Math.floor(Math.random() * 90) + 10;
+        b = Math.floor(Math.random() * 90) + 10;
+        if (op === '덧셈') {
+          ans = a + b;
+          hasCarry = (a % 10) + (b % 10) >= 10;
+          q = `${a} + ${b} =`;
+        } else if (op === '뺄셈') {
+          if (a < b) [a, b] = [b, a];
+          ans = a - b;
+          hasCarry = (a % 10) - (b % 10) < 0;
+          q = `${a} - ${b} =`;
+        } else if (op === '곱셈') {
+          ans = a * b;
+          hasCarry = a * b >= 1000;
+          q = `${a} × ${b} =`;
+        } else if (op === '나눗셈') {
+          ans = a;
+          q = `${a * b} ÷ ${b} =`;
+          hasCarry = false;
+        }
+      } while (
+        (carry === 'with' && !hasCarry) ||
+        (carry === 'without' && hasCarry)
+      );
+    } else if (type === '세자릿수 + 세자릿수') {
+      do {
+        a = Math.floor(Math.random() * 900) + 100;
+        b = Math.floor(Math.random() * 900) + 100;
+        if (op === '덧셈') {
+          ans = a + b;
+          hasCarry = (a % 10) + (b % 10) >= 10 || (Math.floor(a / 10) % 10) + (Math.floor(b / 10) % 10) >= 10;
+          q = `${a} + ${b} =`;
+        } else {
+          // 추후 확장 가능
+          ans = a + b;
+          q = `${a} + ${b} =`;
+          hasCarry = false;
+        }
+      } while (
+        (carry === 'with' && !hasCarry) ||
+        (carry === 'without' && hasCarry)
+      );
+    } else if (type === '빈칸 문제 한자릿수') {
+      do {
+        a = Math.floor(Math.random() * 9) + 1;
+        const answer = Math.floor(Math.random() * 9) + 1;
+        const b = a + answer;
+        ans = answer;
+        q = `${a} + □ = ${b} (빈칸 문제)`;
+        hasCarry = a + ans >= 10;
+      } while (
+        (carry === 'with' && !hasCarry) ||
+        (carry === 'without' && hasCarry)
+      );
+    } else if (type === '빈칸 문제 두자릿수') {
+      do {
+        a = Math.floor(Math.random() * 90) + 10;
+        const answer = Math.floor(Math.random() * 99) + 1;
+        const b = a + answer;
+        ans = answer;
+        q = `${a} + □ = ${b} (빈칸 문제)`;
+        hasCarry = (a % 10) + (ans % 10) >= 10;
+      } while (
+        (carry === 'with' && !hasCarry) ||
+        (carry === 'without' && hasCarry)
+      );
+    } else if (type === '빈칸 문제 세자릿수') {
+      do {
+        a = Math.floor(Math.random() * 900) + 100;
+        const answer = Math.floor(Math.random() * 999) + 1;
+        const b = a + answer;
+        ans = answer;
+        q = `${a} + □ = ${b} (빈칸 문제)`;
+        hasCarry = (a % 10) + (ans % 10) >= 10 || (Math.floor(a / 10) % 10) + (Math.floor(ans / 10) % 10) >= 10;
+      } while (
+        (carry === 'with' && !hasCarry) ||
+        (carry === 'without' && hasCarry)
+      );
+    } else if (type === '5 + □ = 10 (빈칸 문제)') {
+      b = Math.floor(Math.random() * 9) + 1;
+      a = 10 - b;
+      q = '5 + □ = 10 (빈칸 문제)';
+      ans = a;
+    }
+    // 뺄셈 유형별 문제 생성
+    else if (type === '한자릿수 - 한자릿수') {
+      do {
+        a = Math.floor(Math.random() * 9) + 1;
+        b = Math.floor(Math.random() * 9) + 1;
+        if (a < b) [a, b] = [b, a];
+        ans = a - b;
+        hasCarry = a - b < 0;
+        q = `${a} - ${b} =`;
+      } while (
+        (carry === 'with' && !hasCarry) ||
+        (carry === 'without' && hasCarry)
+      );
+    } else if (type === '두자릿수 - 한자릿수') {
+      do {
+        a = Math.floor(Math.random() * 90) + 10;
+        b = Math.floor(Math.random() * 9) + 1;
+        if (a < b) [a, b] = [b, a];
+        ans = a - b;
+        hasCarry = (a % 10) - b < 0;
+        q = `${a} - ${b} =`;
+      } while (
+        (carry === 'with' && !hasCarry) ||
+        (carry === 'without' && hasCarry)
+      );
+    } else if (type === '두자릿수 - 두자릿수') {
+      do {
+        a = Math.floor(Math.random() * 90) + 10;
+        b = Math.floor(Math.random() * 90) + 10;
+        if (a < b) [a, b] = [b, a];
+        ans = a - b;
+        hasCarry = (a % 10) - (b % 10) < 0;
+        q = `${a} - ${b} =`;
+      } while (
+        (carry === 'with' && !hasCarry) ||
+        (carry === 'without' && hasCarry)
+      );
+    } else if (type === '세자릿수 - 세자릿수') {
+      do {
+        a = Math.floor(Math.random() * 900) + 100;
+        b = Math.floor(Math.random() * 900) + 100;
+        if (a < b) [a, b] = [b, a];
+        ans = a - b;
+        hasCarry = (a % 10) - (b % 10) < 0 || (Math.floor(a / 10) % 10) - (Math.floor(b / 10) % 10) < 0;
+        q = `${a} - ${b} =`;
+      } while (
+        (carry === 'with' && !hasCarry) ||
+        (carry === 'without' && hasCarry)
+      );
+    } else if (type === '빈칸 문제 한자릿수(뺄셈)') {
+      do {
+        a = Math.floor(Math.random() * 9) + 1;
+        const answer = Math.floor(Math.random() * 9) + 1;
+        const b = a - answer;
+        if (b < 0) continue;
+        ans = answer;
+        q = `${a} - □ = ${b} (빈칸 문제)`;
+        hasCarry = a - ans < 0;
+      } while (
+        (carry === 'with' && !hasCarry) ||
+        (carry === 'without' && hasCarry)
+      );
+    } else if (type === '빈칸 문제 두자릿수(뺄셈)') {
+      do {
+        a = Math.floor(Math.random() * 90) + 10;
+        const answer = Math.floor(Math.random() * 99) + 1;
+        const b = a - answer;
+        if (b < 0) continue;
+        ans = answer;
+        q = `${a} - □ = ${b} (빈칸 문제)`;
+        hasCarry = (a % 10) - (answer % 10) < 0;
+      } while (
+        (carry === 'with' && !hasCarry) ||
+        (carry === 'without' && hasCarry)
+      );
+    } else if (type === '빈칸 문제 세자릿수(뺄셈)') {
+      do {
+        a = Math.floor(Math.random() * 900) + 100;
+        const answer = Math.floor(Math.random() * 999) + 1;
+        const b = a - answer;
+        if (b < 0) continue;
+        ans = answer;
+        q = `${a} - □ = ${b} (빈칸 문제)`;
+        hasCarry = (a % 10) - (answer % 10) < 0 || (Math.floor(a / 10) % 10) - (Math.floor(answer / 10) % 10) < 0;
+      } while (
+        (carry === 'with' && !hasCarry) ||
+        (carry === 'without' && hasCarry)
+      );
+    }
+    // 곱셈 유형별 문제 생성
+    else if (type === '한자릿수 × 한자릿수') {
+      a = Math.floor(Math.random() * 9) + 1;
+      b = Math.floor(Math.random() * 9) + 1;
+      ans = a * b;
+      q = `${a} × ${b} =`;
+    } else if (type === '두자릿수 × 한자릿수') {
+      a = Math.floor(Math.random() * 90) + 10;
+      b = Math.floor(Math.random() * 9) + 1;
+      ans = a * b;
+      q = `${a} × ${b} =`;
+    } else if (type === '두자릿수 × 두자릿수') {
+      a = Math.floor(Math.random() * 90) + 10;
+      b = Math.floor(Math.random() * 90) + 10;
+      ans = a * b;
+      q = `${a} × ${b} =`;
+    } else if (type === '빈칸 문제 한자릿수(곱셈)') {
+      a = Math.floor(Math.random() * 9) + 1;
+      const answer = Math.floor(Math.random() * 9) + 1;
+      const b = a * answer;
+      ans = answer;
+      q = `${a} × □ = ${b} (빈칸 문제)`;
+    } else if (type === '빈칸 문제 두자릿수(곱셈)') {
+      a = Math.floor(Math.random() * 90) + 10;
+      const answer = Math.floor(Math.random() * 9) + 1;
+      const b = a * answer;
+      ans = answer;
+      q = `${a} × □ = ${b} (빈칸 문제)`;
+    }
+    // 나눗셈 유형별 문제 생성 (중복X, 나머지 있는/없는 문제 섞기)
+    else if (type === '두자릿수 ÷ 한자릿수') {
+      b = Math.floor(Math.random() * 8) + 2; // 2~9
+      const qVal = Math.floor(Math.random() * 90) + 10; // 10~99
+      if (Math.random() < 0.5) {
+        a = b * qVal;
+        if (a < 10 || a > 99) continue; // 두자릿수만 허용
+        ans = { q: qVal, r: 0 };
+      } else {
+        const rVal = Math.floor(Math.random() * b);
+        if (rVal === 0) continue;
+        a = b * qVal + rVal;
+        if (a < 10 || a > 99) continue; // 두자릿수만 허용
+        ans = { q: qVal, r: rVal };
+      }
+      q = `${a} ÷ ${b} =`;
+    } else if (type === '세자릿수 ÷ 한자릿수') {
+      b = Math.floor(Math.random() * 8) + 2; // 2~9
+      const qVal = Math.floor(Math.random() * 900) + 100; // 100~999
+      if (Math.random() < 0.5) {
+        a = b * qVal;
+        if (a < 100 || a > 999) continue; // 세자릿수만 허용
+        ans = { q: qVal, r: 0 };
+      } else {
+        const rVal = Math.floor(Math.random() * b);
+        if (rVal === 0) continue;
+        a = b * qVal + rVal;
+        if (a < 100 || a > 999) continue; // 세자릿수만 허용
+        ans = { q: qVal, r: rVal };
+      }
+      q = `${a} ÷ ${b} =`;
+    } else if (type === '세자릿수 ÷ 두자릿수') {
+      let found = false;
+      for (let try2 = 0; try2 < 300 && !found; try2++) {
+        b = Math.floor(Math.random() * 90) + 10; // 10~99
+        const qVal = Math.floor(Math.random() * 10) + 1; // 몫 1~10로 제한(세자릿수 범위 보장)
+        if (Math.random() < 0.5) {
+          a = b * qVal;
+          if (a < 100 || a > 999) continue; // 세자릿수만 허용
+          ans = { q: qVal, r: 0 };
+        } else {
+          const rVal = Math.floor(Math.random() * b);
+          if (rVal === 0) continue;
+          a = b * qVal + rVal;
+          if (a < 100 || a > 999) continue; // 세자릿수만 허용
+          ans = { q: qVal, r: rVal };
+        }
+        q = `${a} ÷ ${b} =`;
+        if (!problemSet.has(q)) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) continue;
+    }
+    // 빈칸 문제 한자릿수(나눗셈)
+    else if (type === '빈칸 문제 한자릿수(나눗셈)') {
+      // 두자릿수 ÷ □ = (몫: 1~9), 나머지 랜덤
+      let found = false;
+      for (let try2 = 0; try2 < 200 && !found; try2++) {
+        const qVal = Math.floor(Math.random() * 9) + 1; // 몫 1~9
+        const b = Math.floor(Math.random() * 9) + 1; // 빈칸(1~9)
+        if (b === 0) continue;
+        let rVal = Math.floor(Math.random() * b); // 나머지
+        let a = b * qVal + rVal;
+        if (a < 10 || a > 99) continue; // 두자릿수만
+        q = `${a} ÷ □ = (몫: ${qVal}, 나머지: ${rVal}) (빈칸 문제)`;
+        ans = b;
+        if (!problemSet.has(q)) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) continue;
+      problemSet.add(q);
+      problems.push({ question: q, answer: ans });
+      continue;
+    }
+    // 빈칸 문제 두자릿수(나눗셈)
+    else if (type === '빈칸 문제 두자릿수(나눗셈)') {
+      // 세자릿수 ÷ □ = (몫: 10~99), 나머지 랜덤
+      let found = false;
+      for (let try2 = 0; try2 < 200 && !found; try2++) {
+        const qVal = Math.floor(Math.random() * 90) + 10; // 몫 10~99
+        const b = Math.floor(Math.random() * 90) + 10; // 빈칸(10~99)
+        if (b === 0) continue;
+        let rVal = Math.floor(Math.random() * b); // 나머지
+        let a = b * qVal + rVal;
+        if (a < 100 || a > 999) continue; // 세자릿수만
+        q = `${a} ÷ □ = (몫: ${qVal}, 나머지: ${rVal}) (빈칸 문제)`;
+        ans = b;
+        if (!problemSet.has(q)) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) continue;
+      problemSet.add(q);
+      problems.push({ question: q, answer: ans });
+      continue;
+    }
+    // 분수 연산
+    if (op === '분수') {
+      // a/b (1~9/2~9), c/d (1~9/2~9)
+      const numer1 = Math.floor(Math.random() * 9) + 1;
+      const denom1 = Math.floor(Math.random() * 8) + 2;
+      const numer2 = Math.floor(Math.random() * 9) + 1;
+      const denom2 = Math.floor(Math.random() * 8) + 2;
+      let resNumer = 0, resDenom = 0;
+      if (type.includes('덧셈') || type === '분수') {
+        resNumer = numer1 * denom2 + numer2 * denom1;
+        resDenom = denom1 * denom2;
+        q = `${numer1}/${denom1} + ${numer2}/${denom2} =`;
+      } else if (type.includes('뺄셈')) {
+        resNumer = numer1 * denom2 - numer2 * denom1;
+        resDenom = denom1 * denom2;
+        q = `${numer1}/${denom1} - ${numer2}/${denom2} =`;
+      } else if (type.includes('곱셈')) {
+        resNumer = numer1 * numer2;
+        resDenom = denom1 * denom2;
+        q = `${numer1}/${denom1} × ${numer2}/${denom2} =`;
+      } else if (type.includes('나눗셈')) {
+        resNumer = numer1 * denom2;
+        resDenom = denom1 * numer2;
+        q = `${numer1}/${denom1} ÷ ${numer2}/${denom2} =`;
+      } else {
+        resNumer = numer1 * denom2 + numer2 * denom1;
+        resDenom = denom1 * denom2;
+        q = `${numer1}/${denom1} + ${numer2}/${denom2} =`;
+      }
+      ans = `${resNumer}/${resDenom}`;
+      problems.push({ question: q, answer: ans });
+      continue;
+    }
+    // 정수 연산
+    if (op === '정수') {
+      a = Math.floor(Math.random() * 199) - 99; // -99 ~ 99
+      b = Math.floor(Math.random() * 199) - 99;
+      if (type.includes('덧셈') || type === '정수') {
+        ans = a + b;
+        q = `${a} + ${b} =`;
+      } else if (type.includes('뺄셈')) {
+        ans = a - b;
+        q = `${a} - ${b} =`;
+      } else if (type.includes('곱셈')) {
+        ans = a * b;
+        q = `${a} × ${b} =`;
+      } else if (type.includes('나눗셈')) {
+        ans = b !== 0 ? (a / b).toFixed(2) : '?';
+        q = `${a} ÷ ${b} =`;
+      } else {
+        ans = a + b;
+        q = `${a} + ${b} =`;
+      }
+      problems.push({ question: q, answer: ans });
+      continue;
+    }
+    // 중복 체크
+    if (problemSet.has(q)) continue;
+    problemSet.add(q);
+    problems.push({ question: q, answer: ans });
+  }
+  return problems;
+}
+
+// [문제 유형 미리보기용 예시 생성 함수 추가]
+function getBlankExample(type: string, carry: 'all' | 'with' | 'without') {
+  if (type.startsWith('빈칸 문제')) {
+    // 임시로 1개만 생성
+    const ex = generateProblems('덧셈', type, carry)[0];
+    return ex?.question || '';
+  }
+  return '';
+}
+
+// 문제 유형 필터링 함수 추가
+function getFilteredProblemTypes(op: string) {
+  if (op === '덧셈') {
+    return problemTypes.filter(t =>
+      typeof t.value === 'string' && (
+        t.value.includes('+') ||
+        (t.value.startsWith('빈칸 문제') &&
+          !t.value.includes('(뺄셈)') &&
+          !t.value.includes('(곱셈)') &&
+          !t.value.includes('(나눗셈)'))
+      )
+    );
+  }
+  if (op === '뺄셈') {
+    return problemTypes.filter(t =>
+      typeof t.value === 'string' && (
+        t.value.includes('-') ||
+        (t.value.startsWith('빈칸 문제') && t.value.includes('(뺄셈)'))
+      )
+    );
+  }
+  if (op === '곱셈') {
+    return problemTypes.filter(t =>
+      typeof t.value === 'string' && (
+        t.value.includes('×') ||
+        (t.value.startsWith('빈칸 문제') && t.value.includes('(곱셈)'))
+      )
+    );
+  }
+  if (op === '나눗셈') {
+    return problemTypes.filter(t =>
+      typeof t.value === 'string' && (
+        t.value.includes('÷') ||
+        (t.value.startsWith('빈칸 문제') && t.value.includes('(나눗셈)'))
+      )
+    );
+  }
+  // 분수 등 기타 연산은 추후 확장
+  return problemTypes;
+}
+
+const problemTypes = [
+  { label: '한자릿수 + 한자릿수', value: '한자릿수 + 한자릿수' },
+  { label: '두자릿수 + 한자릿수', value: '두자릿수 + 한자릿수' },
+  { label: '두자릿수 + 두자릿수', value: '두자릿수 + 두자릿수' },
+  { label: '세자릿수 + 세자릿수', value: '세자릿수 + 세자릿수' },
+  { label: '한자릿수 - 한자릿수', value: '한자릿수 - 한자릿수' },
+  { label: '두자릿수 - 한자릿수', value: '두자릿수 - 한자릿수' },
+  { label: '두자릿수 - 두자릿수', value: '두자릿수 - 두자릿수' },
+  { label: '세자릿수 - 세자릿수', value: '세자릿수 - 세자릿수' },
+  { label: '한자릿수 × 한자릿수', value: '한자릿수 × 한자릿수' },
+  { label: '두자릿수 × 한자릿수', value: '두자릿수 × 한자릿수' },
+  { label: '두자릿수 × 두자릿수', value: '두자릿수 × 두자릿수' },
+  {
+    label: <>
+      빈칸 문제 한자릿수(곱셈)
+      <span style={{ color: '#2563eb', fontWeight: 600, fontSize: 14, marginLeft: 6, fontFamily: 'monospace' }}>
+        (예시. 7 × <span style={{ fontSize: 18, fontWeight: 900, verticalAlign: 'middle' }}>□</span> = 21)
+      </span>
+    </>,
+    value: '빈칸 문제 한자릿수(곱셈)'
+  },
+  {
+    label: <>
+      빈칸 문제 두자릿수(곱셈)
+      <span style={{ color: '#2563eb', fontWeight: 600, fontSize: 14, marginLeft: 6, fontFamily: 'monospace' }}>
+        (예시. 12 × <span style={{ fontSize: 18, fontWeight: 900, verticalAlign: 'middle' }}>□</span> = 60)
+      </span>
+    </>,
+    value: '빈칸 문제 두자릿수(곱셈)'
+  },
+  { label: '두자릿수 ÷ 한자릿수', value: '두자릿수 ÷ 한자릿수' },
+  { label: '세자릿수 ÷ 한자릿수', value: '세자릿수 ÷ 한자릿수' },
+  { label: '세자릿수 ÷ 두자릿수', value: '세자릿수 ÷ 두자릿수' },
+  {
+    label: <>
+      빈칸 문제 한자릿수(나눗셈)
+      <span style={{ color: '#2563eb', fontWeight: 600, fontSize: 14, marginLeft: 6, fontFamily: 'monospace' }}>
+        (예시. 18 ÷ <span style={{ fontSize: 18, fontWeight: 900, verticalAlign: 'middle' }}>□</span> = 6)
+      </span>
+    </>,
+    value: '빈칸 문제 한자릿수(나눗셈)'
+  },
+  {
+    label: <>
+      빈칸 문제 두자릿수(나눗셈)
+      <span style={{ color: '#2563eb', fontWeight: 600, fontSize: 14, marginLeft: 6, fontFamily: 'monospace' }}>
+        (예시. 72 ÷ <span style={{ fontSize: 18, fontWeight: 900, verticalAlign: 'middle' }}>□</span> = 8)
+      </span>
+    </>,
+    value: '빈칸 문제 두자릿수(나눗셈)'
+  },
+  {
+    label: <>
+      빈칸 문제 한자릿수
+      <span style={{ color: '#2563eb', fontWeight: 600, fontSize: 14, marginLeft: 6, fontFamily: 'monospace' }}>
+        (예시. 5 + <span style={{ fontSize: 18, fontWeight: 900, verticalAlign: 'middle' }}>□</span> = 10)
+      </span>
+    </>,
+    value: '빈칸 문제 한자릿수'
+  },
+  {
+    label: <>
+      빈칸 문제 두자릿수
+      <span style={{ color: '#2563eb', fontWeight: 600, fontSize: 14, marginLeft: 6, fontFamily: 'monospace' }}>
+        (예시. 23 + <span style={{ fontSize: 18, fontWeight: 900, verticalAlign: 'middle' }}>□</span> = 57)
+      </span>
+    </>,
+    value: '빈칸 문제 두자릿수'
+  },
+  {
+    label: <>
+      빈칸 문제 세자릿수
+      <span style={{ color: '#2563eb', fontWeight: 600, fontSize: 14, marginLeft: 6, fontFamily: 'monospace' }}>
+        (예시. 123 + <span style={{ fontSize: 18, fontWeight: 900, verticalAlign: 'middle' }}>□</span> = 456)
+      </span>
+    </>,
+    value: '빈칸 문제 세자릿수'
+  },
+  {
+    label: <>
+      빈칸 문제 한자릿수(뺄셈)
+      <span style={{ color: '#2563eb', fontWeight: 600, fontSize: 14, marginLeft: 6, fontFamily: 'monospace' }}>
+        (예시. 9 - <span style={{ fontSize: 18, fontWeight: 900, verticalAlign: 'middle' }}>□</span> = 4)
+      </span>
+    </>,
+    value: '빈칸 문제 한자릿수(뺄셈)'
+  },
+  {
+    label: <>
+      빈칸 문제 두자릿수(뺄셈)
+      <span style={{ color: '#2563eb', fontWeight: 600, fontSize: 14, marginLeft: 6, fontFamily: 'monospace' }}>
+        (예시. 27 - <span style={{ fontSize: 18, fontWeight: 900, verticalAlign: 'middle' }}>□</span> = 13)
+      </span>
+    </>,
+    value: '빈칸 문제 두자릿수(뺄셈)'
+  },
+  {
+    label: <>
+      빈칸 문제 세자릿수(뺄셈)
+      <span style={{ color: '#2563eb', fontWeight: 600, fontSize: 14, marginLeft: 6, fontFamily: 'monospace' }}>
+        (예시. 321 - <span style={{ fontSize: 18, fontWeight: 900, verticalAlign: 'middle' }}>□</span> = 123)
+      </span>
+    </>,
+    value: '빈칸 문제 세자릿수(뺄셈)'
+  }
+];
+
+const ElemPage: React.FC = () => {
+  const navigate = useNavigate();
+  const [op, setOp] = useState('덧셈');
+  const [type, setType] = useState('한자릿수 + 한자릿수');
+  // carry: 'all'(섞어서), 'with'(올림만), 'without'(올림없음)
+  const [carry, setCarry] = useState<'all' | 'with' | 'without'>('all');
+  // 제한 시간 사용 여부
+  const [useLimit, setUseLimit] = useState(false);
+  // 제한 시간(분)
+  const [limit, setLimit] = useState(5);
+  const [showTypeList, setShowTypeList] = useState(false);
+  const typeRef = useRef<HTMLDivElement>(null);
+  // [문제 유형 미리보기용 예시 상태]
+  const [example, setExample] = useState('');
+
+  const handleGenerate = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const problems = generateProblems(op, type, carry);
+    localStorage.setItem('problems', JSON.stringify(problems));
+    localStorage.setItem('limit', useLimit ? String(limit * 60) : '');
+    navigate('/elem/problems');
+  };
+
+  // 올림 옵션 라디오 버튼 핸들러
+  const handleCarry = (val: 'all' | 'with' | 'without') => {
+    setCarry(val);
+  };
+
+  // 제한 시간 up/down
+  const handleLimitChange = (delta: number) => {
+    setLimit(prev => Math.max(1, prev + delta));
+  };
+
+  // 커스텀 드롭다운 외부 클릭 닫기
+  React.useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (typeRef.current && !typeRef.current.contains(e.target as Node)) {
+        setShowTypeList(false);
+      }
+    }
+    if (showTypeList) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showTypeList]);
+
+  React.useEffect(() => {
+    if (type.startsWith('빈칸 문제')) {
+      setExample(getBlankExample(type, carry));
+    } else {
+      setExample('');
+    }
+  }, [type, carry]);
+
+  // 연산 종류 변경 시 문제 유형도 자동 변경
+  React.useEffect(() => {
+    const filtered = getFilteredProblemTypes(op);
+    if (filtered.length > 0) {
+      setType(filtered[0].value);
+    }
+    // eslint-disable-next-line
+  }, [op]);
+
+  // carry 옵션 라벨 동적 처리
+  const carryLabels = op === '뺄셈'
+    ? {
+        with: '내림 있는 계산만',
+        without: '내림 없는 계산만',
+        all: '섞어서',
+      }
+    : {
+        with: '올림 있는 계산만',
+        without: '올림 없는 계산만',
+        all: '섞어서',
+      };
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f7fafd' }}>
+      <form onSubmit={handleGenerate} style={{ background: '#fff', borderRadius: 18, boxShadow: '0 4px 24px rgba(37,99,235,0.10)', padding: '48px 36px', minWidth: 340, maxWidth: 380, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ fontSize: 44, marginBottom: 8 }}>✏️</div>
+        <h2 style={{ color: '#2563eb', fontWeight: 800, fontSize: 26, marginBottom: 32, textAlign: 'center' }}>
+          초등학교 연산 문제 생성
+        </h2>
+        {/* 빈칸 문제 예시 미리보기 */}
+        {type.startsWith('빈칸 문제') && example && (
+          <div style={{ marginBottom: 18, fontSize: 20, color: '#2563eb', fontWeight: 700, textAlign: 'center', letterSpacing: 1 }}>
+            예시: {example.split('□').map((part, idx, arr) => (
+              idx < arr.length - 1 ? (
+                <React.Fragment key={idx}>
+                  {part}
+                  <span style={{ fontSize: 26, fontWeight: 900, margin: '0 4px', verticalAlign: 'middle' }}>□</span>
+                </React.Fragment>
+              ) : part
+            ))}
+          </div>
+        )}
+        {/* 연산 종류 */}
+        <div style={{ width: '100%', marginBottom: 18 }}>
+          <label style={{ fontWeight: 600, fontSize: 15, marginBottom: 6, display: 'block' }}>연산 종류:</label>
+          <select value={op} onChange={e => setOp(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: 8, border: '1.5px solid #bcd0f7', fontSize: 16 }}>
+            <option>덧셈</option>
+            <option>뺄셈</option>
+            <option>곱셈</option>
+            <option>나눗셈</option>
+            <option disabled>분수 (서비스 준비중)</option>
+            <option disabled>정수 (서비스 준비중)</option>
+          </select>
+        </div>
+        {/* 문제 유형 (커스텀 드롭다운) */}
+        <div style={{ width: '100%', marginBottom: 18 }} ref={typeRef}>
+          <label style={{ fontWeight: 600, fontSize: 15, marginBottom: 6, display: 'block' }}>문제 유형:</label>
+          <div
+            style={{
+              width: '100%',
+              padding: '12px',
+              borderRadius: 8,
+              border: '1.5px solid #bcd0f7',
+              fontSize: 16,
+              background: '#fff',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              minHeight: 32,
+              position: 'relative',
+            }}
+            onClick={() => setShowTypeList(v => !v)}
+          >
+            {problemTypes.find(t => t.value === type)?.label}
+            <span style={{ marginLeft: 'auto', color: '#2563eb', fontWeight: 700, fontSize: 18 }}>▼</span>
+            {showTypeList && (
+              <ul style={{
+                position: 'absolute',
+                left: 0,
+                top: '100%',
+                width: '100%',
+                background: '#fff',
+                border: '1.5px solid #bcd0f7',
+                borderRadius: 8,
+                margin: 0,
+                padding: 0,
+                zIndex: 10,
+                boxShadow: '0 4px 16px rgba(37,99,235,0.10)',
+                listStyle: 'none',
+                maxHeight: 200,
+                overflowY: 'auto',
+              }}>
+                {getFilteredProblemTypes(op).map(t => (
+                  <li
+                    key={t.value}
+                    onClick={() => {
+                      setType(t.value);
+                      setTimeout(() => setShowTypeList(false), 0);
+                    }}
+                    style={{
+                      padding: '12px',
+                      fontSize: 16,
+                      background: t.value === type ? '#e0e7ff' : '#fff',
+                      color: t.value === type ? '#2563eb' : '#222',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      fontWeight: t.value === type ? 700 : 500,
+                    }}
+                  >
+                    {t.label}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+        {/* 올림/내림 옵션 (라디오 버튼처럼 동작) */}
+        {(op === '덧셈' || op === '뺄셈') && (
+          <div style={{ width: '100%', marginBottom: 18, display: 'flex', gap: 12, justifyContent: 'center' }}>
+            <label style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', fontWeight: 500, fontSize: 15, cursor: 'pointer', whiteSpace: 'nowrap', minWidth: 0, flex: 1, justifyContent: 'center' }}>
+              <input type="radio" checked={carry === 'with'} onChange={() => handleCarry('with')} style={{ marginRight: 6 }} />
+              <span style={{ wordBreak: 'keep-all', textAlign: 'center' }}>{carryLabels.with}</span>
+            </label>
+            <label style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', fontWeight: 500, fontSize: 15, cursor: 'pointer', whiteSpace: 'nowrap', minWidth: 0, flex: 1, justifyContent: 'center' }}>
+              <input type="radio" checked={carry === 'without'} onChange={() => handleCarry('without')} style={{ marginRight: 6 }} />
+              <span style={{ wordBreak: 'keep-all', textAlign: 'center' }}>{carryLabels.without}</span>
+            </label>
+            <label style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', fontWeight: 500, fontSize: 15, cursor: 'pointer', whiteSpace: 'nowrap', minWidth: 0, flex: 1, justifyContent: 'center' }}>
+              <input type="radio" checked={carry === 'all'} onChange={() => handleCarry('all')} style={{ marginRight: 6 }} />
+              <span style={{ wordBreak: 'keep-all', textAlign: 'center' }}>{carryLabels.all}</span>
+            </label>
+          </div>
+        )}
+        {/* 제한 시간 */}
+        <div style={{ width: '100%', marginBottom: 32 }}>
+          <label style={{ fontWeight: 600, fontSize: 15, marginBottom: 6, display: 'block' }}>제한 시간:</label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <input type="checkbox" checked={useLimit} onChange={e => setUseLimit(e.target.checked)} />
+            <span style={{ color: useLimit ? '#222' : '#aaa', fontWeight: 500 }}>제한 시간 사용</span>
+            <input type="number" min={1} value={limit} disabled={!useLimit} onChange={e => setLimit(Math.max(1, Number(e.target.value)))} style={{ width: 60, padding: '10px', borderRadius: 8, border: '1.5px solid #bcd0f7', fontSize: 16, color: useLimit ? '#222' : '#aaa', marginLeft: 8, marginRight: 4 }} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <button type="button" disabled={!useLimit} onClick={() => handleLimitChange(1)} style={{ padding: 0, width: 24, height: 20, fontSize: 16, borderRadius: 4, background: '#e0e7ff', color: '#2563eb', border: 'none', marginBottom: 2, cursor: useLimit ? 'pointer' : 'not-allowed' }}>▲</button>
+              <button type="button" disabled={!useLimit} onClick={() => handleLimitChange(-1)} style={{ padding: 0, width: 24, height: 20, fontSize: 16, borderRadius: 4, background: '#e0e7ff', color: '#2563eb', border: 'none', cursor: useLimit ? 'pointer' : 'not-allowed' }}>▼</button>
+            </div>
+            <span style={{ color: useLimit ? '#222' : '#aaa', fontWeight: 500, marginLeft: 2 }}>분</span>
+          </div>
+        </div>
+        <button type="submit" style={{ width: '100%', fontSize: 18, padding: '16px 0', borderRadius: 10, background: '#2563eb', color: '#fff', fontWeight: 700, letterSpacing: 1 }}>문제 생성</button>
+      </form>
+    </div>
+  );
+};
+
+export default ElemPage; 
