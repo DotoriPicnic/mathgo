@@ -80,6 +80,8 @@ function compareAnswer(user: string, answer: string | number): boolean {
 // [정답 표시용 약분 함수]
 function getDisplayAnswer(answer: string | number) {
   if (typeof answer === 'number') return String(answer);
+  // 소수 문제는 소수 그대로 반환
+  if (/^[-+]?\d*\.\d+$/.test(String(answer))) return String(answer);
   const frac = parseFraction(answer);
   if (!frac) return answer;
   const norm = normalizeFrac(frac);
@@ -194,6 +196,7 @@ const ResultPage: React.FC = () => {
                   const userAns = userAnswers[idx] || '';
                   let isCorrect = false;
                   let isIntDiv = p.question.includes('÷') && !p.question.includes('/');
+                  let isDecimalDiv = (p.question.includes('소수') || p.question.match(/\d+\.\d+/));
                   // 채점 분기 수정: 정수 나눗셈만 몫/나머지 비교, 나머지는 분수/일반 비교
                   if (isIntDiv) {
                     const user = userAnswers[idx];
@@ -206,16 +209,16 @@ const ResultPage: React.FC = () => {
                   }
                   return (
                     <div key={i} className="result-item">
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', minWidth: 0 }}>
                         <span className="question-number">Q{idx + 1}.</span>
-                        <span className="question-text">{renderWithFraction(p.question)}</span>
-                        {/* 정수 나눗셈만 몫/나머지, 나머지는 분수/일반 입력값 */}
-                        {isIntDiv && typeof (userAnswers[idx] as any) === 'object' ? (
-                          <span className="division-answer">
+                        <span className="question-text" style={{ fontSize: 15, minWidth: 0, wordBreak: 'break-all', whiteSpace: 'normal' }}>{renderWithFraction(p.question)}</span>
+                        {/* 정수 나눗셈만 몫/나머지, 소수 나눗셈은 소수 한 칸만 */}
+                        {isIntDiv && !isDecimalDiv ? (
+                          <span className="division-answer" style={{ fontSize: 15, minWidth: 0, wordBreak: 'break-all', whiteSpace: 'normal' }}>
                             (몫: {(userAnswers[idx] as any)?.q ?? ''}, 나머지: {(userAnswers[idx] as any)?.r ?? ''})
                           </span>
                         ) : (
-                          typeof userAns === 'string' && <span className="user-answer">{renderWithFraction(userAns)}</span>
+                          typeof userAns === 'string' && <span className="user-answer" style={{ fontSize: 15, minWidth: 0, wordBreak: 'break-all', whiteSpace: 'normal' }}>{renderWithFraction(userAns)}</span>
                         )}
                         {isCorrect ? (
                           <span className="result-mark result-mark-correct">O</span>
@@ -224,20 +227,18 @@ const ResultPage: React.FC = () => {
                         )}
                         <span
                           style={{
-                            fontSize: (typeof getDisplayAnswer(p.answer) === 'string' && getDisplayAnswer(p.answer).includes('/')) ? 15 : 18,
+                            fontSize: (typeof getDisplayAnswer(p.answer) === 'string' && getDisplayAnswer(p.answer).includes('/')) ? 13 : 15,
                             color: '#2563eb',
                             marginLeft: 10,
                             fontFamily: 'monospace',
                             fontWeight: 700,
-                            minWidth: 60,
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            verticalAlign: 'middle',
+                            minWidth: 0,
+                            wordBreak: 'break-all',
+                            whiteSpace: 'normal',
+                            maxWidth: '100%',
                           }}
                         >
-                          (정답: {isIntDiv && typeof (p.answer as any) === 'object'
-                            ? `몫: ${(p.answer as any).q}, 나머지: ${(p.answer as any).r}`
-                            : renderWithFraction(getDisplayAnswer(p.answer))})
+                          {renderWithFraction(getDisplayAnswer(p.answer))}
                         </span>
                       </div>
                     </div>

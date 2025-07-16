@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
@@ -222,6 +223,7 @@ const ProblemPage: React.FC = () => {
                 const isDiv = p.question.includes('÷');
                 const isFractionDiv = p.question.includes('/') && p.question.includes('÷');
                 const isIntDiv = p.question.includes('÷') && !p.question.includes('/');
+                const isDecimalDiv = (p.question.includes('소수') || p.question.match(/\d+\.\d+/));
                 return (
                   <div key={i} className="problem-item">
                     <span style={{ fontWeight: 700, color: '#2563eb', marginRight: 6, whiteSpace: 'nowrap', fontSize: 16 }}>Q{idx + 1}.</span>
@@ -254,7 +256,7 @@ const ProblemPage: React.FC = () => {
                           {renderWithFraction(p.question)}
                         </span>
                         {/* 정수 나눗셈만 몫/나머지 입력란, 분수 나눗셈은 아래 분수 입력란 */}
-                        {isIntDiv && !p.question.includes('÷ □') ? (
+                        {isIntDiv && !p.question.includes('÷ □') && !isDecimalDiv ? (
                           <div className="division-vertical">
                             <div className="division-vertical-inputs">
                               <div className="division-input-group">
@@ -281,6 +283,15 @@ const ProblemPage: React.FC = () => {
                               </div>
                             </div>
                           </div>
+                        ) : isDecimalDiv && isDiv ? (
+                          // 소수 나눗셈: 소수 한 칸만 입력
+                          <input
+                            type="number"
+                            inputMode="decimal"
+                            className="answer-input"
+                            value={answers[idx] || ''}
+                            onChange={e => handleInput(idx, e.target.value)}
+                          />
                         ) : (
                           // 분수 문제 입력란 (덧셈, 뺄셈, 곱셈, 나눗셈 모두)
                           isFractionDiv || p.question.match(/\d+\/\d+/) ? (

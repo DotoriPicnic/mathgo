@@ -409,6 +409,62 @@ function generateProblems(
       problems.push({ question: q, answer: ans });
       continue;
     }
+    // 소수 연산
+    if (op === '소수') {
+      let a, b, ans, q, hasCarry = false;
+      // 소수점 자릿수 결정
+      let decimalPlaces = 1;
+      if (type.includes('두자릿수')) decimalPlaces = 2;
+      // 덧셈/뺄셈 carry/borrow 판별
+      if (type.startsWith('소수 덧셈')) {
+        do {
+          a = (Math.random() * (decimalPlaces === 1 ? 9 : 99) + 0.1).toFixed(decimalPlaces);
+          b = (Math.random() * (decimalPlaces === 1 ? 9 : 99) + 0.1).toFixed(decimalPlaces);
+          ans = (parseFloat(a) + parseFloat(b)).toFixed(decimalPlaces + 1);
+          q = `${a} + ${b} =`;
+          // 올림 판별: 소수점 아래 마지막 자리 합이 10 이상이면 올림
+          const aDec = parseInt(a.split('.')[1] || '0', 10);
+          const bDec = parseInt(b.split('.')[1] || '0', 10);
+          const sumDec = aDec + bDec;
+          hasCarry = sumDec >= Math.pow(10, decimalPlaces);
+        } while (
+          (carry === 'with' && !hasCarry) ||
+          (carry === 'without' && hasCarry)
+        );
+      } else if (type.startsWith('소수 뺄셈')) {
+        do {
+          a = (Math.random() * (decimalPlaces === 1 ? 9 : 99) + 0.1).toFixed(decimalPlaces);
+          b = (Math.random() * (decimalPlaces === 1 ? 9 : 99) + 0.1).toFixed(decimalPlaces);
+          if (parseFloat(a) < parseFloat(b)) [a, b] = [b, a];
+          ans = (parseFloat(a) - parseFloat(b)).toFixed(decimalPlaces + 1);
+          q = `${a} - ${b} =`;
+          // 내림 판별: a의 소수점 아래가 b보다 작으면 내림
+          const aDec = parseInt(a.split('.')[1] || '0', 10);
+          const bDec = parseInt(b.split('.')[1] || '0', 10);
+          hasCarry = aDec < bDec;
+        } while (
+          (carry === 'with' && !hasCarry) ||
+          (carry === 'without' && hasCarry)
+        );
+      } else if (type.startsWith('소수 곱셈')) {
+        a = (Math.random() * (decimalPlaces === 1 ? 9 : 99) + 0.1).toFixed(decimalPlaces);
+        b = (Math.random() * (decimalPlaces === 1 ? 9 : 99) + 0.1).toFixed(decimalPlaces);
+        ans = (parseFloat(a) * parseFloat(b)).toFixed(decimalPlaces + 1);
+        q = `${a} × ${b} =`;
+      } else if (type.startsWith('소수 나눗셈')) {
+        a = (Math.random() * (decimalPlaces === 1 ? 9 : 99) + 0.1).toFixed(decimalPlaces);
+        b = (Math.random() * (decimalPlaces === 1 ? 9 : 99) + 0.1).toFixed(decimalPlaces);
+        ans = parseFloat(b) !== 0 ? (parseFloat(a) / parseFloat(b)).toFixed(decimalPlaces + 1) : '?';
+        q = `${a} ÷ ${b} =`;
+      } else {
+        a = (Math.random() * 9 + 0.1).toFixed(1);
+        b = (Math.random() * 9 + 0.1).toFixed(1);
+        ans = (parseFloat(a) + parseFloat(b)).toFixed(2);
+        q = `${a} + ${b} =`;
+      }
+      problems.push({ question: q, answer: ans });
+      continue;
+    }
     // 정수 연산
     if (op === '정수') {
       a = Math.floor(Math.random() * 199) - 99; // -99 ~ 99
@@ -565,6 +621,18 @@ const fractionTypes = [
   { label: '분수 나눗셈', value: '분수 나눗셈' },
 ];
 
+// [소수 문제 유형 세분화]
+const decimalTypes = [
+  { label: '소수 덧셈 (소수점 한자릿수)', value: '소수 덧셈 (소수점 한자릿수)' },
+  { label: '소수 덧셈 (소수점 두자릿수)', value: '소수 덧셈 (소수점 두자릿수)' },
+  { label: '소수 뺄셈 (소수점 한자릿수)', value: '소수 뺄셈 (소수점 한자릿수)' },
+  { label: '소수 뺄셈 (소수점 두자릿수)', value: '소수 뺄셈 (소수점 두자릿수)' },
+  { label: '소수 곱셈 (소수점 한자릿수)', value: '소수 곱셈 (소수점 한자릿수)' },
+  { label: '소수 곱셈 (소수점 두자릿수)', value: '소수 곱셈 (소수점 두자릿수)' },
+  { label: '소수 나눗셈 (소수점 한자릿수)', value: '소수 나눗셈 (소수점 한자릿수)' },
+  { label: '소수 나눗셈 (소수점 두자릿수)', value: '소수 나눗셈 (소수점 두자릿수)' },
+];
+
 function getFilteredProblemTypes(op: string) {
   if (op === '덧셈') {
     return problemTypes.filter(t =>
@@ -603,6 +671,9 @@ function getFilteredProblemTypes(op: string) {
   }
   if (op === '분수') {
     return fractionTypes;
+  }
+  if (op === '소수') {
+    return decimalTypes;
   }
   // 분수 등 기타 연산은 추후 확장
   return problemTypes;
@@ -690,6 +761,14 @@ const ElemPage: React.FC = () => {
         all: '섞어서',
       };
 
+  // 라디오 버튼 노출 조건 함수 추가
+  const showDecimalCarryRadio = (
+    type === '소수 덧셈 (소수점 한자릿수)' ||
+    type === '소수 덧셈 (소수점 두자릿수)' ||
+    type === '소수 뺄셈 (소수점 한자릿수)' ||
+    type === '소수 뺄셈 (소수점 두자릿수)'
+  );
+
   return (
     <div className="elem-page">
       <HomeButton />
@@ -724,6 +803,7 @@ const ElemPage: React.FC = () => {
             <option>곱셈</option>
             <option>나눗셈</option>
             <option>분수</option>
+            <option>소수</option> {/* 추가 */}
             <option disabled>정수 (서비스 준비중)</option>
           </select>
         </div>
@@ -736,7 +816,9 @@ const ElemPage: React.FC = () => {
           >
             {(op === '분수'
               ? fractionTypes.find(t => t.value === type)
-              : problemTypes.find(t => t.value === type)
+              : op === '소수'
+                ? decimalTypes.find(t => t.value === type)
+                : problemTypes.find(t => t.value === type)
             )?.label}
             <span className="dropdown-arrow">▼</span>
             {showTypeList && (
@@ -758,7 +840,7 @@ const ElemPage: React.FC = () => {
           </div>
         </div>
         {/* 올림/내림 옵션 (라디오 버튼처럼 동작) */}
-        {(op === '덧셈' || op === '뺄셈') && (
+        {op === '덧셈' || op === '뺄셈' ? (
           <div className="radio-group">
             <label className={`radio-option ${carry === 'with' ? 'selected' : ''}`}>
               <input type="radio" checked={carry === 'with'} onChange={() => handleCarry('with')} />
@@ -773,7 +855,22 @@ const ElemPage: React.FC = () => {
               <span>{carryLabels.all}</span>
             </label>
           </div>
-        )}
+        ) : op === '소수' && showDecimalCarryRadio ? (
+          <div className="radio-group">
+            <label className={`radio-option ${carry === 'with' ? 'selected' : ''}`}>
+              <input type="radio" checked={carry === 'with'} onChange={() => handleCarry('with')} />
+              <span>{carryLabels.with}</span>
+            </label>
+            <label className={`radio-option ${carry === 'without' ? 'selected' : ''}`}>
+              <input type="radio" checked={carry === 'without'} onChange={() => handleCarry('without')} />
+              <span>{carryLabels.without}</span>
+            </label>
+            <label className={`radio-option ${carry === 'all' ? 'selected' : ''}`}>
+              <input type="radio" checked={carry === 'all'} onChange={() => handleCarry('all')} />
+              <span>{carryLabels.all}</span>
+            </label>
+          </div>
+        ) : null}
         {/* 제한 시간 */}
         <div className="time-limit-group">
           <label className="form-label">제한 시간:</label>
