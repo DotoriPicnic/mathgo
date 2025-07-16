@@ -1,10 +1,21 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./MainPage.css";
 
 const MainPage: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <div className="main-page">
+      {/* 상단 홈 버튼 */}
+      <button
+        className="home-top-btn"
+        onClick={() => navigate("/")}
+        style={{
+          position: 'absolute', left: 24, top: 24, zIndex: 20, background: 'none', border: 'none', color: '#2563eb', fontWeight: 700, fontSize: 20, cursor: 'pointer', letterSpacing: 1
+        }}
+      >
+        홈
+      </button>
       <div className="main-container">
         <h1 className="main-title">초등 수학 문제 생성기</h1>
         <p className="main-subtitle">초등학생을 위한 맞춤형 수학 문제를 만들어보세요!</p>
@@ -40,6 +51,9 @@ const MainPage: React.FC = () => {
         
         <div className="footer">
           <p>초등학생 수학 학습을 위한 무료 도구입니다</p>
+          <p>
+            문의/건의: <a href="mailto:calcuriofficial@gmail.com" style={{ color: '#2563eb', textDecoration: 'underline' }}>calcuriofficial@gmail.com</a>
+          </p>
         </div>
       </div>
     </div>
