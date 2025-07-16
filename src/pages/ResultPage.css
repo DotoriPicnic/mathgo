@@ -1,0 +1,237 @@
+/* ResultPage 반응형 스타일 */
+.result-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f7fafd;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.result-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.time-info {
+  text-align: center;
+  font-size: 17px;
+  color: #2563eb;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.result-title {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.result-score {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 32px;
+}
+
+.result-score-main {
+  color: #2563eb;
+}
+
+.result-score-sub {
+  color: #888;
+  font-size: 16px;
+}
+
+.result-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.result-row {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  width: 100%;
+}
+
+.result-item {
+  background: #f9fafb;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  padding: 14px 18px;
+  min-width: 220px;
+  margin-bottom: 4px;
+  box-sizing: border-box;
+}
+
+.result-question {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.question-number {
+  font-weight: 700;
+  color: #2563eb;
+  margin-right: 8px;
+}
+
+.question-text {
+  margin-right: 8px;
+}
+
+.user-answer {
+  margin-right: 8px;
+  min-width: 40px;
+  text-align: center;
+}
+
+.division-answer {
+  font-size: 13px;
+  color: #888;
+  margin-left: 4px;
+  margin-right: 4px;
+  font-family: monospace;
+  display: inline-block;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.result-mark {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid #ef4444;
+  color: #ef4444;
+  font-weight: 900;
+  font-size: 20px;
+  text-align: center;
+  line-height: 28px;
+  margin-right: 8px;
+  margin-left: 8px;
+  background: transparent;
+}
+
+.result-mark-correct {
+  border: 3px solid #22c55e;
+  color: #22c55e;
+}
+
+.result-mark-incorrect {
+  border: none;
+  color: #ef4444;
+  font-size: 28px;
+}
+
+.correct-answer {
+  font-size: 12px;
+  color: #bbb;
+  margin-left: 36px;
+  margin-top: 2px;
+  font-family: monospace;
+}
+
+.result-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.result-button {
+  font-size: 18px;
+  padding: 12px 32px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #2563eb;
+  color: white;
+  transition: background-color 0.2s;
+}
+
+.result-button:hover {
+  background: #1d4ed8;
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+  .result-container {
+    padding: 0 12px;
+    margin: 20px auto;
+  }
+  
+  .time-info {
+    font-size: 15px;
+  }
+  
+  .result-title {
+    font-size: 20px;
+  }
+  
+  .result-score {
+    font-size: 20px;
+  }
+  
+  .result-score-sub {
+    font-size: 14px;
+  }
+  
+  .result-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .result-item {
+    min-width: 100%;
+    width: 100%;
+    padding: 12px 16px;
+  }
+  
+  .result-question {
+    font-size: 16px;
+    flex-wrap: wrap;
+  }
+  
+  .question-text {
+    font-size: 15px;
+  }
+  
+  .division-answer {
+    font-size: 12px;
+  }
+  
+  .result-mark {
+    width: 24px;
+    height: 24px;
+    font-size: 18px;
+    line-height: 24px;
+  }
+  
+  .result-mark-incorrect {
+    font-size: 24px;
+  }
+  
+  .correct-answer {
+    font-size: 11px;
+    margin-left: 28px;
+  }
+  
+  .result-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .result-button {
+    font-size: 16px;
+    padding: 10px 24px;
+  }
+} 

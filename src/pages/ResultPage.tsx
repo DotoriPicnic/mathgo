@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import './ResultPage.css';
 
 interface Problem {
   question: string;
@@ -171,11 +172,11 @@ const ResultPage: React.FC = () => {
   const score100 = total > 0 ? Math.round((score / total) * 100) : 0;
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f7fafd' }}>
-      <div className="card" style={{ width: '100%', maxWidth: 800, margin: '40px auto' }}>
+    <div className="result-page">
+      <div className="result-container">
         {/* 제한시간/소요시간 표시 */}
         {(limitSec !== null || elapsedSec !== null) && (
-          <div style={{ textAlign: 'center', fontSize: 17, color: '#2563eb', fontWeight: 700, marginBottom: 8 }}>
+          <div className="time-info">
             {limitSec !== null && (
               <span>제한시간: {formatTime(limitSec)} </span>
             )}
@@ -184,13 +185,13 @@ const ResultPage: React.FC = () => {
             )}
           </div>
         )}
-        <h2 style={{ textAlign: 'center', marginBottom: 16 }}>채점 결과</h2>
-        <div style={{ textAlign: 'center', fontSize: 22, fontWeight: 700, marginBottom: 32 }}>
-          점수: <span style={{ color: '#2563eb' }}>{score100}점</span> <span style={{ color: '#888', fontSize: 16 }}>({score} / {total})</span>
+        <h2 className="result-title">채점 결과</h2>
+        <div className="result-score">
+          점수: <span className="result-score-main">{score100}점</span> <span className="result-score-sub">({score} / {total})</span>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+        <div className="result-list">
           {rows.map((row, rowIdx) => (
-            <div key={rowIdx} style={{ display: 'flex', gap: 32, justifyContent: 'center', width: '100%' }}>
+            <div key={rowIdx} className="result-row">
               {row.map((p, i) => {
                 const idx = rowIdx * 2 + i;
                 const userAns = userAnswers[idx] || '';
@@ -205,30 +206,24 @@ const ResultPage: React.FC = () => {
                   isCorrect = compareAnswer(userAns, p.answer);
                 }
                 return (
-                  <div key={i} style={{ background: '#f9fafb', borderRadius: 10, boxShadow: '0 1px 4px rgba(0,0,0,0.04)', padding: '14px 18px', minWidth: 220, marginBottom: 4 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', fontWeight: 600, fontSize: 18 }}>
-                      <span style={{ fontWeight: 700, color: '#2563eb', marginRight: 8 }}>Q{idx + 1}.</span>
-                      <span style={{ marginRight: 8 }}>{renderWithFraction(p.question)}</span>
+                  <div key={i} className="result-item">
+                    <div className="result-question">
+                      <span className="question-number">Q{idx + 1}.</span>
+                      <span className="question-text">{renderWithFraction(p.question)}</span>
                       {p.question.includes('÷') && typeof (userAnswers[idx] as any) === 'object' ? (
-                        <span style={{ fontSize: 13, color: '#888', marginLeft: 4, marginRight: 4, fontFamily: 'monospace', display: 'inline-block', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                        <span className="division-answer">
                           (몫: {(userAnswers[idx] as any)?.q ?? ''}, 나머지: {(userAnswers[idx] as any)?.r ?? ''})
                         </span>
                       ) : (
-                        <span style={{ marginRight: 8, minWidth: 40, textAlign: 'center' }}>{userAns}</span>
+                        <span className="user-answer">{userAns}</span>
                       )}
                       {isCorrect ? (
-                        <span style={{ ...markStyle, border: '3px solid #ef4444', color: '#ef4444', marginLeft: 4, marginRight: 4 }}>O</span>
+                        <span className="result-mark result-mark-correct">O</span>
                       ) : (
-                        <span style={{ ...markStyle, border: 'none', color: '#ef4444', fontSize: 28, marginLeft: 4, marginRight: 4 }}>×</span>
+                        <span className="result-mark result-mark-incorrect">×</span>
                       )}
                     </div>
-                    <div style={{
-                      fontSize: 12,
-                      color: '#bbb',
-                      marginLeft: 36,
-                      marginTop: 2,
-                      fontFamily: p.question.includes('÷') ? 'monospace' : undefined
-                    }}>
+                    <div className="correct-answer">
                       (정답: {p.question.includes('÷') && typeof (p.answer as any) === 'object'
                         ? `몫: ${(p.answer as any).q}, 나머지: ${(p.answer as any).r}`
                         : renderWithFraction(getDisplayAnswer(p.answer))})
@@ -239,9 +234,9 @@ const ResultPage: React.FC = () => {
             </div>
           ))}
         </div>
-        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 32 }}>
-          <button style={{ fontSize: 18, padding: '12px 32px' }} onClick={() => window.location.href = '/elem/problems'}>다시 풀기</button>
-          <button style={{ fontSize: 18, padding: '12px 32px' }} onClick={() => window.location.href = '/'}>메인으로</button>
+        <div className="result-buttons">
+          <button className="result-button" onClick={() => window.location.href = '/elem/problems'}>다시 풀기</button>
+          <button className="result-button" onClick={() => window.location.href = '/'}>메인으로</button>
         </div>
       </div>
     </div>
