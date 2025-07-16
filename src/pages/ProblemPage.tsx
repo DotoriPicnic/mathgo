@@ -216,7 +216,8 @@ const ProblemPage: React.FC = () => {
                         </div>
                         {/* 두 번째 줄: 입력란만 크게 */}
                         <input
-                          type="text"
+                          type="number"
+                          inputMode="numeric"
                           placeholder=""
                           className="blank-division-input"
                           value={typeof answers[idx] === 'string' ? answers[idx] : ''}
@@ -236,29 +237,32 @@ const ProblemPage: React.FC = () => {
                             <div className="division-vertical-inputs">
                               <div className="division-input-group">
                                 <span className="division-label">몫</span>
-                                <input
-                                  type="text"
-                                  placeholder=""
-                                  className="division-input"
-                                  value={answers[idx]?.q || ''}
-                                  onChange={e => handleInput(idx, e.target.value, 'q')}
-                                />
+                                                              <input
+                                type="number"
+                                inputMode="numeric"
+                                placeholder=""
+                                className="division-input"
+                                value={answers[idx]?.q || ''}
+                                onChange={e => handleInput(idx, e.target.value, 'q')}
+                              />
                               </div>
                               <div className="division-input-group">
                                 <span className="division-label">나머지</span>
-                                <input
-                                  type="text"
-                                  placeholder=""
-                                  className="division-input"
-                                  value={answers[idx]?.r || ''}
-                                  onChange={e => handleInput(idx, e.target.value, 'r')}
-                                />
+                                                              <input
+                                type="number"
+                                inputMode="numeric"
+                                placeholder=""
+                                className="division-input"
+                                value={answers[idx]?.r || ''}
+                                onChange={e => handleInput(idx, e.target.value, 'r')}
+                              />
                               </div>
                             </div>
                           </div>
                         ) : (
                           <input
-                            type="text"
+                            type="number"
+                            inputMode="numeric"
                             className="answer-input"
                             value={answers[idx] || ''}
                             onChange={e => handleInput(idx, e.target.value)}

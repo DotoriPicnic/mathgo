@@ -161,11 +161,8 @@ const ResultPage: React.FC = () => {
     background: 'transparent',
   };
 
-  // 2개씩 묶어서 row로 변환
-  const rows = [];
-  for (let i = 0; i < problems.length; i += 2) {
-    rows.push(problems.slice(i, i + 2));
-  }
+  // 문제를 개별적으로 처리 (모바일에서 한 줄에 하나씩)
+  const rows = problems.map(problem => [problem]);
 
   // 100점 만점 환산
   const total = problems.length;
