@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { QRCodeCanvas } from 'qrcode.react';
+// QRCodeCanvas import 제거
 import HomeButton from '../components/HomeButton';
 import './ProblemPage.css';
 
@@ -139,33 +139,11 @@ const ProblemPage: React.FC = () => {
     pdf.save('mathgo.pdf');
   };
 
-  // 문제 배열을 5개씩 분할하여 각 QR 코드 생성
-  let qrUrls: string[] = [];
-  let chunkedProblems: Problem[][] = [];
-  if (problems.length === 1) {
-    chunkedProblems = [problems];
-    qrUrls = [encodeData({ problems: [problems[0].question], type: 'mathgo', t: Date.now(), range: [1, 1] })];
-  } else {
-    chunkedProblems = [];
-    for (let i = 0; i < problems.length; i += 5) {
-      chunkedProblems.push(problems.slice(i, i + 5));
-    }
-    qrUrls = chunkedProblems.map((chunk, idx) => {
-      const qrData = encodeData({ problems: chunk.map(p => p.question), type: 'mathgo', t: Date.now(), range: [idx * 5 + 1, idx * 5 + chunk.length] });
-      return `${window.location.origin}/qr-answer?data=${qrData}`;
-    });
-  }
-
   // PDF용 문제 rows (2열 10행, 입력란 없이)
   const pdfRows: Problem[][] = [];
   for (let i = 0; i < problems.length; i += 2) {
     pdfRows.push(problems.slice(i, i + 2));
   }
-
-  // 항상 1번 문제만 포함하는 QR 코드 1개만 생성
-  const qrUrl = problems.length > 0
-    ? `${window.location.origin}/qr-answer?data=${encodeData({ problems: [problems[0].question], type: 'mathgo', t: Date.now(), range: [1, 1] })}`
-    : '';
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f7fafd', width: '100%', overflowX: 'hidden' }}>

@@ -193,9 +193,7 @@ const ResultPage: React.FC = () => {
                   const idx = rowIdx * 2 + i;
                   const userAns = userAnswers[idx] || '';
                   let isCorrect = false;
-                  let isFractionDiv = p.question.includes('/') && p.question.includes('÷');
                   let isIntDiv = p.question.includes('÷') && !p.question.includes('/');
-                  let isDiv = p.question.includes('÷');
                   // 채점 분기 수정: 정수 나눗셈만 몫/나머지 비교, 나머지는 분수/일반 비교
                   if (isIntDiv) {
                     const user = userAnswers[idx];
