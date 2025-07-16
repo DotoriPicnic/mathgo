@@ -11,10 +11,6 @@ interface Problem {
   answer: number;
 }
 
-function encodeData(data: any) {
-  return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-}
-
 // [분수 표시용 컴포넌트 추가]
 function Fraction({ value }: { value: string }) {
   const match = value.match(/^(\d+)\/(\d+)$/);
