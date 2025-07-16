@@ -1,71 +1,70 @@
-<<<<<<< HEAD
-# React + TypeScript + Vite
+# 초등 수학 문제 생성기 (MathGo)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+초등학생을 위한 맞춤형 수학 문제를 자동으로 생성해주는 웹 애플리케이션입니다.
 
-Currently, two official plugins are available:
+## 주요 기능
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **다양한 연산**: 덧셈, 뺄셈, 곱셈, 나눗셈 문제 생성
+- **문제 유형**: 한자릿수, 두자릿수, 세자릿수 연산 및 빈칸 문제
+- **올림/내림 옵션**: 올림/내림이 있는 문제만, 없는 문제만, 또는 섞어서 생성
+- **타이머 기능**: 시간 제한을 설정하여 실전 연습 가능
+- **PDF 출력**: 문제를 PDF로 출력하여 오프라인에서도 사용 가능
+- **모바일 친화적**: 모바일 환경에서도 편리하게 사용 가능
 
-## Expanding the ESLint configuration
+## 기술 스택
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Frontend**: React 19 + TypeScript
+- **Build Tool**: Vite
+- **Routing**: React Router DOM
+- **PDF Generation**: jsPDF + html2canvas
+- **QR Code**: qrcode.react
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 개발 환경 설정
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+```bash
+# 의존성 설치
+npm install
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# 개발 서버 실행
+npm run dev
+
+# 빌드
+npm run build
+
+# 빌드 미리보기
+npm run preview
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 배포
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+이 프로젝트는 Vercel을 통해 배포됩니다.
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Vercel 배포 방법
+
+1. [Vercel](https://vercel.com)에 가입하고 로그인
+2. GitHub 저장소를 연결
+3. 프로젝트를 import
+4. 자동으로 빌드 및 배포됨
+
+### 환경 변수
+
+현재 특별한 환경 변수 설정이 필요하지 않습니다.
+
+## 프로젝트 구조
+
 ```
+src/
+├── pages/          # 페이지 컴포넌트
+│   ├── MainPage.tsx
+│   ├── ElemPage.tsx
+│   ├── ProblemPage.tsx
+│   ├── ResultPage.tsx
+│   └── QrAnswerPage.tsx
+├── App.tsx         # 메인 앱 컴포넌트
+└── main.tsx        # 앱 진입점
+```
+
+## 라이선스
+
+이 프로젝트는 교육 목적으로 제작되었습니다.
 

@@ -1,5 +1,4 @@
 {
-  "homepage": "https://DotoriPicnic.github.io/mathgo",
   "name": "mathgo",
   "private": true,
   "version": "0.0.0",
@@ -8,9 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "predeploy": "npm run build && copy dist\\index.html dist\\404.html",
-    "deploy": "gh-pages -d dist"
+    "preview": "vite preview"
   },
   "dependencies": {
     "html2canvas": "^1.4.1",

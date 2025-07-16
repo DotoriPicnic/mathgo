@@ -8,7 +8,7 @@ import QrAnswerPage from './pages/QrAnswerPage';
 
 function App() {
   return (
-    <Router basename="/mathgo">
+    <Router>
         <Routes>
           <Route path="/" element={<MainPage />} />
           <Route path="/elem" element={<ElemPage />} />
