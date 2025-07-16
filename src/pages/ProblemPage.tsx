@@ -34,6 +34,40 @@ function renderWithFraction(str: string) {
   );
 }
 
+// [정답 표시용 약분 함수]
+function parseFraction(str: string): { n: number, d: number } | null {
+  if (/^[-+]?\d+$/.test(str)) {
+    return { n: parseInt(str, 10), d: 1 };
+  }
+  if (/^[-+]?\d+\/\d+$/.test(str)) {
+    const [n, d] = str.split('/').map(Number);
+    return { n, d };
+  }
+  if (/^[-+]?\d*\.\d+$/.test(str)) {
+    const f = parseFloat(str);
+    const s = str.split('.')[1].length;
+    const d = Math.pow(10, s);
+    const n = Math.round(f * d);
+    return { n, d };
+  }
+  return null;
+}
+function gcd(a: number, b: number): number {
+  return b === 0 ? Math.abs(a) : gcd(b, a % b);
+}
+function normalizeFrac(frac: { n: number, d: number }) {
+  const g = gcd(frac.n, frac.d);
+  return { n: frac.n / g, d: frac.d / g };
+}
+function getDisplayAnswer(answer: string | number) {
+  if (typeof answer === 'number') return String(answer);
+  const frac = parseFraction(answer);
+  if (!frac) return answer;
+  const norm = normalizeFrac(frac);
+  if (norm.d === 1) return String(norm.n);
+  return `${norm.n}/${norm.d}`;
+}
+
 const ProblemPage: React.FC = () => {
   const [problems, setProblems] = useState<Problem[]>([]);
   // answers: 나눗셈은 {q, r}, 나머지는 string
@@ -466,7 +500,7 @@ const ProblemPage: React.FC = () => {
                         <span style={{ color: '#2563eb', fontWeight: 700, marginLeft: 8 }}>
                           {row[col].question.includes('÷') && typeof (row[col].answer as any) === 'object'
                             ? `몫: ${(row[col].answer as any).q}, 나머지: ${(row[col].answer as any).r}`
-                            : renderWithFraction(row[col].answer?.toString() ?? '')}
+                            : renderWithFraction(getDisplayAnswer(row[col].answer))}
                         </span>
                       </div>
                     ) : <div key={rowIdx} style={{ minHeight: 10, padding: 0 }} />
