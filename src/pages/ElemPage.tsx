@@ -803,7 +803,7 @@ const ElemPage: React.FC = () => {
             <option>곱셈</option>
             <option>나눗셈</option>
             <option>분수</option>
-            <option>소수</option> {/* 추가 */}
+            <option disabled>소수 (서비스 준비중)</option>
             <option disabled>정수 (서비스 준비중)</option>
           </select>
         </div>
