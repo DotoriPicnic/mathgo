@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './ElemPage.css';
 
 // 문제 생성 함수 (연산별, 올림 옵션별)
 function generateProblems(
@@ -594,7 +595,10 @@ const problemTypes = [
 
 const ElemPage: React.FC = () => {
   const navigate = useNavigate();
-  const [op, setOp] = useState('덧셈');
+  const [op, setOp] = useState(() => {
+    const savedOp = localStorage.getItem('lastOperation');
+    return savedOp || '덧셈';
+  });
   const [type, setType] = useState('한자릿수 + 한자릿수');
   // carry: 'all'(섞어서), 'with'(올림만), 'without'(올림없음)
   const [carry, setCarry] = useState<'all' | 'with' | 'without'>('all');
@@ -667,15 +671,15 @@ const ElemPage: React.FC = () => {
       };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f7fafd' }}>
-      <form onSubmit={handleGenerate} style={{ background: '#fff', borderRadius: 18, boxShadow: '0 4px 24px rgba(37,99,235,0.10)', padding: '48px 36px', minWidth: 340, maxWidth: 380, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ fontSize: 44, marginBottom: 8 }}>✏️</div>
-        <h2 style={{ color: '#2563eb', fontWeight: 800, fontSize: 26, marginBottom: 32, textAlign: 'center' }}>
+    <div className="elem-page">
+      <form onSubmit={handleGenerate} className="elem-form">
+        <div className="elem-emoji">✏️</div>
+        <h2 className="elem-title">
           초등학교 연산 문제 생성
         </h2>
         {/* 빈칸 문제 예시 미리보기 */}
         {type.startsWith('빈칸 문제') && example && (
-          <div style={{ marginBottom: 18, fontSize: 20, color: '#2563eb', fontWeight: 700, textAlign: 'center', letterSpacing: 1 }}>
+          <div className="example-preview">
             예시: {example.split('□').map((part, idx, arr) => (
               idx < arr.length - 1 ? (
                 <React.Fragment key={idx}>
@@ -687,9 +691,13 @@ const ElemPage: React.FC = () => {
           </div>
         )}
         {/* 연산 종류 */}
-        <div style={{ width: '100%', marginBottom: 18 }}>
-          <label style={{ fontWeight: 600, fontSize: 15, marginBottom: 6, display: 'block' }}>연산 종류:</label>
-          <select value={op} onChange={e => setOp(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: 8, border: '1.5px solid #bcd0f7', fontSize: 16 }}>
+        <div className="form-group">
+          <label className="form-label">연산 종류:</label>
+          <select value={op} onChange={e => {
+            const newOp = e.target.value;
+            setOp(newOp);
+            localStorage.setItem('lastOperation', newOp);
+          }} className="form-select">
             <option>덧셈</option>
             <option>뺄셈</option>
             <option>곱셈</option>
@@ -699,43 +707,16 @@ const ElemPage: React.FC = () => {
           </select>
         </div>
         {/* 문제 유형 (커스텀 드롭다운) */}
-        <div style={{ width: '100%', marginBottom: 18 }} ref={typeRef}>
-          <label style={{ fontWeight: 600, fontSize: 15, marginBottom: 6, display: 'block' }}>문제 유형:</label>
+        <div className="form-group" ref={typeRef}>
+          <label className="form-label">문제 유형:</label>
           <div
-            style={{
-              width: '100%',
-              padding: '12px',
-              borderRadius: 8,
-              border: '1.5px solid #bcd0f7',
-              fontSize: 16,
-              background: '#fff',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              minHeight: 32,
-              position: 'relative',
-            }}
+            className="custom-dropdown"
             onClick={() => setShowTypeList(v => !v)}
           >
             {problemTypes.find(t => t.value === type)?.label}
-            <span style={{ marginLeft: 'auto', color: '#2563eb', fontWeight: 700, fontSize: 18 }}>▼</span>
+            <span className="dropdown-arrow">▼</span>
             {showTypeList && (
-              <ul style={{
-                position: 'absolute',
-                left: 0,
-                top: '100%',
-                width: '100%',
-                background: '#fff',
-                border: '1.5px solid #bcd0f7',
-                borderRadius: 8,
-                margin: 0,
-                padding: 0,
-                zIndex: 10,
-                boxShadow: '0 4px 16px rgba(37,99,235,0.10)',
-                listStyle: 'none',
-                maxHeight: 200,
-                overflowY: 'auto',
-              }}>
+              <ul className="dropdown-list">
                 {getFilteredProblemTypes(op).map(t => (
                   <li
                     key={t.value}
@@ -743,16 +724,7 @@ const ElemPage: React.FC = () => {
                       setType(t.value);
                       setTimeout(() => setShowTypeList(false), 0);
                     }}
-                    style={{
-                      padding: '12px',
-                      fontSize: 16,
-                      background: t.value === type ? '#e0e7ff' : '#fff',
-                      color: t.value === type ? '#2563eb' : '#222',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      fontWeight: t.value === type ? 700 : 500,
-                    }}
+                    className={`dropdown-item ${t.value === type ? 'selected' : ''}`}
                   >
                     {t.label}
                   </li>
@@ -763,36 +735,38 @@ const ElemPage: React.FC = () => {
         </div>
         {/* 올림/내림 옵션 (라디오 버튼처럼 동작) */}
         {(op === '덧셈' || op === '뺄셈') && (
-          <div style={{ width: '100%', marginBottom: 18, display: 'flex', gap: 12, justifyContent: 'center' }}>
-            <label style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', fontWeight: 500, fontSize: 15, cursor: 'pointer', whiteSpace: 'nowrap', minWidth: 0, flex: 1, justifyContent: 'center' }}>
-              <input type="radio" checked={carry === 'with'} onChange={() => handleCarry('with')} style={{ marginRight: 6 }} />
-              <span style={{ wordBreak: 'keep-all', textAlign: 'center' }}>{carryLabels.with}</span>
+          <div className="radio-group">
+            <label className={`radio-option ${carry === 'with' ? 'selected' : ''}`}>
+              <input type="radio" checked={carry === 'with'} onChange={() => handleCarry('with')} />
+              <span>{carryLabels.with}</span>
             </label>
-            <label style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', fontWeight: 500, fontSize: 15, cursor: 'pointer', whiteSpace: 'nowrap', minWidth: 0, flex: 1, justifyContent: 'center' }}>
-              <input type="radio" checked={carry === 'without'} onChange={() => handleCarry('without')} style={{ marginRight: 6 }} />
-              <span style={{ wordBreak: 'keep-all', textAlign: 'center' }}>{carryLabels.without}</span>
+            <label className={`radio-option ${carry === 'without' ? 'selected' : ''}`}>
+              <input type="radio" checked={carry === 'without'} onChange={() => handleCarry('without')} />
+              <span>{carryLabels.without}</span>
             </label>
-            <label style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', fontWeight: 500, fontSize: 15, cursor: 'pointer', whiteSpace: 'nowrap', minWidth: 0, flex: 1, justifyContent: 'center' }}>
-              <input type="radio" checked={carry === 'all'} onChange={() => handleCarry('all')} style={{ marginRight: 6 }} />
-              <span style={{ wordBreak: 'keep-all', textAlign: 'center' }}>{carryLabels.all}</span>
+            <label className={`radio-option ${carry === 'all' ? 'selected' : ''}`}>
+              <input type="radio" checked={carry === 'all'} onChange={() => handleCarry('all')} />
+              <span>{carryLabels.all}</span>
             </label>
           </div>
         )}
         {/* 제한 시간 */}
-        <div style={{ width: '100%', marginBottom: 32 }}>
-          <label style={{ fontWeight: 600, fontSize: 15, marginBottom: 6, display: 'block' }}>제한 시간:</label>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <input type="checkbox" checked={useLimit} onChange={e => setUseLimit(e.target.checked)} />
-            <span style={{ color: useLimit ? '#222' : '#aaa', fontWeight: 500 }}>제한 시간 사용</span>
-            <input type="number" min={1} value={limit} disabled={!useLimit} onChange={e => setLimit(Math.max(1, Number(e.target.value)))} style={{ width: 60, padding: '10px', borderRadius: 8, border: '1.5px solid #bcd0f7', fontSize: 16, color: useLimit ? '#222' : '#aaa', marginLeft: 8, marginRight: 4 }} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <button type="button" disabled={!useLimit} onClick={() => handleLimitChange(1)} style={{ padding: 0, width: 24, height: 20, fontSize: 16, borderRadius: 4, background: '#e0e7ff', color: '#2563eb', border: 'none', marginBottom: 2, cursor: useLimit ? 'pointer' : 'not-allowed' }}>▲</button>
-              <button type="button" disabled={!useLimit} onClick={() => handleLimitChange(-1)} style={{ padding: 0, width: 24, height: 20, fontSize: 16, borderRadius: 4, background: '#e0e7ff', color: '#2563eb', border: 'none', cursor: useLimit ? 'pointer' : 'not-allowed' }}>▼</button>
+        <div className="time-limit-group">
+          <label className="form-label">제한 시간:</label>
+          <div className="time-limit-row">
+            <div className="time-limit-checkbox">
+              <input type="checkbox" checked={useLimit} onChange={e => setUseLimit(e.target.checked)} />
+              <span style={{ color: useLimit ? '#222' : '#aaa', fontWeight: 500 }}>제한 시간 사용</span>
             </div>
-            <span style={{ color: useLimit ? '#222' : '#aaa', fontWeight: 500, marginLeft: 2 }}>분</span>
+            <input type="number" min={1} value={limit} disabled={!useLimit} onChange={e => setLimit(Math.max(1, Number(e.target.value)))} className="time-limit-input" />
+            <div className="time-limit-buttons">
+              <button type="button" disabled={!useLimit} onClick={() => handleLimitChange(1)} className="time-limit-button">▲</button>
+              <button type="button" disabled={!useLimit} onClick={() => handleLimitChange(-1)} className="time-limit-button">▼</button>
+            </div>
+            <span style={{ color: useLimit ? '#222' : '#aaa', fontWeight: 500 }}>분</span>
           </div>
         </div>
-        <button type="submit" style={{ width: '100%', fontSize: 18, padding: '16px 0', borderRadius: 10, background: '#2563eb', color: '#fff', fontWeight: 700, letterSpacing: 1 }}>문제 생성</button>
+        <button type="submit" className="submit-button">문제 생성</button>
       </form>
     </div>
   );

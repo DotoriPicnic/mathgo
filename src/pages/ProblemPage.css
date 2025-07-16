@@ -1,0 +1,206 @@
+/* 문제 페이지 반응형 스타일 */
+.problem-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.problem-row {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+}
+
+.problem-item {
+  background: #f9fafb;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  padding: 14px 12px;
+  min-width: 180px;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 18px;
+  max-width: 320px;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.question-text {
+  margin-right: 6px;
+  white-space: nowrap;
+  min-width: 60px;
+  display: inline-block;
+  font-size: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
+  flex-shrink: 1;
+}
+
+.question-text-division {
+  margin-right: 8px;
+  white-space: nowrap;
+  min-width: 100px;
+  display: inline-block;
+  font-size: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+  flex-shrink: 1;
+}
+
+.answer-input {
+  width: 48px;
+  height: 32px;
+  font-size: 18px;
+  text-align: center;
+  border: 1.5px solid #bcd0f7;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.division-inputs {
+  display: flex;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.division-input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.division-label {
+  font-size: 15px;
+  color: #888;
+  margin-bottom: 2px;
+}
+
+.division-input {
+  width: 36px;
+  height: 32px;
+  font-size: 18px;
+  text-align: center;
+  border: 1.5px solid #bcd0f7;
+  border-radius: 6px;
+}
+
+.blank-division-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.blank-division-text {
+  font-size: 17px;
+  margin-bottom: 6px;
+  text-align: center;
+  width: 100%;
+}
+
+.blank-division-input {
+  width: 60px;
+  height: 20px;
+  font-size: 22px;
+  text-align: center;
+  border: 2px solid #2563eb;
+  border-radius: 8px;
+  margin-top: 2px;
+}
+
+/* 나눗셈 문제 세로 표시 */
+.division-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.division-vertical-text {
+  font-size: 16px;
+  margin-bottom: 8px;
+  text-align: center;
+  width: 100%;
+  line-height: 1.4;
+}
+
+.division-vertical-inputs {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+  .problem-row {
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .problem-item {
+    min-width: 100%;
+    max-width: 100%;
+    width: 100%;
+    padding: 12px 10px;
+    font-size: 16px;
+  }
+  
+  .question-text {
+    min-width: auto;
+    max-width: 100%;
+    font-size: 16px;
+  }
+  
+  .question-text-division {
+    min-width: auto;
+    max-width: 100%;
+    font-size: 16px;
+  }
+  
+  .answer-input {
+    width: 44px;
+    height: 30px;
+    font-size: 16px;
+  }
+  
+  .division-input {
+    width: 32px;
+    height: 30px;
+    font-size: 16px;
+  }
+  
+  .blank-division-input {
+    width: 50px;
+    height: 18px;
+    font-size: 20px;
+  }
+  
+  .blank-division-text {
+    font-size: 15px;
+  }
+  
+  .division-vertical-text {
+    font-size: 14px;
+  }
+  
+  .division-vertical-inputs {
+    gap: 8px;
+  }
+  
+  .division-label {
+    font-size: 13px;
+  }
+} 

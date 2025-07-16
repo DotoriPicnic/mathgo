@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { QRCodeCanvas } from 'qrcode.react';
+import './ProblemPage.css';
 
 interface Problem {
   question: string;
@@ -147,7 +148,7 @@ const ProblemPage: React.FC = () => {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f7fafd' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f7fafd', width: '100%', overflowX: 'hidden' }}>
       {/* 제한시간 타이머 상단 고정 */}
       {timeLeft !== null && (
         <div style={{
@@ -170,53 +171,40 @@ const ProblemPage: React.FC = () => {
       )}
       {/* 좌측 상단 이동 버튼 */}
       <button
-        style={{ position: 'absolute', left: 32, top: 24, zIndex: 10, fontSize: 15, fontWeight: 700, background: '#fff', border: '2px solid #2563eb', color: '#2563eb', borderRadius: 8, padding: '8px 18px', cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,0.08)' }}
+        style={{ position: 'absolute', left: 16, top: 24, zIndex: 10, fontSize: 14, fontWeight: 700, background: '#fff', border: '2px solid #2563eb', color: '#2563eb', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,0.08)', maxWidth: 'calc(100vw - 32px)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
         onClick={() => navigate('/elem')}
       >
         ← 초등학교 연산 문제 생성
       </button>
-      <div className="card" style={{ width: '100%', maxWidth: 800, margin: '40px auto' }}>
+      <div className="card" style={{ width: '100%', maxWidth: 'calc(100vw - 32px)', margin: '40px auto', padding: '0 16px', boxSizing: 'border-box' }}>
         <h2 style={{ textAlign: 'center', marginBottom: 32 }}>연산 문제</h2>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 8 }}>
           {/* 1. 채점하기 버튼 */}
-          <button style={{ background: '#22c55e', marginRight: 12 }} onClick={() => {
+          <button style={{ background: '#22c55e', padding: '8px 16px', fontSize: 14, borderRadius: 6, border: 'none', color: 'white', cursor: 'pointer' }} onClick={() => {
             localStorage.setItem('userAnswers', JSON.stringify(answers));
             navigate('/elem/result');
           }}>채점하기</button>
           {/* 2. PDF 저장 버튼 */}
-          <button style={{ marginRight: 12 }} onClick={handlePdf}>PDF 저장</button>
+          <button style={{ background: '#3b82f6', padding: '8px 16px', fontSize: 14, borderRadius: 6, border: 'none', color: 'white', cursor: 'pointer' }} onClick={handlePdf}>PDF 저장</button>
           {/* 3. 정답 포함 체크박스 */}
-          <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 14 }}>
             <input type="checkbox" style={{ marginLeft: 8 }} checked={includeAnswer} onChange={e => setIncludeAnswer(e.target.checked)} /> 정답 포함
           </label>
         </div>
         {/* 기존 문제 풀이 화면 (입력란 포함) */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+        <div className="problem-container">
           {rows.map((row, rowIdx) => (
-            <div key={rowIdx} style={{ display: 'flex', gap: 32, justifyContent: 'center', width: '100%' }}>
+            <div key={rowIdx} className="problem-row">
               {row.map((p, i) => {
                 const idx = rowIdx * 2 + i;
                 const isDiv = p.question.includes('÷');
                 return (
-                  <div key={i} style={{
-                    background: '#f9fafb',
-                    borderRadius: 10,
-                    boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
-                    padding: '14px 12px', // 여백 축소
-                    minWidth: 180, // 최소 너비 축소
-                    display: 'flex',
-                    alignItems: 'center',
-                    fontWeight: 600,
-                    fontSize: 18,
-                    maxWidth: 320, // 최대 너비 제한
-                    width: '100%',
-                    overflow: 'hidden'
-                  }}>
+                  <div key={i} className="problem-item">
                     <span style={{ fontWeight: 700, color: '#2563eb', marginRight: 6, whiteSpace: 'nowrap', fontSize: 16 }}>Q{idx + 1}.</span>
                     {isDiv && p.question.includes('÷ □') ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                      <div className="blank-division-container">
                         {/* 첫 줄: 식과 힌트 */}
-                        <div style={{ fontSize: 17, marginBottom: 6, textAlign: 'center', width: '100%' }}>
+                        <div className="blank-division-text">
                           {(() => {
                             // 예: '72 ÷ □ = (몫: 8, 나머지: 4) (빈칸 문제)'
                             const match = p.question.match(/([0-9]+) ÷ □ = \(몫: ([0-9]+), 나머지: ([0-9]+)\)/);
@@ -230,63 +218,48 @@ const ProblemPage: React.FC = () => {
                         <input
                           type="text"
                           placeholder=""
-                          style={{ width: 60, height: 20, fontSize: 22, textAlign: 'center', border: '2px solid #2563eb', borderRadius: 8, marginTop: 2 }}
+                          className="blank-division-input"
                           value={typeof answers[idx] === 'string' ? answers[idx] : ''}
                           onChange={e => handleInput(idx, e.target.value)}
                         />
                       </div>
                     ) : (
                       <>
-                        <span
-                          style={isDiv ? {
-                            marginRight: 8,
-                            whiteSpace: 'nowrap',
-                            minWidth: 100,
-                            display: 'inline-block',
-                            fontSize: 18,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            maxWidth: 180
-                          } : {
-                            marginRight: 6,
-                            whiteSpace: 'nowrap',
-                            minWidth: 60,
-                            display: 'inline-block',
-                            fontSize: p.question.length > 18 ? 16 : 18,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            maxWidth: 240
-                          }}
-                        >
+                        <span className={isDiv ? "question-text-division" : "question-text"}>
                           {renderWithFraction(p.question)}
                         </span>
                         {isDiv ? (
-                          <div style={{ display: 'flex', gap: 16 }}>
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                              <span style={{ fontSize: 15, color: '#888', marginBottom: 2 }}>몫</span>
-                              <input
-                                type="text"
-                                placeholder=""
-                                style={{ width: 36, height: 32, fontSize: 18, textAlign: 'center', border: '1.5px solid #bcd0f7', borderRadius: 6 }}
-                                value={answers[idx]?.q || ''}
-                                onChange={e => handleInput(idx, e.target.value, 'q')}
-                              />
+                          <div className="division-vertical">
+                            <div className="division-vertical-text">
+                              {p.question}
                             </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                              <span style={{ fontSize: 15, color: '#888', marginBottom: 2 }}>나머지</span>
-                              <input
-                                type="text"
-                                placeholder=""
-                                style={{ width: 36, height: 32, fontSize: 18, textAlign: 'center', border: '1.5px solid #bcd0f7', borderRadius: 6 }}
-                                value={answers[idx]?.r || ''}
-                                onChange={e => handleInput(idx, e.target.value, 'r')}
-                              />
+                            <div className="division-vertical-inputs">
+                              <div className="division-input-group">
+                                <span className="division-label">몫</span>
+                                <input
+                                  type="text"
+                                  placeholder=""
+                                  className="division-input"
+                                  value={answers[idx]?.q || ''}
+                                  onChange={e => handleInput(idx, e.target.value, 'q')}
+                                />
+                              </div>
+                              <div className="division-input-group">
+                                <span className="division-label">나머지</span>
+                                <input
+                                  type="text"
+                                  placeholder=""
+                                  className="division-input"
+                                  value={answers[idx]?.r || ''}
+                                  onChange={e => handleInput(idx, e.target.value, 'r')}
+                                />
+                              </div>
                             </div>
                           </div>
                         ) : (
                           <input
                             type="text"
-                            style={{ width: 48, height: 32, fontSize: 18, textAlign: 'center', border: '1.5px solid #bcd0f7', borderRadius: 6 }}
+                            className="answer-input"
                             value={answers[idx] || ''}
                             onChange={e => handleInput(idx, e.target.value)}
                           />

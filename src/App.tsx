@@ -8,16 +8,16 @@ import QrAnswerPage from './pages/QrAnswerPage';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<MainPage />} />
-        <Route path="/elem" element={<ElemPage />} />
-        <Route path="/elem/problems" element={<ProblemPage />} />
-        <Route path="/elem/result" element={<ResultPage />} />
-        <Route path="/qr-answer" element={<QrAnswerPage />} />
-      </Routes>
+    <Router basename="/mathgo">
+        <Routes>
+          <Route path="/" element={<MainPage />} />
+          <Route path="/elem" element={<ElemPage />} />
+          <Route path="/elem/problems" element={<ProblemPage />} />
+          <Route path="/elem/result" element={<ResultPage />} />
+          <Route path="/qr-answer" element={<QrAnswerPage />} />
+        </Routes>
     </Router>
   );
 }
 
-export default App
+export default App;
