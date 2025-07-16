@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './ResultPage.css';
+import HomeButton from '../components/HomeButton';
 
 interface Problem {
   question: string;
@@ -155,6 +156,7 @@ const ResultPage: React.FC = () => {
 
   return (
     <div className="result-page">
+      <HomeButton />
       <div className="result-container">
         {/* 제한시간/소요시간 표시 */}
         {(limitSec !== null || elapsedSec !== null) && (

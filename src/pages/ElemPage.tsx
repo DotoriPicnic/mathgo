@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import HomeButton from '../components/HomeButton';
 import './ElemPage.css';
 
 // 문제 생성 함수 (연산별, 올림 옵션별)
@@ -672,6 +673,7 @@ const ElemPage: React.FC = () => {
 
   return (
     <div className="elem-page">
+      <HomeButton />
       <form onSubmit={handleGenerate} className="elem-form">
         <div className="elem-emoji">✏️</div>
         <h2 className="elem-title">

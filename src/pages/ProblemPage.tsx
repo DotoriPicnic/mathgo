@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { QRCodeCanvas } from 'qrcode.react';
+import HomeButton from '../components/HomeButton';
 import './ProblemPage.css';
 
 interface Problem {
@@ -149,6 +150,7 @@ const ProblemPage: React.FC = () => {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f7fafd', width: '100%', overflowX: 'hidden' }}>
+      <HomeButton />
       {/* 제한시간 타이머 상단 고정 */}
       {timeLeft !== null && (
         <div style={{
@@ -169,13 +171,7 @@ const ProblemPage: React.FC = () => {
           ⏰ 남은 시간: {formatTime(timeLeft)}
         </div>
       )}
-      {/* 좌측 상단 이동 버튼 */}
-      <button
-        style={{ position: 'absolute', left: 16, top: 24, zIndex: 10, fontSize: 14, fontWeight: 700, background: '#fff', border: '2px solid #2563eb', color: '#2563eb', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,0.08)', maxWidth: 'calc(100vw - 32px)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-        onClick={() => navigate('/elem')}
-      >
-        ← 초등학교 연산 문제 생성
-      </button>
+      {/* 기존 문제 풀이 화면 (입력란 포함) */}
       <div className="card" style={{ width: '100%', maxWidth: 'calc(100vw - 32px)', margin: '40px auto', padding: '0 16px', boxSizing: 'border-box' }}>
         <h2 style={{ textAlign: 'center', marginBottom: 32 }}>연산 문제</h2>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 8 }}>
@@ -191,7 +187,6 @@ const ProblemPage: React.FC = () => {
             <input type="checkbox" style={{ marginLeft: 8 }} checked={includeAnswer} onChange={e => setIncludeAnswer(e.target.checked)} /> 정답 포함
           </label>
         </div>
-        {/* 기존 문제 풀이 화면 (입력란 포함) */}
         <div className="problem-container">
           {rows.map((row, rowIdx) => (
             <div key={rowIdx} className="problem-row">
