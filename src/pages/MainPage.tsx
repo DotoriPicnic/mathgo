@@ -8,7 +8,7 @@ const MainPage: React.FC = () => {
     <div className="main-page">
       <HomeButton />
       <div className="main-container">
-        <h1 className="main-title">초등 수학 문제 생성기</h1>
+        <h1 className="main-title">초등 수학 문제집</h1>
         <p className="main-subtitle">초등학생을 위한 맞춤형 수학 문제를 만들어보세요!</p>
         <p className="main-description">초등 수학 연산 문제를 자동으로 생성해주는 서비스입니다. 모바일 환경에서도 간편하게 사용할 수 있습니다.</p>
         

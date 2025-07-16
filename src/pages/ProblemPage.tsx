@@ -112,6 +112,17 @@ const ProblemPage: React.FC = () => {
     rows.push(problems.slice(i, i + 2));
   }
 
+  const getPdfTitle = () => {
+    if (problems.length === 0) return 'Calcuri-문제지';
+    const q = problems[0].question;
+    if (q.includes('/')) return 'Calcuri-분수';
+    if (q.includes('+')) return 'Calcuri-덧셈';
+    if (q.includes('-')) return 'Calcuri-뺄셈';
+    if (q.includes('×')) return 'Calcuri-곱셈';
+    if (q.includes('÷')) return 'Calcuri-나눗셈';
+    return 'Calcuri-문제지';
+  };
+
   // PDF 저장 기능 (문제만/정답 포함)
   const handlePdf = async () => {
     if (!pdfRef.current) return;
@@ -132,7 +143,16 @@ const ProblemPage: React.FC = () => {
       pdf.addPage();
       pdf.addImage(answerImg, 'PNG', 0, 0, pdfWidth, pdfHeight);
     }
-    pdf.save('mathgo.pdf');
+    // 파일명: Calcuri-연산명_YYYYMMDD-HHmmss.pdf
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const ss = String(now.getSeconds()).padStart(2, '0');
+    const title = getPdfTitle() + `_${y}${m}${d}-${hh}${mm}${ss}.pdf`;
+    pdf.save(title);
   };
 
   // PDF용 문제 rows (2열 10행, 입력란 없이)
@@ -341,9 +361,18 @@ const ProblemPage: React.FC = () => {
         }}>
           {/* 상단 제목/입력란 */}
           <div style={{ display: 'flex', alignItems: 'center', borderBottom: '3px solid #bbb', paddingBottom: 10, marginBottom: 18 }}>
-            <div style={{ fontWeight: 900, fontSize: 18, background: '#eee', borderRadius: 6, padding: '2px 10px', marginRight: 12 }}>MATHGO</div>
-            <div style={{ fontWeight: 800, fontSize: 28, marginRight: 12 }}>연산학습지</div>
-            <div style={{ fontWeight: 600, fontSize: 18, color: '#2563eb', marginRight: 12 }}>- {problems.length > 0 && problems[0].question.includes('-') ? '뺄셈' : problems[0]?.question.includes('×') ? '곱셈' : problems[0]?.question.includes('÷') ? '나눗셈' : '덧셈'}</div>
+            <div style={{ fontWeight: 900, fontSize: 18, background: '#eee', borderRadius: 6, padding: '2px 10px', marginRight: 12 }}>Caluri</div>
+            <div style={{ fontWeight: 800, fontSize: 28, marginRight: 12 }}>연산문제집</div>
+            {/* 연산명 표시는 분수 문제일 때만 */}
+            {problems.length > 0 && problems[0].question.includes('/') ? (
+              <div style={{ fontWeight: 600, fontSize: 18, color: '#2563eb', marginRight: 12 }}>
+                {problems[0].question.includes('+') ? '분수 덧셈'
+                  : problems[0].question.includes('-') ? '분수 뺄셈'
+                  : problems[0].question.includes('×') ? '분수 곱셈'
+                  : problems[0].question.includes('÷') ? '분수 나눗셈'
+                  : '분수 연산'}
+              </div>
+            ) : null}
             <div style={{ flex: 1 }} />
             <div style={{ fontSize: 16, marginRight: 12 }}>월 <span style={{ borderBottom: '1px solid #bbb', minWidth: 24, display: 'inline-block' }}>&nbsp;&nbsp;&nbsp;</span></div>
             <div style={{ fontSize: 16, marginRight: 12 }}>일 <span style={{ borderBottom: '1px solid #bbb', minWidth: 24, display: 'inline-block' }}>&nbsp;&nbsp;&nbsp;</span></div>
@@ -381,7 +410,10 @@ const ProblemPage: React.FC = () => {
               </div>
             ))}
           </div>
-          {/* 하단 저작권 문구 삭제됨 */}
+          {/* 하단 저작권 문구 추가 */}
+          <div style={{ width: '100%', textAlign: 'right', fontSize: 13, color: '#bbb', marginBottom: 12, position: 'absolute', right: 32, bottom: 0 }}>
+            @https://www.calcuri.com/
+          </div>
         </div>
         {/* 정답용 PDF 영역 (화면에는 보이지 않음) */}
         {includeAnswer && (
@@ -398,9 +430,17 @@ const ProblemPage: React.FC = () => {
           }}>
             {/* 상단 제목/입력란 */}
             <div style={{ display: 'flex', alignItems: 'center', borderBottom: '2px solid #bbb', paddingBottom: 6, marginBottom: 10 }}>
-              <div style={{ fontWeight: 900, fontSize: 15, background: '#eee', borderRadius: 6, padding: '2px 10px', marginRight: 8 }}>MATHGO</div>
-              <div style={{ fontWeight: 800, fontSize: 20, marginRight: 8 }}>정답지</div>
-              <div style={{ fontWeight: 600, fontSize: 13, color: '#2563eb', marginRight: 8 }}>- {problems.length > 0 && problems[0].question.includes('-') ? '뺄셈' : problems[0]?.question.includes('×') ? '곱셈' : problems[0]?.question.includes('÷') ? '나눗셈' : '덧셈'}</div>
+              <div style={{ fontWeight: 900, fontSize: 15, background: '#eee', borderRadius: 6, padding: '2px 10px', marginRight: 8 }}>Caluri</div>
+              <div style={{ fontWeight: 800, fontSize: 20, marginRight: 8 }}>연산문제집</div>
+              {problems.length > 0 && problems[0].question.includes('/') ? (
+                <div style={{ fontWeight: 600, fontSize: 13, color: '#2563eb', marginRight: 8 }}>
+                  {problems[0].question.includes('+') ? '분수 덧셈'
+                    : problems[0].question.includes('-') ? '분수 뺄셈'
+                    : problems[0].question.includes('×') ? '분수 곱셈'
+                    : problems[0].question.includes('÷') ? '분수 나눗셈'
+                    : '분수 연산'}
+                </div>
+              ) : null}
               <div style={{ flex: 1 }} />
             </div>
             {/* 정답 2열 10행, 폰트 12px로 축소 */}
@@ -425,6 +465,10 @@ const ProblemPage: React.FC = () => {
             </div>
             {/* 하단 여백 최소화 */}
             <div style={{ height: 12 }} />
+            {/* 정답지 하단에도 동일하게 */}
+            <div style={{ width: '100%', textAlign: 'right', fontSize: 13, color: '#bbb', marginBottom: 12, position: 'absolute', right: 32, bottom: 0 }}>
+              @https://www.calcuri.com/
+            </div>
           </div>
         )}
       </div>
