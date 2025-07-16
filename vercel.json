@@ -1,8 +1,9 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+        "source": "www.calcuri.com",
+        "destination": "https://calcuri.com",
+        "permanent": true
     }
   ],
   "buildCommand": "npm run build",
