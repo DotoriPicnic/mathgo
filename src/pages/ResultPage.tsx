@@ -144,22 +144,7 @@ const ResultPage: React.FC = () => {
     }
   }, []);
 
-  // 동그라미/엑스 스타일
-  const markStyle = {
-    display: 'inline-block',
-    width: 28,
-    height: 28,
-    borderRadius: '50%',
-    border: '3px solid #ef4444',
-    color: '#ef4444',
-    fontWeight: 900,
-    fontSize: 20,
-    textAlign: 'center' as const,
-    lineHeight: '28px',
-    marginRight: 8,
-    marginLeft: 8,
-    background: 'transparent',
-  };
+
 
   // 문제를 개별적으로 처리 (모바일에서 한 줄에 하나씩)
   const rows = problems.map(problem => [problem]);
