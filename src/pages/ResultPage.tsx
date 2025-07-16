@@ -4,7 +4,7 @@ import HomeButton from '../components/HomeButton';
 
 interface Problem {
   question: string;
-  answer: number;
+  answer: string | number;
 }
 
 // [분수 표시용 컴포넌트 추가]
@@ -22,6 +22,7 @@ function Fraction({ value }: { value: string }) {
 
 // [문자열에서 분수 자동 변환 함수]
 function renderWithFraction(str: string) {
+  if (typeof str !== 'string') return str;
   const parts = str.split(/(\d+\/\d+)/g);
   return parts.map((part, idx) =>
     /^\d+\/\d+$/.test(part) ? <Fraction key={idx} value={part} /> : part
@@ -34,9 +35,10 @@ function parseFraction(str: string): { n: number, d: number } | null {
     // 정수
     return { n: parseInt(str, 10), d: 1 };
   }
-  if (/^[-+]?\d+\/\d+$/.test(str)) {
-    const [n, d] = str.split('/').map(Number);
-    return { n, d };
+  // 분모가 비어 있거나 0이어도 d=1로 간주
+  if (/^[-+]?\d+\/\d*$/.test(str)) {
+    const [n, d] = str.split('/');
+    return { n: Number(n), d: d ? Number(d) : 1 };
   }
   if (/^[-+]?\d*\.\d+$/.test(str)) {
     // 소수 → 분수 변환
@@ -66,9 +68,10 @@ function compareAnswer(user: string, answer: string | number): boolean {
   if (!u || !a) return false;
   const nu = normalizeFrac(u);
   const na = normalizeFrac(a);
-  // 정답이 정수(분모 1)면 정수로만 정답 인정
+  // 정답이 정수(분모 1)면 정수로만 정답 인정 + 3/1, 3/빈칸(3/)도 인정
   if (na.d === 1) {
-    return String(nu.n) === String(na.n) && nu.d === 1 && user.trim() === String(na.n);
+    // 3, 3/1, 3/ 모두 인정 (분자만 맞으면)
+    return nu.n === na.n && (nu.d === 1 || nu.d === 0);
   }
   // 정수가 아닌 분수면 기약분수로만 정답 인정
   return nu.n === na.n && nu.d === na.d && user.trim() === `${na.n}/${na.d}`;
@@ -147,8 +150,11 @@ const ResultPage: React.FC = () => {
 
 
 
-  // 문제를 개별적으로 처리 (모바일에서 한 줄에 하나씩)
-  const rows = problems.map(problem => [problem]);
+  // 문제를 2개씩 묶어서 row로 변환 (문제 풀이 페이지와 동일)
+  const rows: Problem[][] = [];
+  for (let i = 0; i < problems.length; i += 2) {
+    rows.push(problems.slice(i, i + 2));
+  }
 
   // 100점 만점 환산
   const total = problems.length;
@@ -173,51 +179,76 @@ const ResultPage: React.FC = () => {
         <div className="result-score">
           점수: <span className="result-score-main">{score100}점</span> <span className="result-score-sub">({score} / {total})</span>
         </div>
-        <div className="result-list">
-          {rows.map((row, rowIdx) => (
-            <div key={rowIdx} className="result-row">
-              {row.map((p, i) => {
-                const idx = rowIdx * 2 + i;
-                const userAns = userAnswers[idx] || '';
-                let isCorrect = false;
-                if (p.question.includes('÷')) {
-                  const user = userAnswers[idx];
-                  const ans = (p.answer as any);
-                  isCorrect = user && typeof user === 'object' && ans && typeof ans === 'object' &&
-                    String(user.q).trim() === String(ans.q) &&
-                    String(user.r).trim() === String(ans.r);
-                } else {
-                  isCorrect = compareAnswer(userAns, p.answer);
-                }
-                return (
-                  <div key={i} className="result-item">
-                    <div className="result-question">
-                      <span className="question-number">Q{idx + 1}.</span>
-                      <span className="question-text">{renderWithFraction(p.question)}</span>
-                      {p.question.includes('÷') && typeof (userAnswers[idx] as any) === 'object' ? (
-                        <span className="division-answer">
-                          (몫: {(userAnswers[idx] as any)?.q ?? ''}, 나머지: {(userAnswers[idx] as any)?.r ?? ''})
+        {/* 문제/답안이 없을 때 안내 메시지 */}
+        {(problems.length === 0 || userAnswers.length === 0) ? (
+          <div style={{ textAlign: 'center', color: '#888', fontSize: 20, margin: '40px 0' }}>
+            채점할 문제가 없습니다.<br />
+            메인 화면에서 문제를 먼저 생성해 주세요.
+          </div>
+        ) : (
+          <div className="result-list">
+            {rows.map((row, rowIdx) => (
+              <div key={rowIdx} className="result-row">
+                {row.map((p, i) => {
+                  const idx = rowIdx * 2 + i;
+                  const userAns = userAnswers[idx] || '';
+                  let isCorrect = false;
+                  let isFractionDiv = p.question.includes('/') && p.question.includes('÷');
+                  let isIntDiv = p.question.includes('÷') && !p.question.includes('/');
+                  let isDiv = p.question.includes('÷');
+                  // 채점 분기 수정: 정수 나눗셈만 몫/나머지 비교, 나머지는 분수/일반 비교
+                  if (isIntDiv) {
+                    const user = userAnswers[idx];
+                    const ans = (p.answer as any);
+                    isCorrect = user && typeof user === 'object' && ans && typeof ans === 'object' &&
+                      String(user.q).trim() === String(ans.q) &&
+                      String(user.r).trim() === String(ans.r);
+                  } else {
+                    isCorrect = typeof userAns === 'string' && compareAnswer(userAns, p.answer);
+                  }
+                  return (
+                    <div key={i} className="result-item">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span className="question-number">Q{idx + 1}.</span>
+                        <span className="question-text">{renderWithFraction(p.question)}</span>
+                        {/* 정수 나눗셈만 몫/나머지, 나머지는 분수/일반 입력값 */}
+                        {isIntDiv && typeof (userAnswers[idx] as any) === 'object' ? (
+                          <span className="division-answer">
+                            (몫: {(userAnswers[idx] as any)?.q ?? ''}, 나머지: {(userAnswers[idx] as any)?.r ?? ''})
+                          </span>
+                        ) : (
+                          typeof userAns === 'string' && <span className="user-answer">{renderWithFraction(userAns)}</span>
+                        )}
+                        {isCorrect ? (
+                          <span className="result-mark result-mark-correct">O</span>
+                        ) : (
+                          <span className="result-mark result-mark-incorrect">×</span>
+                        )}
+                        <span
+                          style={{
+                            fontSize: (typeof getDisplayAnswer(p.answer) === 'string' && getDisplayAnswer(p.answer).includes('/')) ? 15 : 18,
+                            color: '#2563eb',
+                            marginLeft: 10,
+                            fontFamily: 'monospace',
+                            fontWeight: 700,
+                            minWidth: 60,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            verticalAlign: 'middle',
+                          }}
+                        >
+                          (정답: {isIntDiv && typeof (p.answer as any) === 'object'
+                            ? `몫: ${(p.answer as any).q}, 나머지: ${(p.answer as any).r}`
+                            : renderWithFraction(getDisplayAnswer(p.answer))})
                         </span>
-                      ) : (
-                        <span className="user-answer">{userAns}</span>
-                      )}
-                      {isCorrect ? (
-                        <span className="result-mark result-mark-correct">O</span>
-                      ) : (
-                        <span className="result-mark result-mark-incorrect">×</span>
-                      )}
+                      </div>
                     </div>
-                    <div className="correct-answer">
-                      (정답: {p.question.includes('÷') && typeof (p.answer as any) === 'object'
-                        ? `몫: ${(p.answer as any).q}, 나머지: ${(p.answer as any).r}`
-                        : renderWithFraction(getDisplayAnswer(p.answer))})
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-        </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        )}
         <div className="result-buttons">
           <button className="result-button" onClick={() => window.location.href = '/elem/problems'}>다시 풀기</button>
           <button className="result-button" onClick={() => window.location.href = '/'}>메인으로</button>

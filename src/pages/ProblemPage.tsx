@@ -42,7 +42,8 @@ const ProblemPage: React.FC = () => {
   // answers: 나눗셈은 {q, r}, 나머지는 string
   const [answers, setAnswers] = useState<any[]>([]);
   const [timeLeft, setTimeLeft] = useState<number | null>(null); // 제한시간(초)
-  const [includeAnswer, setIncludeAnswer] = useState(false); // 정답 포함 체크박스 상태
+  // 정답 포함 체크박스 상태 (기본값 true)
+  const [includeAnswer, setIncludeAnswer] = useState(true); // 정답 포함 체크박스 상태
   const timerRef = useRef<number | null>(null);
   const navigate = useNavigate();
   const pdfRef = useRef<HTMLDivElement>(null);
@@ -109,7 +110,7 @@ const ProblemPage: React.FC = () => {
     });
   };
 
-  // 2개씩 묶어서 row로 변환
+  // 2개씩 묶어서 row로 변환 (한 줄에 두 문제)
   const rows: Problem[][] = [];
   for (let i = 0; i < problems.length; i += 2) {
     rows.push(problems.slice(i, i + 2));
@@ -138,15 +139,33 @@ const ProblemPage: React.FC = () => {
     pdf.save('mathgo.pdf');
   };
 
-  // QR코드 데이터(문제 정보 인코딩, base64)
-  const qrData = encodeData({ problems: problems.map(p => p.question), type: 'mathgo', t: Date.now() });
-  const qrUrl = `${window.location.origin}/qr-answer?data=${qrData}`;
+  // 문제 배열을 5개씩 분할하여 각 QR 코드 생성
+  let qrUrls: string[] = [];
+  let chunkedProblems: Problem[][] = [];
+  if (problems.length === 1) {
+    chunkedProblems = [problems];
+    qrUrls = [encodeData({ problems: [problems[0].question], type: 'mathgo', t: Date.now(), range: [1, 1] })];
+  } else {
+    chunkedProblems = [];
+    for (let i = 0; i < problems.length; i += 5) {
+      chunkedProblems.push(problems.slice(i, i + 5));
+    }
+    qrUrls = chunkedProblems.map((chunk, idx) => {
+      const qrData = encodeData({ problems: chunk.map(p => p.question), type: 'mathgo', t: Date.now(), range: [idx * 5 + 1, idx * 5 + chunk.length] });
+      return `${window.location.origin}/qr-answer?data=${qrData}`;
+    });
+  }
 
   // PDF용 문제 rows (2열 10행, 입력란 없이)
   const pdfRows: Problem[][] = [];
   for (let i = 0; i < problems.length; i += 2) {
     pdfRows.push(problems.slice(i, i + 2));
   }
+
+  // 항상 1번 문제만 포함하는 QR 코드 1개만 생성
+  const qrUrl = problems.length > 0
+    ? `${window.location.origin}/qr-answer?data=${encodeData({ problems: [problems[0].question], type: 'mathgo', t: Date.now(), range: [1, 1] })}`
+    : '';
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f7fafd', width: '100%', overflowX: 'hidden' }}>
@@ -177,7 +196,21 @@ const ProblemPage: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 8 }}>
           {/* 1. 채점하기 버튼 */}
           <button style={{ background: '#22c55e', padding: '8px 16px', fontSize: 14, borderRadius: 6, border: 'none', color: 'white', cursor: 'pointer' }} onClick={() => {
-            localStorage.setItem('userAnswers', JSON.stringify(answers));
+            // 채점 전 answers 보정: 분수 입력값이 '분자/' 또는 '분자' 형태라면 '분자/1'로 변환
+            const fixedAnswers = answers.map(ans => {
+              if (typeof ans === 'string' && ans.includes('/')) {
+                const [numer, denom] = ans.split('/');
+                if (numer && (denom === undefined || denom === '')) {
+                  return numer + '/1';
+                }
+                return ans;
+              } else if (typeof ans === 'string' && ans !== '' && !ans.includes('/')) {
+                // 분자만 입력된 경우
+                return ans + '/1';
+              }
+              return ans;
+            });
+            localStorage.setItem('userAnswers', JSON.stringify(fixedAnswers));
             navigate('/elem/result');
           }}>채점하기</button>
           {/* 2. PDF 저장 버튼 */}
@@ -193,10 +226,12 @@ const ProblemPage: React.FC = () => {
               {row.map((p, i) => {
                 const idx = rowIdx * 2 + i;
                 const isDiv = p.question.includes('÷');
+                const isFractionDiv = p.question.includes('/') && p.question.includes('÷');
+                const isIntDiv = p.question.includes('÷') && !p.question.includes('/');
                 return (
                   <div key={i} className="problem-item">
                     <span style={{ fontWeight: 700, color: '#2563eb', marginRight: 6, whiteSpace: 'nowrap', fontSize: 16 }}>Q{idx + 1}.</span>
-                    {isDiv && p.question.includes('÷ □') ? (
+                    {isIntDiv && p.question.includes('÷ □') ? (
                       <div className="blank-division-container">
                         {/* 첫 줄: 식과 힌트 */}
                         <div className="blank-division-text">
@@ -224,44 +259,91 @@ const ProblemPage: React.FC = () => {
                         <span className={isDiv ? "question-text-division" : "question-text"}>
                           {renderWithFraction(p.question)}
                         </span>
-                        {isDiv ? (
+                        {/* 정수 나눗셈만 몫/나머지 입력란, 분수 나눗셈은 아래 분수 입력란 */}
+                        {isIntDiv && !p.question.includes('÷ □') ? (
                           <div className="division-vertical">
-                            <div className="division-vertical-text">
-                              {p.question}
-                            </div>
                             <div className="division-vertical-inputs">
                               <div className="division-input-group">
                                 <span className="division-label">몫</span>
-                                                              <input
-                                type="number"
-                                inputMode="numeric"
-                                placeholder=""
-                                className="division-input"
-                                value={answers[idx]?.q || ''}
-                                onChange={e => handleInput(idx, e.target.value, 'q')}
-                              />
+                                <input
+                                  type="number"
+                                  inputMode="numeric"
+                                  placeholder=""
+                                  className="division-input"
+                                  value={answers[idx]?.q || ''}
+                                  onChange={e => handleInput(idx, e.target.value, 'q')}
+                                />
                               </div>
                               <div className="division-input-group">
                                 <span className="division-label">나머지</span>
-                                                              <input
-                                type="number"
-                                inputMode="numeric"
-                                placeholder=""
-                                className="division-input"
-                                value={answers[idx]?.r || ''}
-                                onChange={e => handleInput(idx, e.target.value, 'r')}
-                              />
+                                <input
+                                  type="number"
+                                  inputMode="numeric"
+                                  placeholder=""
+                                  className="division-input"
+                                  value={answers[idx]?.r || ''}
+                                  onChange={e => handleInput(idx, e.target.value, 'r')}
+                                />
                               </div>
                             </div>
                           </div>
                         ) : (
-                          <input
-                            type="number"
-                            inputMode="numeric"
-                            className="answer-input"
-                            value={answers[idx] || ''}
-                            onChange={e => handleInput(idx, e.target.value)}
-                          />
+                          // 분수 문제 입력란 (덧셈, 뺄셈, 곱셈, 나눗셈 모두)
+                          isFractionDiv || p.question.match(/\d+\/\d+/) ? (
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 8 }}>
+                              <input
+                                type="number"
+                                inputMode="numeric"
+                                className="answer-input small-placeholder"
+                                style={{ width: 40, minWidth: 0, fontSize: 16, padding: '2px 4px' }}
+                                placeholder="분자"
+                                value={typeof answers[idx] === 'string' && answers[idx].includes('/') ? answers[idx].split('/')[0] : answers[idx]?.numer || ''}
+                                onChange={e => {
+                                  const val = e.target.value;
+                                  let denom = '';
+                                  if (typeof answers[idx] === 'string' && answers[idx].includes('/')) {
+                                    denom = answers[idx].split('/')[1];
+                                  } else if (typeof answers[idx] === 'object' && answers[idx] !== null) {
+                                    denom = answers[idx].denom || '';
+                                  }
+                                  handleInput(idx, val + '/' + denom);
+                                }}
+                              />
+                              <span style={{ fontSize: 18, fontWeight: 700, color: '#222', minWidth: 10 }}>/</span>
+                              <input
+                                type="number"
+                                inputMode="numeric"
+                                className="answer-input small-placeholder"
+                                style={{ width: 40, minWidth: 0, fontSize: 16, padding: '2px 4px' }}
+                                placeholder="분모"
+                                value={(() => {
+                                  if (typeof answers[idx] === 'string' && answers[idx].includes('/')) {
+                                    const denom = answers[idx].split('/')[1];
+                                    return denom === undefined ? '' : denom;
+                                  }
+                                  return answers[idx]?.denom || '';
+                                })()}
+                                onChange={e => {
+                                  const val = e.target.value;
+                                  let numer = '';
+                                  if (typeof answers[idx] === 'string' && answers[idx].includes('/')) {
+                                    numer = answers[idx].split('/')[0];
+                                  } else if (typeof answers[idx] === 'object' && answers[idx] !== null) {
+                                    numer = answers[idx].numer || '';
+                                  }
+                                  handleInput(idx, numer + '/' + val);
+                                }}
+                              />
+                            </span>
+                          ) : (
+                            <input
+                              type="number"
+                              inputMode="numeric"
+                              className="answer-input"
+                              value={answers[idx] || ''}
+                              onChange={e => handleInput(idx, e.target.value)}
+                            />
+                          )
                         )}
                       </>
                     )}
@@ -325,25 +407,7 @@ const ProblemPage: React.FC = () => {
               </div>
             ))}
           </div>
-          {/* 하단 저작권/QR코드 */}
-          <div style={{
-            position: 'absolute',
-            left: 0,
-            bottom: 24,
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            fontSize: 14,
-            color: '#888',
-            padding: '0 16px',
-            boxSizing: 'border-box',
-          }}>
-            <div style={{ flex: 1, textAlign: 'center' }}>저작권 문구 자리</div>
-            <div style={{ marginLeft: 'auto' }}>
-              <QRCodeCanvas value={qrUrl} size={64} level="M" includeMargin={false} />
-            </div>
-          </div>
+          {/* 하단 저작권 문구 삭제됨 */}
         </div>
         {/* 정답용 PDF 영역 (화면에는 보이지 않음) */}
         {includeAnswer && (
@@ -359,51 +423,34 @@ const ProblemPage: React.FC = () => {
             boxSizing: 'border-box',
           }}>
             {/* 상단 제목/입력란 */}
-            <div style={{ display: 'flex', alignItems: 'center', borderBottom: '3px solid #bbb', paddingBottom: 10, marginBottom: 18 }}>
-              <div style={{ fontWeight: 900, fontSize: 18, background: '#eee', borderRadius: 6, padding: '2px 10px', marginRight: 12 }}>MATHGO</div>
-              <div style={{ fontWeight: 800, fontSize: 28, marginRight: 12 }}>정답지</div>
-              <div style={{ fontWeight: 600, fontSize: 18, color: '#2563eb', marginRight: 12 }}>- {problems.length > 0 && problems[0].question.includes('-') ? '뺄셈' : problems[0]?.question.includes('×') ? '곱셈' : problems[0]?.question.includes('÷') ? '나눗셈' : '덧셈'}</div>
+            <div style={{ display: 'flex', alignItems: 'center', borderBottom: '2px solid #bbb', paddingBottom: 6, marginBottom: 10 }}>
+              <div style={{ fontWeight: 900, fontSize: 15, background: '#eee', borderRadius: 6, padding: '2px 10px', marginRight: 8 }}>MATHGO</div>
+              <div style={{ fontWeight: 800, fontSize: 20, marginRight: 8 }}>정답지</div>
+              <div style={{ fontWeight: 600, fontSize: 13, color: '#2563eb', marginRight: 8 }}>- {problems.length > 0 && problems[0].question.includes('-') ? '뺄셈' : problems[0]?.question.includes('×') ? '곱셈' : problems[0]?.question.includes('÷') ? '나눗셈' : '덧셈'}</div>
               <div style={{ flex: 1 }} />
             </div>
-            {/* 정답 2열 10행 */}
-            <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: 850, marginTop: 8, marginBottom: 0 }}>
+            {/* 정답 2열 10행, 폰트 12px로 축소 */}
+            <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: 850, marginTop: 0, marginBottom: 0, alignItems: 'flex-start' }}>
               {[0, 1].map(col => (
-                <div key={col} style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
+                <div key={col} style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: 0 }}>
                   {pdfRows.map((row, rowIdx) => (
                     row[col] ? (
-                      <div key={rowIdx} style={{ display: 'flex', alignItems: 'center', fontSize: 22, fontWeight: 600, minHeight: 36 }}>
-                        <span style={{ fontSize: 20, fontWeight: 700, marginRight: 10 }}>{col === 0 ? rowIdx + 1 : rowIdx + 11}.</span>
-                        <span style={{ letterSpacing: 2, color: '#2563eb', fontWeight: 900 }}>
-                          {/* 정답 표시 */}
+                      <div key={rowIdx} style={{ display: 'flex', alignItems: 'center', fontSize: 12, fontWeight: 600, minHeight: 10, marginBottom: 0, padding: 0, lineHeight: 1.1 }}>
+                        <span style={{ fontSize: 12, fontWeight: 700, marginRight: 6 }}>{col === 0 ? rowIdx + 1 : rowIdx + 11}.</span>
+                        <span style={{ letterSpacing: 1 }}>{renderWithFraction(row[col].question)}</span>
+                        <span style={{ color: '#2563eb', fontWeight: 700, marginLeft: 8 }}>
                           {row[col].question.includes('÷') && typeof (row[col].answer as any) === 'object'
                             ? `몫: ${(row[col].answer as any).q}, 나머지: ${(row[col].answer as any).r}`
                             : renderWithFraction(row[col].answer?.toString() ?? '')}
                         </span>
                       </div>
-                    ) : <div key={rowIdx} style={{ minHeight: 36 }} />
+                    ) : <div key={rowIdx} style={{ minHeight: 10, padding: 0 }} />
                   ))}
                 </div>
               ))}
             </div>
-            {/* 하단 저작권/QR코드 */}
-            <div style={{
-              position: 'absolute',
-              left: 0,
-              bottom: 24,
-              width: '100%',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              fontSize: 14,
-              color: '#888',
-              padding: '0 16px',
-              boxSizing: 'border-box',
-            }}>
-              <div style={{ flex: 1, textAlign: 'center' }}>저작권 문구 자리</div>
-              <div style={{ marginLeft: 'auto' }}>
-                <QRCodeCanvas value={qrUrl} size={64} level="M" includeMargin={false} />
-              </div>
-            </div>
+            {/* 하단 여백 최소화 */}
+            <div style={{ height: 12 }} />
           </div>
         )}
       </div>

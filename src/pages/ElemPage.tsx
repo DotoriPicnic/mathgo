@@ -385,6 +385,9 @@ function generateProblems(
         resDenom = denom1 * denom2;
         q = `${numer1}/${denom1} + ${numer2}/${denom2} =`;
       } else if (type.includes('뺄셈')) {
+        // A/B > C/D가 되도록 생성
+        // numer1/denom1 > numer2/denom2
+        if (numer1 * denom2 <= numer2 * denom1) continue;
         resNumer = numer1 * denom2 - numer2 * denom1;
         resDenom = denom1 * denom2;
         q = `${numer1}/${denom1} - ${numer2}/${denom2} =`;
@@ -393,6 +396,7 @@ function generateProblems(
         resDenom = denom1 * denom2;
         q = `${numer1}/${denom1} × ${numer2}/${denom2} =`;
       } else if (type.includes('나눗셈')) {
+        // 분수 나눗셈: a/b ÷ c/d = (a*d)/(b*c)
         resNumer = numer1 * denom2;
         resDenom = denom1 * numer2;
         q = `${numer1}/${denom1} ÷ ${numer2}/${denom2} =`;
@@ -447,46 +451,6 @@ function getBlankExample(type: string, carry: 'all' | 'with' | 'without') {
 }
 
 // 문제 유형 필터링 함수 추가
-function getFilteredProblemTypes(op: string) {
-  if (op === '덧셈') {
-    return problemTypes.filter(t =>
-      typeof t.value === 'string' && (
-        t.value.includes('+') ||
-        (t.value.startsWith('빈칸 문제') &&
-          !t.value.includes('(뺄셈)') &&
-          !t.value.includes('(곱셈)') &&
-          !t.value.includes('(나눗셈)'))
-      )
-    );
-  }
-  if (op === '뺄셈') {
-    return problemTypes.filter(t =>
-      typeof t.value === 'string' && (
-        t.value.includes('-') ||
-        (t.value.startsWith('빈칸 문제') && t.value.includes('(뺄셈)'))
-      )
-    );
-  }
-  if (op === '곱셈') {
-    return problemTypes.filter(t =>
-      typeof t.value === 'string' && (
-        t.value.includes('×') ||
-        (t.value.startsWith('빈칸 문제') && t.value.includes('(곱셈)'))
-      )
-    );
-  }
-  if (op === '나눗셈') {
-    return problemTypes.filter(t =>
-      typeof t.value === 'string' && (
-        t.value.includes('÷') ||
-        (t.value.startsWith('빈칸 문제') && t.value.includes('(나눗셈)'))
-      )
-    );
-  }
-  // 분수 등 기타 연산은 추후 확장
-  return problemTypes;
-}
-
 const problemTypes = [
   { label: '한자릿수 + 한자릿수', value: '한자릿수 + 한자릿수' },
   { label: '두자릿수 + 한자릿수', value: '두자릿수 + 한자릿수' },
@@ -594,6 +558,56 @@ const problemTypes = [
   }
 ];
 
+const fractionTypes = [
+  { label: '분수 덧셈', value: '분수 덧셈' },
+  { label: '분수 뺄셈', value: '분수 뺄셈' },
+  { label: '분수 곱셈', value: '분수 곱셈' },
+  { label: '분수 나눗셈', value: '분수 나눗셈' },
+];
+
+function getFilteredProblemTypes(op: string) {
+  if (op === '덧셈') {
+    return problemTypes.filter(t =>
+      typeof t.value === 'string' && (
+        t.value.includes('+') ||
+        (t.value.startsWith('빈칸 문제') &&
+          !t.value.includes('(뺄셈)') &&
+          !t.value.includes('(곱셈)') &&
+          !t.value.includes('(나눗셈)'))
+      )
+    );
+  }
+  if (op === '뺄셈') {
+    return problemTypes.filter(t =>
+      typeof t.value === 'string' && (
+        t.value.includes('-') ||
+        (t.value.startsWith('빈칸 문제') && t.value.includes('(뺄셈)'))
+      )
+    );
+  }
+  if (op === '곱셈') {
+    return problemTypes.filter(t =>
+      typeof t.value === 'string' && (
+        t.value.includes('×') ||
+        (t.value.startsWith('빈칸 문제') && t.value.includes('(곱셈)'))
+      )
+    );
+  }
+  if (op === '나눗셈') {
+    return problemTypes.filter(t =>
+      typeof t.value === 'string' && (
+        t.value.includes('÷') ||
+        (t.value.startsWith('빈칸 문제') && t.value.includes('(나눗셈)'))
+      )
+    );
+  }
+  if (op === '분수') {
+    return fractionTypes;
+  }
+  // 분수 등 기타 연산은 추후 확장
+  return problemTypes;
+}
+
 const ElemPage: React.FC = () => {
   const navigate = useNavigate();
   const [op, setOp] = useState(() => {
@@ -653,7 +667,12 @@ const ElemPage: React.FC = () => {
   React.useEffect(() => {
     const filtered = getFilteredProblemTypes(op);
     if (filtered.length > 0) {
-      setType(filtered[0].value);
+      // 분수 연산일 때는 fractionTypes의 첫 번째 값으로 명확히 지정
+      if (op === '분수') {
+        setType(fractionTypes[0].value);
+      } else {
+        setType(filtered[0].value);
+      }
     }
     // eslint-disable-next-line
   }, [op]);
@@ -704,7 +723,7 @@ const ElemPage: React.FC = () => {
             <option>뺄셈</option>
             <option>곱셈</option>
             <option>나눗셈</option>
-            <option disabled>분수 (서비스 준비중)</option>
+            <option>분수</option>
             <option disabled>정수 (서비스 준비중)</option>
           </select>
         </div>
@@ -715,7 +734,10 @@ const ElemPage: React.FC = () => {
             className="custom-dropdown"
             onClick={() => setShowTypeList(v => !v)}
           >
-            {problemTypes.find(t => t.value === type)?.label}
+            {(op === '분수'
+              ? fractionTypes.find(t => t.value === type)
+              : problemTypes.find(t => t.value === type)
+            )?.label}
             <span className="dropdown-arrow">▼</span>
             {showTypeList && (
               <ul className="dropdown-list">
