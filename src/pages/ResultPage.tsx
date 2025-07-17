@@ -238,7 +238,10 @@ const ResultPage: React.FC = () => {
                             maxWidth: '100%',
                           }}
                         >
-                          {renderWithFraction(getDisplayAnswer(p.answer))}
+                          {/* 분수 문제일 때만 분수 형태로, 나머지는 숫자만 */}
+                          {p.question.includes('/')
+                            ? renderWithFraction(getDisplayAnswer(p.answer))
+                            : getDisplayAnswer(p.answer)}
                         </span>
                       </div>
                     </div>
