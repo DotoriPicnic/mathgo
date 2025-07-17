@@ -218,7 +218,14 @@ const ResultPage: React.FC = () => {
                             (몫: {(userAnswers[idx] as any)?.q ?? ''}, 나머지: {(userAnswers[idx] as any)?.r ?? ''})
                           </span>
                         ) : (
-                          typeof userAns === 'string' && <span className="user-answer" style={{ fontSize: 15, minWidth: 0, wordBreak: 'break-all', whiteSpace: 'normal' }}>{renderWithFraction(userAns)}</span>
+                          typeof userAns === 'string' && (
+                            <span className="user-answer" style={{ fontSize: 15, minWidth: 0, wordBreak: 'break-all', whiteSpace: 'normal' }}>
+                              {/* 분수 문제일 때만 분수 형태로, 나머지는 숫자만 */}
+                              {p.question.includes('/')
+                                ? renderWithFraction(userAns)
+                                : (userAns.includes('/') ? userAns.split('/')[0] : userAns)}
+                            </span>
+                          )
                         )}
                         {isCorrect ? (
                           <span className="result-mark result-mark-correct">O</span>
