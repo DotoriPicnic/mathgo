@@ -58,6 +58,8 @@ function normalizeFrac(frac: { n: number, d: number }) {
   return { n: frac.n / g, d: frac.d / g };
 }
 function compareAnswer(user: string, answer: string | number): boolean {
+  // 빈 입력은 무조건 오답 처리
+  if (user == null || user.trim() === '') return false;
   // 숫자 비교
   if (!isNaN(Number(user)) && !isNaN(Number(answer))) {
     return Number(user) === Number(answer);
