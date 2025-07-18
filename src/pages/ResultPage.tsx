@@ -247,10 +247,16 @@ const ResultPage: React.FC = () => {
                             maxWidth: '100%',
                           }}
                         >
-                          {/* 분수 문제일 때만 분수 형태로, 나머지는 숫자만 */}
-                          {p.question.includes('/')
-                            ? renderWithFraction(getDisplayAnswer(p.answer))
-                            : getDisplayAnswer(p.answer)}
+                          {/* 정수 나눗셈(몫/나머지) 문제의 정답도 객체일 경우 문자열로 변환 */}
+                          {isIntDiv && !isDecimalDiv && typeof p.answer === 'object' && p.answer !== null ?
+                            (() => {
+                              const ans = p.answer as any;
+                              return `(몫: ${ans.q}, 나머지: ${ans.r})`;
+                            })()
+                            : p.question.includes('/')
+                              ? renderWithFraction(getDisplayAnswer(p.answer))
+                              : getDisplayAnswer(p.answer)
+                          }
                         </span>
                       </div>
                     </div>
