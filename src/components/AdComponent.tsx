@@ -13,14 +13,18 @@ interface AdComponentProps {
   type: 'adsense' | 'coupang';
   size?: 'banner' | 'sidebar' | 'rectangle';
   className?: string;
+  userConsent?: boolean;
 }
 
-const AdComponent: React.FC<AdComponentProps> = ({ type, size = 'banner', className = '' }) => {
+const AdComponent: React.FC<AdComponentProps> = ({ type, size = 'banner', className = '', userConsent = true }) => {
   // 광고 활성화 여부 확인 (Vite에서는 import.meta.env 사용)
   const adsEnabled = import.meta.env.VITE_ADS_ENABLED === 'true';
   
+  // 유럽 사용자의 동의 여부 확인
+  const canShowAds = adsEnabled && userConsent;
+  
   useEffect(() => {
-    if (!adsEnabled) return;
+    if (!canShowAds) return;
     
     // Google AdSense 스크립트 로드
     if (type === 'adsense' && !window.adsbygoogle) {
@@ -45,14 +49,14 @@ const AdComponent: React.FC<AdComponentProps> = ({ type, size = 'banner', classN
 
   // AdSense 광고 로드
   useEffect(() => {
-    if (type === 'adsense' && adsEnabled && window.adsbygoogle) {
+    if (type === 'adsense' && canShowAds && window.adsbygoogle) {
       try {
         (window.adsbygoogle = window.adsbygoogle || []).push({});
       } catch (error) {
         console.log('AdSense 광고 로드 중 오류:', error);
       }
     }
-  }, [type, adsEnabled]);
+  }, [type, canShowAds]);
 
   const getAdSize = () => {
     switch (size) {
@@ -72,7 +76,7 @@ const AdComponent: React.FC<AdComponentProps> = ({ type, size = 'banner', classN
     const publisherId = import.meta.env.VITE_ADSENSE_PUBLISHER_ID;
     const adSlot = import.meta.env.VITE_ADSENSE_BANNER_SLOT;
     
-    if (!adsEnabled || !publisherId || !adSlot) {
+    if (!canShowAds || !publisherId || !adSlot) {
       return (
         <div className={`ad-container adsense ${className} hidden`} style={{ 
           width: adSize.width, 
@@ -123,7 +127,7 @@ const AdComponent: React.FC<AdComponentProps> = ({ type, size = 'banner', classN
     const trackingId = import.meta.env.VITE_COUPANG_TRACKING_ID;
     const campaignId = import.meta.env.VITE_COUPANG_CAMPAIGN_ID;
     
-    if (!adsEnabled || !trackingId || !campaignId) {
+    if (!canShowAds || !trackingId || !campaignId) {
       return (
         <div className={`ad-container coupang ${className} hidden`} style={{ 
           width: adSize.width, 

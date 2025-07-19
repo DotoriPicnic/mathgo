@@ -69,7 +69,11 @@ function getDisplayAnswer(answer: string | number) {
   return `${norm.n}/${norm.d}`;
 }
 
-const ProblemPage: React.FC = () => {
+interface ProblemPageProps {
+  userConsent?: boolean;
+}
+
+const ProblemPage: React.FC<ProblemPageProps> = ({ userConsent = true }) => {
   const [problems, setProblems] = useState<Problem[]>([]);
   // answers: 나눗셈은 {q, r}, 나머지는 string
   const [answers, setAnswers] = useState<any[]>([]);
@@ -201,7 +205,7 @@ const ProblemPage: React.FC = () => {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f7fafd', width: '100%', overflowX: 'hidden' }}>
       <HomeButton />
       {/* 상단 광고 */}
-      <AdComponent type="adsense" size="banner" className="top-ad" />
+      <AdComponent type="adsense" size="banner" className="top-ad" userConsent={userConsent} />
       {/* 제한시간 타이머 상단 고정 */}
       {timeLeft !== null && (
         <div style={{

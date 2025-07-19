@@ -92,7 +92,11 @@ function getDisplayAnswer(answer: string | number) {
   return `${norm.n}/${norm.d}`;
 }
 
-const ResultPage: React.FC = () => {
+interface ResultPageProps {
+  userConsent?: boolean;
+}
+
+const ResultPage: React.FC<ResultPageProps> = ({ userConsent = true }) => {
   const [problems, setProblems] = useState<Problem[]>([]);
   const [userAnswers, setUserAnswers] = useState<any[]>([]);
   const [score, setScore] = useState(0);
@@ -176,7 +180,7 @@ const ResultPage: React.FC = () => {
     <div className="result-page">
       <HomeButton />
       {/* 상단 광고 */}
-      <AdComponent type="adsense" size="banner" className="top-ad" />
+      <AdComponent type="adsense" size="banner" className="top-ad" userConsent={userConsent} />
       <div className="result-container">
         {/* 제한시간/소요시간 표시 */}
         {(limitSec !== null || elapsedSec !== null) && (

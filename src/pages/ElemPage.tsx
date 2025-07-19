@@ -624,7 +624,11 @@ function getFilteredProblemTypes(op: string) {
   return problemTypes;
 }
 
-const ElemPage: React.FC = () => {
+interface ElemPageProps {
+  userConsent?: boolean;
+}
+
+const ElemPage: React.FC<ElemPageProps> = ({ userConsent = true }) => {
   const navigate = useNavigate();
   const [op, setOp] = useState(() => {
     const savedOp = localStorage.getItem('lastOperation');
@@ -739,7 +743,7 @@ const ElemPage: React.FC = () => {
     <div className="elem-page">
       <HomeButton />
       {/* 상단 광고 */}
-      <AdComponent type="adsense" size="banner" className="top-ad" />
+      <AdComponent type="adsense" size="banner" className="top-ad" userConsent={userConsent} />
       <form onSubmit={handleGenerate} className="elem-form">
         <div className="elem-emoji">✏️</div>
         <h2 className="elem-title">
@@ -897,7 +901,7 @@ const ElemPage: React.FC = () => {
         <button type="submit" className="submit-button">문제 생성</button>
       </form>
       {/* 하단 광고 */}
-      <AdComponent type="coupang" size="rectangle" className="bottom-ad" />
+      <AdComponent type="coupang" size="rectangle" className="bottom-ad" userConsent={userConsent} />
     </div>
   );
 };

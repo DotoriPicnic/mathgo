@@ -1,0 +1,124 @@
+/* 동의 관리 배너 스타일 */
+.consent-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  z-index: 10000;
+  padding: 20px;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.consent-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.consent-text h3 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.consent-text p {
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.consent-text strong {
+  color: #ffd700;
+}
+
+.consent-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.consent-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+}
+
+.consent-button.decline {
+  background: #6c757d;
+  color: white;
+}
+
+.consent-button.decline:hover {
+  background: #5a6268;
+}
+
+.consent-button.manage {
+  background: #17a2b8;
+  color: white;
+}
+
+.consent-button.manage:hover {
+  background: #138496;
+}
+
+.consent-button.accept {
+  background: #28a745;
+  color: white;
+}
+
+.consent-button.accept:hover {
+  background: #218838;
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+  .consent-banner {
+    padding: 15px;
+  }
+  
+  .consent-content {
+    gap: 15px;
+  }
+  
+  .consent-text h3 {
+    font-size: 16px;
+  }
+  
+  .consent-text p {
+    font-size: 13px;
+  }
+  
+  .consent-buttons {
+    justify-content: center;
+  }
+  
+  .consent-button {
+    padding: 8px 16px;
+    font-size: 13px;
+    min-width: 70px;
+  }
+}
+
+/* 애니메이션 */
+.consent-banner {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+} 
