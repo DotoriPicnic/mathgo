@@ -5,6 +5,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 // QRCodeCanvas import 제거
 import HomeButton from '../components/HomeButton';
+import AdComponent from '../components/AdComponent';
 import './ProblemPage.css';
 
 interface Problem {
@@ -199,6 +200,8 @@ const ProblemPage: React.FC = () => {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f7fafd', width: '100%', overflowX: 'hidden' }}>
       <HomeButton />
+      {/* 상단 광고 */}
+      <AdComponent type="adsense" size="banner" className="top-ad" />
       {/* 제한시간 타이머 상단 고정 */}
       {timeLeft !== null && (
         <div style={{

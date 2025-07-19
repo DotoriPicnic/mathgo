@@ -1,0 +1,79 @@
+/* 광고 컴포넌트 스타일 */
+.ad-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.ad-container.adsense {
+  min-height: 90px;
+}
+
+.ad-container.coupang {
+  min-height: 250px;
+}
+
+.ad-container.sidebar {
+  min-height: 600px;
+}
+
+/* 반응형 광고 */
+@media (max-width: 768px) {
+  .ad-container {
+    margin: 15px auto;
+    border-radius: 6px;
+  }
+  
+  .ad-container.adsense {
+    min-height: 60px;
+  }
+  
+  .ad-container.coupang {
+    min-height: 200px;
+  }
+  
+  .ad-container.sidebar {
+    min-height: 400px;
+  }
+}
+
+/* 광고 로딩 상태 */
+.ad-container::before {
+  content: '광고 로딩 중...';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #6c757d;
+  font-size: 14px;
+  z-index: 1;
+}
+
+.ad-container.loaded::before {
+  display: none;
+}
+
+/* 광고 숨김 처리 (개발 모드) */
+.ad-container.hidden {
+  display: none;
+}
+
+/* 광고 클릭 영역 */
+.ad-container a {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+}
+
+.ad-container img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+} 

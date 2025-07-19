@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HomeButton from '../components/HomeButton';
+import AdComponent from '../components/AdComponent';
 import './ElemPage.css';
 
 // 문제 생성 함수 (연산별, 올림 옵션별)
@@ -737,6 +738,8 @@ const ElemPage: React.FC = () => {
   return (
     <div className="elem-page">
       <HomeButton />
+      {/* 상단 광고 */}
+      <AdComponent type="adsense" size="banner" className="top-ad" />
       <form onSubmit={handleGenerate} className="elem-form">
         <div className="elem-emoji">✏️</div>
         <h2 className="elem-title">
@@ -893,6 +896,8 @@ const ElemPage: React.FC = () => {
         </div>
         <button type="submit" className="submit-button">문제 생성</button>
       </form>
+      {/* 하단 광고 */}
+      <AdComponent type="coupang" size="rectangle" className="bottom-ad" />
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './ResultPage.css';
 import HomeButton from '../components/HomeButton';
+import AdComponent from '../components/AdComponent';
 
 interface Problem {
   question: string;
@@ -174,6 +175,8 @@ const ResultPage: React.FC = () => {
   return (
     <div className="result-page">
       <HomeButton />
+      {/* 상단 광고 */}
+      <AdComponent type="adsense" size="banner" className="top-ad" />
       <div className="result-container">
         {/* 제한시간/소요시간 표시 */}
         {(limitSec !== null || elapsedSec !== null) && (
