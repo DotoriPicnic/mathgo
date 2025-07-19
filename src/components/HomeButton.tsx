@@ -1,11 +1,14 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const HomeButton: React.FC = () => {
-  const navigate = useNavigate();
+  const handleClick = () => {
+    // 간단하게 window.location 사용
+    window.location.href = '/';
+  };
+
   return (
     <button
-      onClick={() => navigate('/')}
+      onClick={handleClick}
       style={{
         position: 'fixed',
         top: 20,

@@ -133,8 +133,15 @@ const ResultPage: React.FC = () => {
       setUserAnswers(alist);
       let s = 0;
       plist.forEach((prob, i) => {
+        // 비교 연산 문제는 기호 정확히 일치할 때만 정답
+        if (prob.question.includes('□') && prob.question.match(/\d+\s*□\s*\d+/)) {
+          const user = alist[i];
+          if (user === prob.answer) {
+            s++;
+          }
+        }
         // 나눗셈 문제는 몫/나머지 모두 비교
-        if (prob.question.includes('÷')) {
+        else if (prob.question.includes('÷')) {
           const user = alist[i];
           const ans = prob.answer as any;
           if (
@@ -199,8 +206,11 @@ const ResultPage: React.FC = () => {
                   let isCorrect = false;
                   let isIntDiv = p.question.includes('÷') && !p.question.includes('/');
                   let isDecimalDiv = (p.question.includes('소수') || p.question.match(/\d+\.\d+/));
-                  // 채점 분기 수정: 정수 나눗셈만 몫/나머지 비교, 나머지는 분수/일반 비교
-                  if (isIntDiv) {
+                  // 비교 연산 문제 채점 분기 개선: '>', '<', '=' 세 기호만 정확히 일치할 때만 정답 처리
+                  let isComparison = p.question.includes('□') && p.question.match(/\d+\s*□\s*\d+/);
+                  if (isComparison) {
+                    isCorrect = userAns === p.answer;
+                  } else if (isIntDiv) {
                     const user = userAnswers[idx];
                     const ans = (p.answer as any);
                     isCorrect = user && typeof user === 'object' && ans && typeof ans === 'object' &&
@@ -229,35 +239,48 @@ const ResultPage: React.FC = () => {
                             </span>
                           )
                         )}
+                        {/* 비교 연산 문제 결과: 오직 사용자가 선택한 답(크게)와 정답 기호만 표시 */}
+                        {isComparison ? (
+                          <>
+                            <span style={{ fontSize: 22, fontWeight: 700, margin: '0 12px', color: isCorrect ? '#22c55e' : '#ef4444' }}>
+                              {userAns || '□'}
+                            </span>
+                            <span style={{ fontSize: 20, color: '#2563eb', marginLeft: 8, fontWeight: 700 }}>
+                              (정답: {p.answer})
+                            </span>
+                          </>
+                        ) : (
+                          <span
+                            style={{
+                              fontSize: (typeof getDisplayAnswer(p.answer) === 'string' && getDisplayAnswer(p.answer).includes('/')) ? 13 : 15,
+                              color: '#2563eb',
+                              marginLeft: 10,
+                              fontFamily: 'monospace',
+                              fontWeight: 700,
+                              minWidth: 0,
+                              wordBreak: 'break-all',
+                              whiteSpace: 'normal',
+                              maxWidth: '100%',
+                            }}
+                          >
+                            {/* 비교 연산 문제 정답 기호 노출 */}
+                            {isComparison ? p.answer :
+                              (isIntDiv && !isDecimalDiv && typeof p.answer === 'object' && p.answer !== null ?
+                                (() => {
+                                  const ans = p.answer as any;
+                                  return `(몫: ${ans.q}, 나머지: ${ans.r})`;
+                                })()
+                                : p.question.includes('/')
+                                  ? renderWithFraction(getDisplayAnswer(p.answer))
+                                  : getDisplayAnswer(p.answer)
+                              )}
+                          </span>
+                        )}
                         {isCorrect ? (
                           <span className="result-mark result-mark-correct">O</span>
                         ) : (
                           <span className="result-mark result-mark-incorrect">×</span>
                         )}
-                        <span
-                          style={{
-                            fontSize: (typeof getDisplayAnswer(p.answer) === 'string' && getDisplayAnswer(p.answer).includes('/')) ? 13 : 15,
-                            color: '#2563eb',
-                            marginLeft: 10,
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            minWidth: 0,
-                            wordBreak: 'break-all',
-                            whiteSpace: 'normal',
-                            maxWidth: '100%',
-                          }}
-                        >
-                          {/* 정수 나눗셈(몫/나머지) 문제의 정답도 객체일 경우 문자열로 변환 */}
-                          {isIntDiv && !isDecimalDiv && typeof p.answer === 'object' && p.answer !== null ?
-                            (() => {
-                              const ans = p.answer as any;
-                              return `(몫: ${ans.q}, 나머지: ${ans.r})`;
-                            })()
-                            : p.question.includes('/')
-                              ? renderWithFraction(getDisplayAnswer(p.answer))
-                              : getDisplayAnswer(p.answer)
-                          }
-                        </span>
                       </div>
                     </div>
                   );

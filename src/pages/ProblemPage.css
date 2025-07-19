@@ -11,7 +11,7 @@
 
 .problem-row {
   display: flex;
-  gap: 32px;
+  gap: 24px;
   justify-content: center;
   width: 100%;
   max-width: 100%;
@@ -22,12 +22,12 @@
   border-radius: 10px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
   padding: 14px 12px;
-  min-width: 180px;
+  min-width: 220px;
   display: flex;
   align-items: center;
   font-weight: 600;
-  font-size: 18px;
-  max-width: 320px;
+  font-size: 16px;
+  max-width: 360px;
   width: 100%;
   overflow: hidden;
   box-sizing: border-box;
@@ -36,12 +36,12 @@
 .question-text {
   margin-right: 6px;
   white-space: nowrap;
-  min-width: 60px;
+  min-width: 80px;
   display: inline-block;
-  font-size: 18px;
+  font-size: 15px;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 240px;
+  max-width: 280px;
   flex-shrink: 1;
 }
 
@@ -50,7 +50,7 @@
   white-space: nowrap;
   min-width: 100px;
   display: inline-block;
-  font-size: 18px;
+  font-size: 15px;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 180px;
@@ -58,9 +58,9 @@
 }
 
 .answer-input {
-  width: 48px;
-  height: 32px;
-  font-size: 18px;
+  width: 44px;
+  height: 30px;
+  font-size: 16px;
   text-align: center;
   border: 1.5px solid #bcd0f7;
   border-radius: 6px;
@@ -80,15 +80,15 @@
 }
 
 .division-label {
-  font-size: 15px;
+  font-size: 13px;
   color: #888;
   margin-bottom: 2px;
 }
 
 .division-input {
-  width: 36px;
-  height: 32px;
-  font-size: 18px;
+  width: 32px;
+  height: 28px;
+  font-size: 16px;
   text-align: center;
   border: 1.5px solid #bcd0f7;
   border-radius: 6px;
@@ -136,7 +136,7 @@
 
 .division-vertical-inputs {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   justify-content: center;
   margin-top: 4px;
 }

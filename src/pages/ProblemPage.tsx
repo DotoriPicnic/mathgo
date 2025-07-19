@@ -225,18 +225,20 @@ const ProblemPage: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 8 }}>
           {/* 1. 채점하기 버튼 */}
           <button style={{ background: '#22c55e', padding: '8px 16px', fontSize: 14, borderRadius: 6, border: 'none', color: 'white', cursor: 'pointer' }} onClick={() => {
-            // 채점 전 answers 보정: 분수 입력값이 '분자/' 또는 '분자' 형태라면 '분자/1'로 변환
-            const fixedAnswers = answers.map(ans => {
-              if (typeof ans === 'string' && ans.includes('/')) {
+            // 채점 전 answers 보정: 분수 문제(문제에 '/'가 포함된 경우)만 /1 보정 적용
+            const fixedAnswers = answers.map((ans, idx) => {
+              const isFraction = problems[idx]?.question.includes('/');
+              if (isFraction && typeof ans === 'string' && ans.includes('/')) {
                 const [numer, denom] = ans.split('/');
                 if (numer && (denom === undefined || denom === '')) {
                   return numer + '/1';
                 }
                 return ans;
-              } else if (typeof ans === 'string' && ans !== '' && !ans.includes('/')) {
+              } else if (isFraction && typeof ans === 'string' && ans !== '' && !ans.includes('/')) {
                 // 분자만 입력된 경우
                 return ans + '/1';
               }
+              // 분수가 아니면 입력값 그대로
               return ans;
             });
             localStorage.setItem('userAnswers', JSON.stringify(fixedAnswers));
@@ -259,134 +261,138 @@ const ProblemPage: React.FC = () => {
                 const isIntDiv = p.question.includes('÷') && !p.question.includes('/');
                 const isDecimalDiv = (p.question.includes('소수') || p.question.match(/\d+\.\d+/));
                 return (
-                  <div key={i} className="problem-item">
-                    <span style={{ fontWeight: 700, color: '#2563eb', marginRight: 6, whiteSpace: 'nowrap', fontSize: 16 }}>Q{idx + 1}.</span>
-                    {isIntDiv && p.question.includes('÷ □') ? (
-                      <div className="blank-division-container">
-                        {/* 첫 줄: 식과 힌트 */}
-                        <div className="blank-division-text">
-                          {(() => {
-                            // 예: '72 ÷ □ = (몫: 8, 나머지: 4) (빈칸 문제)'
-                            const match = p.question.match(/([0-9]+) ÷ □ = \(몫: ([0-9]+), 나머지: ([0-9]+)\)/);
-                            if (match) {
-                              return `${match[1]} ÷ □ =   몫 ${match[2]}, 나머지 ${match[3]}`;
-                            }
-                            return p.question;
-                          })()}
+                  // 비교 연산 문제만 드롭다운으로 처리 (숫자 □ 숫자 형태)
+                  (p.question.includes('□') && p.question.match(/\d+\s*□\s*\d+/)) ? (
+                    <div key={i} className="problem-item">
+                      <span style={{ fontWeight: 700, color: '#2563eb', marginRight: 4, whiteSpace: 'nowrap', fontSize: 14 }}>Q{idx + 1}.</span>
+                      {renderWithFraction(p.question)}
+                      <select
+                        className="comparison-select"
+                        value={answers[idx] || ''}
+                        onChange={e => handleInput(idx, e.target.value)}
+                        style={{ fontSize: 20, fontWeight: 700, padding: '6px 16px', borderRadius: 8, marginLeft: 6, marginRight: 6 }}
+                      >
+                        <option value="">□</option>
+                        <option value=">">&gt;</option>
+                        <option value="<">&lt;</option>
+                        <option value="=">=</option>
+                      </select>
+                    </div>
+                  ) : (
+                    <div key={i} className="problem-item">
+                      <span style={{ fontWeight: 700, color: '#2563eb', marginRight: 4, whiteSpace: 'nowrap', fontSize: 14 }}>Q{idx + 1}.</span>
+                      {renderWithFraction(p.question)}
+                      {/* 정수 나눗셈만 몫/나머지 입력란, 분수 나눗셈은 아래 분수 입력란 */}
+                      {isIntDiv && !p.question.includes('÷ □') && !isDecimalDiv ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 8 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <span style={{ fontSize: 12, color: '#888', whiteSpace: 'nowrap' }}>몫</span>
+                            <input
+                              type="number"
+                              inputMode="numeric"
+                              placeholder=""
+                              style={{ 
+                                width: 28, 
+                                height: 24, 
+                                fontSize: 14, 
+                                textAlign: 'center', 
+                                border: '1.5px solid #bcd0f7', 
+                                borderRadius: 4,
+                                padding: 0
+                              }}
+                              value={answers[idx]?.q || ''}
+                              onChange={e => handleInput(idx, e.target.value, 'q')}
+                            />
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <span style={{ fontSize: 12, color: '#888', whiteSpace: 'nowrap' }}>나머지</span>
+                            <input
+                              type="number"
+                              inputMode="numeric"
+                              placeholder=""
+                              style={{ 
+                                width: 28, 
+                                height: 24, 
+                                fontSize: 14, 
+                                textAlign: 'center', 
+                                border: '1.5px solid #bcd0f7', 
+                                borderRadius: 4,
+                                padding: 0
+                              }}
+                              value={answers[idx]?.r || ''}
+                              onChange={e => handleInput(idx, e.target.value, 'r')}
+                            />
+                          </div>
                         </div>
-                        {/* 두 번째 줄: 입력란만 크게 */}
+                      ) : isDecimalDiv && isDiv ? (
+                        // 소수 나눗셈: 소수 한 칸만 입력
                         <input
                           type="number"
-                          inputMode="numeric"
-                          placeholder=""
-                          className="blank-division-input"
-                          value={typeof answers[idx] === 'string' ? answers[idx] : ''}
+                          inputMode="decimal"
+                          className="answer-input"
+                          value={answers[idx] || ''}
                           onChange={e => handleInput(idx, e.target.value)}
                         />
-                      </div>
-                    ) : (
-                      <>
-                        <span className={isDiv ? "question-text-division" : "question-text"}>
-                          {renderWithFraction(p.question)}
-                        </span>
-                        {/* 정수 나눗셈만 몫/나머지 입력란, 분수 나눗셈은 아래 분수 입력란 */}
-                        {isIntDiv && !p.question.includes('÷ □') && !isDecimalDiv ? (
-                          <div className="division-vertical">
-                            <div className="division-vertical-inputs">
-                              <div className="division-input-group">
-                                <span className="division-label">몫</span>
-                                <input
-                                  type="number"
-                                  inputMode="numeric"
-                                  placeholder=""
-                                  className="division-input"
-                                  value={answers[idx]?.q || ''}
-                                  onChange={e => handleInput(idx, e.target.value, 'q')}
-                                />
-                              </div>
-                              <div className="division-input-group">
-                                <span className="division-label">나머지</span>
-                                <input
-                                  type="number"
-                                  inputMode="numeric"
-                                  placeholder=""
-                                  className="division-input"
-                                  value={answers[idx]?.r || ''}
-                                  onChange={e => handleInput(idx, e.target.value, 'r')}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        ) : isDecimalDiv && isDiv ? (
-                          // 소수 나눗셈: 소수 한 칸만 입력
+                      ) : (
+                        // 분수 문제 입력란 (덧셈, 뺄셈, 곱셈, 나눗셈 모두)
+                        isFractionDiv || p.question.match(/\d+\/\d+/) ? (
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 8 }}>
+                            <input
+                              type="number"
+                              inputMode="numeric"
+                              className="answer-input small-placeholder"
+                              style={{ width: 36, minWidth: 0, fontSize: 14, padding: '2px 4px' }}
+                              placeholder="분자"
+                              value={typeof answers[idx] === 'string' && answers[idx].includes('/') ? answers[idx].split('/')[0] : answers[idx]?.numer || ''}
+                              onChange={e => {
+                                const val = e.target.value;
+                                let denom = '';
+                                if (typeof answers[idx] === 'string' && answers[idx].includes('/')) {
+                                  denom = answers[idx].split('/')[1];
+                                } else if (typeof answers[idx] === 'object' && answers[idx] !== null) {
+                                  denom = answers[idx].denom || '';
+                                }
+                                handleInput(idx, val + '/' + denom);
+                              }}
+                            />
+                            <span style={{ fontSize: 16, fontWeight: 700, color: '#222', minWidth: 8 }}>/</span>
+                            <input
+                              type="number"
+                              inputMode="numeric"
+                              className="answer-input small-placeholder"
+                              style={{ width: 36, minWidth: 0, fontSize: 14, padding: '2px 4px' }}
+                              placeholder="분모"
+                              value={(() => {
+                                if (typeof answers[idx] === 'string' && answers[idx].includes('/')) {
+                                  const denom = answers[idx].split('/')[1];
+                                  return denom === undefined ? '' : denom;
+                                }
+                                return answers[idx]?.denom || '';
+                              })()}
+                              onChange={e => {
+                                const val = e.target.value;
+                                let numer = '';
+                                if (typeof answers[idx] === 'string' && answers[idx].includes('/')) {
+                                  numer = answers[idx].split('/')[0];
+                                } else if (typeof answers[idx] === 'object' && answers[idx] !== null) {
+                                  numer = answers[idx].numer || '';
+                                }
+                                handleInput(idx, numer + '/' + val);
+                              }}
+                            />
+                          </span>
+                        ) : (
                           <input
                             type="number"
-                            inputMode="decimal"
+                            inputMode="numeric"
                             className="answer-input"
                             value={answers[idx] || ''}
                             onChange={e => handleInput(idx, e.target.value)}
                           />
-                        ) : (
-                          // 분수 문제 입력란 (덧셈, 뺄셈, 곱셈, 나눗셈 모두)
-                          isFractionDiv || p.question.match(/\d+\/\d+/) ? (
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 8 }}>
-                              <input
-                                type="number"
-                                inputMode="numeric"
-                                className="answer-input small-placeholder"
-                                style={{ width: 40, minWidth: 0, fontSize: 16, padding: '2px 4px' }}
-                                placeholder="분자"
-                                value={typeof answers[idx] === 'string' && answers[idx].includes('/') ? answers[idx].split('/')[0] : answers[idx]?.numer || ''}
-                                onChange={e => {
-                                  const val = e.target.value;
-                                  let denom = '';
-                                  if (typeof answers[idx] === 'string' && answers[idx].includes('/')) {
-                                    denom = answers[idx].split('/')[1];
-                                  } else if (typeof answers[idx] === 'object' && answers[idx] !== null) {
-                                    denom = answers[idx].denom || '';
-                                  }
-                                  handleInput(idx, val + '/' + denom);
-                                }}
-                              />
-                              <span style={{ fontSize: 18, fontWeight: 700, color: '#222', minWidth: 10 }}>/</span>
-                              <input
-                                type="number"
-                                inputMode="numeric"
-                                className="answer-input small-placeholder"
-                                style={{ width: 40, minWidth: 0, fontSize: 16, padding: '2px 4px' }}
-                                placeholder="분모"
-                                value={(() => {
-                                  if (typeof answers[idx] === 'string' && answers[idx].includes('/')) {
-                                    const denom = answers[idx].split('/')[1];
-                                    return denom === undefined ? '' : denom;
-                                  }
-                                  return answers[idx]?.denom || '';
-                                })()}
-                                onChange={e => {
-                                  const val = e.target.value;
-                                  let numer = '';
-                                  if (typeof answers[idx] === 'string' && answers[idx].includes('/')) {
-                                    numer = answers[idx].split('/')[0];
-                                  } else if (typeof answers[idx] === 'object' && answers[idx] !== null) {
-                                    numer = answers[idx].numer || '';
-                                  }
-                                  handleInput(idx, numer + '/' + val);
-                                }}
-                              />
-                            </span>
-                          ) : (
-                            <input
-                              type="number"
-                              inputMode="numeric"
-                              className="answer-input"
-                              value={answers[idx] || ''}
-                              onChange={e => handleInput(idx, e.target.value)}
-                            />
-                          )
-                        )}
-                      </>
-                    )}
-                  </div>
+                        )
+                      )}
+                    </div>
+                  )
                 );
               })}
             </div>

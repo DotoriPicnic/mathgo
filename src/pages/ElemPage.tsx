@@ -117,7 +117,7 @@ function generateProblems(
         const answer = Math.floor(Math.random() * 9) + 1;
         const b = a + answer;
         ans = answer;
-        q = `${a} + □ = ${b} (빈칸 문제)`;
+        q = `${a} + □ = ${b}`;
         hasCarry = a + ans >= 10;
       } while (
         (carry === 'with' && !hasCarry) ||
@@ -129,7 +129,7 @@ function generateProblems(
         const answer = Math.floor(Math.random() * 99) + 1;
         const b = a + answer;
         ans = answer;
-        q = `${a} + □ = ${b} (빈칸 문제)`;
+        q = `${a} + □ = ${b}`;
         hasCarry = (a % 10) + (ans % 10) >= 10;
       } while (
         (carry === 'with' && !hasCarry) ||
@@ -141,7 +141,7 @@ function generateProblems(
         const answer = Math.floor(Math.random() * 999) + 1;
         const b = a + answer;
         ans = answer;
-        q = `${a} + □ = ${b} (빈칸 문제)`;
+        q = `${a} + □ = ${b}`;
         hasCarry = (a % 10) + (ans % 10) >= 10 || (Math.floor(a / 10) % 10) + (Math.floor(ans / 10) % 10) >= 10;
       } while (
         (carry === 'with' && !hasCarry) ||
@@ -150,7 +150,7 @@ function generateProblems(
     } else if (type === '5 + □ = 10 (빈칸 문제)') {
       b = Math.floor(Math.random() * 9) + 1;
       a = 10 - b;
-      q = '5 + □ = 10 (빈칸 문제)';
+      q = '5 + □ = 10';
       ans = a;
     }
     // 뺄셈 유형별 문제 생성
@@ -209,7 +209,7 @@ function generateProblems(
         const b = a - answer;
         if (b < 0) continue;
         ans = answer;
-        q = `${a} - □ = ${b} (빈칸 문제)`;
+        q = `${a} - □ = ${b}`;
         hasCarry = a - ans < 0;
       } while (
         (carry === 'with' && !hasCarry) ||
@@ -222,7 +222,7 @@ function generateProblems(
         const b = a - answer;
         if (b < 0) continue;
         ans = answer;
-        q = `${a} - □ = ${b} (빈칸 문제)`;
+        q = `${a} - □ = ${b}`;
         hasCarry = (a % 10) - (answer % 10) < 0;
       } while (
         (carry === 'with' && !hasCarry) ||
@@ -235,7 +235,7 @@ function generateProblems(
         const b = a - answer;
         if (b < 0) continue;
         ans = answer;
-        q = `${a} - □ = ${b} (빈칸 문제)`;
+        q = `${a} - □ = ${b}`;
         hasCarry = (a % 10) - (answer % 10) < 0 || (Math.floor(a / 10) % 10) - (Math.floor(answer / 10) % 10) < 0;
       } while (
         (carry === 'with' && !hasCarry) ||
@@ -263,13 +263,13 @@ function generateProblems(
       const answer = Math.floor(Math.random() * 9) + 1;
       const b = a * answer;
       ans = answer;
-      q = `${a} × □ = ${b} (빈칸 문제)`;
+      q = `${a} × □ = ${b}`;
     } else if (type === '빈칸 문제 두자릿수(곱셈)') {
       a = Math.floor(Math.random() * 90) + 10;
       const answer = Math.floor(Math.random() * 9) + 1;
       const b = a * answer;
       ans = answer;
-      q = `${a} × □ = ${b} (빈칸 문제)`;
+      q = `${a} × □ = ${b}`;
     }
     // 나눗셈 유형별 문제 생성 (중복X, 나머지 있는/없는 문제 섞기)
     else if (type === '두자릿수 ÷ 한자릿수') {
@@ -337,7 +337,7 @@ function generateProblems(
         let rVal = Math.floor(Math.random() * b); // 나머지
         let a = b * qVal + rVal;
         if (a < 10 || a > 99) continue; // 두자릿수만
-        q = `${a} ÷ □ = (몫: ${qVal}, 나머지: ${rVal}) (빈칸 문제)`;
+        q = `${a} ÷ □ = (몫: ${qVal}, 나머지: ${rVal})`;
         ans = b;
         if (!problemSet.has(q)) {
           found = true;
@@ -360,7 +360,7 @@ function generateProblems(
         let rVal = Math.floor(Math.random() * b); // 나머지
         let a = b * qVal + rVal;
         if (a < 100 || a > 999) continue; // 세자릿수만
-        q = `${a} ÷ □ = (몫: ${qVal}, 나머지: ${rVal}) (빈칸 문제)`;
+        q = `${a} ÷ □ = (몫: ${qVal}, 나머지: ${rVal})`;
         ans = b;
         if (!problemSet.has(q)) {
           found = true;
@@ -488,6 +488,25 @@ function generateProblems(
       problems.push({ question: q, answer: ans });
       continue;
     }
+    // 비교 연산 문제 생성 (0~99, 기호 3종)
+    if (op === '비교 연산') {
+      while (problems.length < 20 && tryCount < 200) {
+        tryCount++;
+        a = Math.floor(Math.random() * 100);
+        b = Math.floor(Math.random() * 100);
+        // 문제 문자열
+        q = `${a} □ ${b}`;
+        // 실제 정답(논리적 정답)
+        let answer = '';
+        if (a > b) answer = '>';
+        else if (a < b) answer = '<';
+        else answer = '=';
+        if (problemSet.has(q)) continue;
+        problemSet.add(q);
+        problems.push({ question: q, answer });
+      }
+      return problems;
+    }
     // 중복 체크
     if (problemSet.has(q)) continue;
     problemSet.add(q);
@@ -519,99 +538,19 @@ const problemTypes = [
   { label: '한자릿수 × 한자릿수', value: '한자릿수 × 한자릿수' },
   { label: '두자릿수 × 한자릿수', value: '두자릿수 × 한자릿수' },
   { label: '두자릿수 × 두자릿수', value: '두자릿수 × 두자릿수' },
-  {
-    label: <>
-      빈칸 문제 한자릿수(곱셈)
-      <span style={{ color: '#2563eb', fontWeight: 600, fontSize: 14, marginLeft: 6, fontFamily: 'monospace' }}>
-        (예시. 7 × <span style={{ fontSize: 18, fontWeight: 900, verticalAlign: 'middle' }}>□</span> = 21)
-      </span>
-    </>,
-    value: '빈칸 문제 한자릿수(곱셈)'
-  },
-  {
-    label: <>
-      빈칸 문제 두자릿수(곱셈)
-      <span style={{ color: '#2563eb', fontWeight: 600, fontSize: 14, marginLeft: 6, fontFamily: 'monospace' }}>
-        (예시. 12 × <span style={{ fontSize: 18, fontWeight: 900, verticalAlign: 'middle' }}>□</span> = 60)
-      </span>
-    </>,
-    value: '빈칸 문제 두자릿수(곱셈)'
-  },
+  { label: '빈칸 문제 한자릿수(곱셈)', value: '빈칸 문제 한자릿수(곱셈)' },
+  { label: '빈칸 문제 두자릿수(곱셈)', value: '빈칸 문제 두자릿수(곱셈)' },
   { label: '두자릿수 ÷ 한자릿수', value: '두자릿수 ÷ 한자릿수' },
   { label: '세자릿수 ÷ 한자릿수', value: '세자릿수 ÷ 한자릿수' },
   { label: '세자릿수 ÷ 두자릿수', value: '세자릿수 ÷ 두자릿수' },
-  {
-    label: <>
-      빈칸 문제 한자릿수(나눗셈)
-      <span style={{ color: '#2563eb', fontWeight: 600, fontSize: 14, marginLeft: 6, fontFamily: 'monospace' }}>
-        (예시. 18 ÷ <span style={{ fontSize: 18, fontWeight: 900, verticalAlign: 'middle' }}>□</span> = 6)
-      </span>
-    </>,
-    value: '빈칸 문제 한자릿수(나눗셈)'
-  },
-  {
-    label: <>
-      빈칸 문제 두자릿수(나눗셈)
-      <span style={{ color: '#2563eb', fontWeight: 600, fontSize: 14, marginLeft: 6, fontFamily: 'monospace' }}>
-        (예시. 72 ÷ <span style={{ fontSize: 18, fontWeight: 900, verticalAlign: 'middle' }}>□</span> = 8)
-      </span>
-    </>,
-    value: '빈칸 문제 두자릿수(나눗셈)'
-  },
-  {
-    label: <>
-      빈칸 문제 한자릿수
-      <span style={{ color: '#2563eb', fontWeight: 600, fontSize: 14, marginLeft: 6, fontFamily: 'monospace' }}>
-        (예시. 5 + <span style={{ fontSize: 18, fontWeight: 900, verticalAlign: 'middle' }}>□</span> = 10)
-      </span>
-    </>,
-    value: '빈칸 문제 한자릿수'
-  },
-  {
-    label: <>
-      빈칸 문제 두자릿수
-      <span style={{ color: '#2563eb', fontWeight: 600, fontSize: 14, marginLeft: 6, fontFamily: 'monospace' }}>
-        (예시. 23 + <span style={{ fontSize: 18, fontWeight: 900, verticalAlign: 'middle' }}>□</span> = 57)
-      </span>
-    </>,
-    value: '빈칸 문제 두자릿수'
-  },
-  {
-    label: <>
-      빈칸 문제 세자릿수
-      <span style={{ color: '#2563eb', fontWeight: 600, fontSize: 14, marginLeft: 6, fontFamily: 'monospace' }}>
-        (예시. 123 + <span style={{ fontSize: 18, fontWeight: 900, verticalAlign: 'middle' }}>□</span> = 456)
-      </span>
-    </>,
-    value: '빈칸 문제 세자릿수'
-  },
-  {
-    label: <>
-      빈칸 문제 한자릿수(뺄셈)
-      <span style={{ color: '#2563eb', fontWeight: 600, fontSize: 14, marginLeft: 6, fontFamily: 'monospace' }}>
-        (예시. 9 - <span style={{ fontSize: 18, fontWeight: 900, verticalAlign: 'middle' }}>□</span> = 4)
-      </span>
-    </>,
-    value: '빈칸 문제 한자릿수(뺄셈)'
-  },
-  {
-    label: <>
-      빈칸 문제 두자릿수(뺄셈)
-      <span style={{ color: '#2563eb', fontWeight: 600, fontSize: 14, marginLeft: 6, fontFamily: 'monospace' }}>
-        (예시. 27 - <span style={{ fontSize: 18, fontWeight: 900, verticalAlign: 'middle' }}>□</span> = 13)
-      </span>
-    </>,
-    value: '빈칸 문제 두자릿수(뺄셈)'
-  },
-  {
-    label: <>
-      빈칸 문제 세자릿수(뺄셈)
-      <span style={{ color: '#2563eb', fontWeight: 600, fontSize: 14, marginLeft: 6, fontFamily: 'monospace' }}>
-        (예시. 321 - <span style={{ fontSize: 18, fontWeight: 900, verticalAlign: 'middle' }}>□</span> = 123)
-      </span>
-    </>,
-    value: '빈칸 문제 세자릿수(뺄셈)'
-  }
+  { label: '빈칸 문제 한자릿수(나눗셈)', value: '빈칸 문제 한자릿수(나눗셈)' },
+  { label: '빈칸 문제 두자릿수(나눗셈)', value: '빈칸 문제 두자릿수(나눗셈)' },
+  { label: '빈칸 문제 한자릿수', value: '빈칸 문제 한자릿수' },
+  { label: '빈칸 문제 두자릿수', value: '빈칸 문제 두자릿수' },
+  { label: '빈칸 문제 세자릿수', value: '빈칸 문제 세자릿수' },
+  { label: '빈칸 문제 한자릿수(뺄셈)', value: '빈칸 문제 한자릿수(뺄셈)' },
+  { label: '빈칸 문제 두자릿수(뺄셈)', value: '빈칸 문제 두자릿수(뺄셈)' },
+  { label: '빈칸 문제 세자릿수(뺄셈)', value: '빈칸 문제 세자릿수(뺄셈)' }
 ];
 
 const fractionTypes = [
@@ -634,6 +573,11 @@ const decimalTypes = [
 ];
 
 function getFilteredProblemTypes(op: string) {
+  if (op === '비교 연산') {
+    return [
+      { label: 'A ㅁ B 비교 연산', value: 'A ㅁ B 비교 연산' }
+    ];
+  }
   if (op === '덧셈') {
     return problemTypes.filter(t =>
       typeof t.value === 'string' && (
@@ -748,6 +692,16 @@ const ElemPage: React.FC = () => {
     // eslint-disable-next-line
   }, [op]);
 
+  // 한자릿수 - 한자릿수 및 빈칸 문제 한자릿수(뺄셈) 선택 시 내림있는 계산만 옵션 자동 변경
+  React.useEffect(() => {
+    if (op === '뺄셈' && 
+        (type === '한자릿수 - 한자릿수' || 
+         type === '빈칸 문제 한자릿수(뺄셈)') && 
+        carry === 'with') {
+      setCarry('all');
+    }
+  }, [op, type, carry]);
+
   // carry 옵션 라벨 동적 처리
   const carryLabels = op === '뺄셈'
     ? {
@@ -768,6 +722,17 @@ const ElemPage: React.FC = () => {
     type === '소수 뺄셈 (소수점 한자릿수)' ||
     type === '소수 뺄셈 (소수점 두자릿수)'
   );
+
+  // 연산 종류 배열 추가 (덧셈 위에 비교 연산)
+  const operationTypes = [
+    { label: '비교 연산', value: '비교 연산' },
+    { label: '덧셈', value: '덧셈' },
+    { label: '뺄셈', value: '뺄셈' },
+    { label: '곱셈', value: '곱셈' },
+    { label: '나눗셈', value: '나눗셈' },
+    { label: '분수', value: '분수' },
+    { label: '소수 (서비스 준비중)', value: '소수', disabled: true },
+  ];
 
   return (
     <div className="elem-page">
@@ -798,53 +763,92 @@ const ElemPage: React.FC = () => {
             setOp(newOp);
             localStorage.setItem('lastOperation', newOp);
           }} className="form-select">
-            <option>덧셈</option>
-            <option>뺄셈</option>
-            <option>곱셈</option>
-            <option>나눗셈</option>
-            <option>분수</option>
-            <option disabled>소수 (서비스 준비중)</option>
-            <option disabled>정수 (서비스 준비중)</option>
+            {operationTypes.map(opt => (
+              <option 
+                key={opt.value} 
+                value={opt.value} 
+                disabled={opt.disabled}
+                style={opt.disabled ? { color: '#999', fontStyle: 'italic' } : {}}
+              >
+                {opt.label}
+              </option>
+            ))}
           </select>
         </div>
-        {/* 문제 유형 (커스텀 드롭다운) */}
+        {/* 문제 유형 (드롭다운) */}
         <div className="form-group" ref={typeRef}>
           <label className="form-label">문제 유형:</label>
-          <div
-            className="custom-dropdown"
-            onClick={() => setShowTypeList(v => !v)}
-          >
-            {(op === '분수'
-              ? fractionTypes.find(t => t.value === type)
-              : op === '소수'
-                ? decimalTypes.find(t => t.value === type)
-                : problemTypes.find(t => t.value === type)
-            )?.label}
-            <span className="dropdown-arrow">▼</span>
-            {showTypeList && (
-              <ul className="dropdown-list">
-                {getFilteredProblemTypes(op).map(t => (
-                  <li
-                    key={t.value}
-                    onClick={() => {
-                      setType(t.value);
-                      setTimeout(() => setShowTypeList(false), 0);
-                    }}
-                    className={`dropdown-item ${t.value === type ? 'selected' : ''}`}
-                  >
-                    {t.label}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          {op === '비교 연산' ? (
+            <select
+              className="form-select"
+              value={type}
+              onChange={e => setType(e.target.value)}
+              style={{ minWidth: 180 }}
+            >
+              {getFilteredProblemTypes(op).map(t => (
+                <option key={t.value} value={t.value}>{t.label}</option>
+              ))}
+            </select>
+          ) : (
+            <div
+              className="custom-dropdown"
+              onClick={() => setShowTypeList(v => !v)}
+            >
+              {(op === '분수'
+                ? fractionTypes.find(t => t.value === type)
+                : op === '소수'
+                  ? decimalTypes.find(t => t.value === type)
+                  : problemTypes.find(t => t.value === type)
+              )?.label}
+              <span className="dropdown-arrow">▼</span>
+              {showTypeList && (
+                <ul className="dropdown-list">
+                  {getFilteredProblemTypes(op).map(t => (
+                    <li
+                      key={t.value}
+                      onClick={() => {
+                        setType(t.value);
+                        setTimeout(() => setShowTypeList(false), 0);
+                      }}
+                      className={`dropdown-item ${t.value === type ? 'selected' : ''}`}
+                    >
+                      {t.label}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
         </div>
         {/* 올림/내림 옵션 (라디오 버튼처럼 동작) */}
         {op === '덧셈' || op === '뺄셈' ? (
           <div className="radio-group">
             <label className={`radio-option ${carry === 'with' ? 'selected' : ''}`}>
-              <input type="radio" checked={carry === 'with'} onChange={() => handleCarry('with')} />
-              <span>{carryLabels.with}</span>
+              <input 
+                type="radio" 
+                checked={carry === 'with'} 
+                onChange={() => handleCarry('with')}
+                disabled={op === '뺄셈' && (
+                  type === '한자릿수 - 한자릿수' ||
+                  type === '빈칸 문제 한자릿수(뺄셈)'
+                )}
+              />
+              <span style={{ 
+                color: (op === '뺄셈' && (
+                  type === '한자릿수 - 한자릿수' ||
+                  type === '빈칸 문제 한자릿수(뺄셈)'
+                )) ? '#ccc' : 'inherit',
+                fontStyle: (op === '뺄셈' && (
+                  type === '한자릿수 - 한자릿수' ||
+                  type === '빈칸 문제 한자릿수(뺄셈)'
+                )) ? 'italic' : 'normal'
+              }}>
+                {carryLabels.with}
+                {op === '뺄셈' && (
+                  type === '한자릿수 - 한자릿수' ||
+                  type === '빈칸 문제 한자릿수(뺄셈)'
+                ) && ' (불가능)'}
+              </span>
             </label>
             <label className={`radio-option ${carry === 'without' ? 'selected' : ''}`}>
               <input type="radio" checked={carry === 'without'} onChange={() => handleCarry('without')} />
