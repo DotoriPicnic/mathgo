@@ -180,7 +180,7 @@ const ResultPage: React.FC<ResultPageProps> = ({ userConsent = true }) => {
     <div className="result-page">
       <HomeButton />
       {/* 상단 광고 */}
-      <AdComponent type="adsense" size="banner" className="top-ad" userConsent={userConsent} />
+      <AdComponent size="banner" className="top-ad" userConsent={userConsent} />
       <div className="result-container">
         {/* 제한시간/소요시간 표시 */}
         {(limitSec !== null || elapsedSec !== null) && (

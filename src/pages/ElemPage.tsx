@@ -743,7 +743,7 @@ const ElemPage: React.FC<ElemPageProps> = ({ userConsent = true }) => {
     <div className="elem-page">
       <HomeButton />
       {/* 상단 광고 */}
-      <AdComponent type="adsense" size="banner" className="top-ad" userConsent={userConsent} />
+      <AdComponent size="banner" className="top-ad" userConsent={userConsent} />
       <form onSubmit={handleGenerate} className="elem-form">
         <div className="elem-emoji">✏️</div>
         <h2 className="elem-title">
@@ -901,7 +901,7 @@ const ElemPage: React.FC<ElemPageProps> = ({ userConsent = true }) => {
         <button type="submit" className="submit-button">문제 생성</button>
       </form>
       {/* 하단 광고 */}
-      <AdComponent type="coupang" size="rectangle" className="bottom-ad" userConsent={userConsent} />
+      <AdComponent size="rectangle" className="bottom-ad" userConsent={userConsent} />
     </div>
   );
 };
