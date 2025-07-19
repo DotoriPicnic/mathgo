@@ -7,7 +7,6 @@ interface ConsentManagerProps {
 
 const ConsentManager: React.FC<ConsentManagerProps> = ({ onConsentChange }) => {
   const [showBanner, setShowBanner] = useState(false);
-  const [consent, setConsent] = useState<boolean | null>(null);
 
   // 유럽 지역 확인 함수
   const isEuropeanUser = (): boolean => {
@@ -31,27 +30,23 @@ const ConsentManager: React.FC<ConsentManagerProps> = ({ onConsentChange }) => {
     
     if (savedConsent !== null) {
       const consentValue = savedConsent === 'true';
-      setConsent(consentValue);
       onConsentChange(consentValue);
     } else if (isEuropeanUser()) {
       // 유럽 사용자이고 동의 상태가 없으면 배너 표시
       setShowBanner(true);
     } else {
       // 유럽이 아닌 사용자는 기본적으로 동의
-      setConsent(true);
       onConsentChange(true);
     }
   }, [onConsentChange]);
 
   const handleAccept = () => {
-    setConsent(true);
     setShowBanner(false);
     localStorage.setItem('adsense-consent', 'true');
     onConsentChange(true);
   };
 
   const handleDecline = () => {
-    setConsent(false);
     setShowBanner(false);
     localStorage.setItem('adsense-consent', 'false');
     onConsentChange(false);
