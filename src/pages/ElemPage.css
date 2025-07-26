@@ -2,11 +2,13 @@
 .elem-page {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   background: #f7fafd;
   width: 100%;
   overflow-x: hidden;
+  padding: 20px 0;
 }
 
 .elem-form {
@@ -226,6 +228,10 @@
 
 /* 모바일 반응형 */
 @media (max-width: 768px) {
+  .elem-page {
+    padding: 10px 0;
+  }
+  
   .elem-form {
     padding: 32px 24px;
     min-width: auto;

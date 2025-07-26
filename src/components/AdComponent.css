@@ -3,12 +3,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 20px auto;
+  margin: 10px auto;
   background-color: #f8f9fa;
   border: 1px solid #e9ecef;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 728px;
 }
 
 .ad-container.adsense {
@@ -26,8 +28,9 @@
 /* 반응형 광고 */
 @media (max-width: 768px) {
   .ad-container {
-    margin: 15px auto;
+    margin: 8px auto;
     border-radius: 6px;
+    max-width: 100%;
   }
   
   .ad-container.adsense {

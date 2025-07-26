@@ -74,7 +74,7 @@ const AdComponent: React.FC<AdComponentProps> = ({ size = 'banner', className = 
     <div className={`ad-container adsense ${className}`} style={{ 
       width: adSize.width, 
       height: adSize.height, 
-      margin: '20px auto',
+      margin: '10px auto',
       textAlign: 'center'
     }}>
       <ins
