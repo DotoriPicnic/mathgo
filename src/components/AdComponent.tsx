@@ -20,7 +20,7 @@ const AdComponent: React.FC<AdComponentProps> = ({ size = 'banner', className = 
   const adsEnabled = import.meta.env.VITE_ADS_ENABLED === 'true';
   
   // 유럽 사용자의 동의 여부 확인
-  const canShowAds = adsEnabled && userConsent;
+  const canShowAds = false; // 임시로 광고 비활성화
   
   useEffect(() => {
     if (!canShowAds) return;
