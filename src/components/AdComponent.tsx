@@ -12,10 +12,9 @@ declare global {
 interface AdComponentProps {
   size?: 'banner' | 'sidebar' | 'rectangle';
   className?: string;
-  userConsent?: boolean;
 }
 
-const AdComponent: React.FC<AdComponentProps> = ({ size = 'banner', className = '', userConsent = true }) => {
+const AdComponent: React.FC<AdComponentProps> = ({ size = 'banner', className = '' }) => {
   // 광고 활성화 여부 확인 (Vite에서는 import.meta.env 사용)
   const adsEnabled = import.meta.env.VITE_ADS_ENABLED === 'true';
   

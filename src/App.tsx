@@ -9,22 +9,17 @@ import QrAnswerPage from './pages/QrAnswerPage';
 import ConsentManager from './components/ConsentManager';
 
 function App() {
-  const [userConsent, setUserConsent] = useState<boolean>(true);
-
-  const handleConsentChange = (consent: boolean) => {
-    setUserConsent(consent);
-  };
 
   return (
     <Router>
         <Routes>
           <Route path="/" element={<MainPage />} />
-          <Route path="/elem" element={<ElemPage userConsent={userConsent} />} />
-          <Route path="/elem/problems" element={<ProblemPage userConsent={userConsent} />} />
-          <Route path="/elem/result" element={<ResultPage userConsent={userConsent} />} />
+          <Route path="/elem" element={<ElemPage />} />
+          <Route path="/elem/problems" element={<ProblemPage />} />
+          <Route path="/elem/result" element={<ResultPage />} />
           <Route path="/qr-answer" element={<QrAnswerPage />} />
         </Routes>
-        <ConsentManager onConsentChange={handleConsentChange} />
+        <ConsentManager onConsentChange={() => {}} />
     </Router>
   );
 }
