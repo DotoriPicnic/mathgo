@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useState } from 'react';
 import './App.css'
 import MainPage from './pages/MainPage';
 import ElemPage from './pages/ElemPage';
