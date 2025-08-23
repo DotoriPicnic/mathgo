@@ -1,13 +1,25 @@
-/* ResultPage 반응형 스타일 */
+/* ResultPage 스타일 */
 .result-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   background: #f7fafd;
   width: 100%;
   overflow-x: hidden;
+  padding: 20px 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 20px;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
 .result-container {

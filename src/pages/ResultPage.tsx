@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import './ResultPage.css';
 import HomeButton from '../components/HomeButton';
 import AdComponent from '../components/AdComponent';
+import LanguageSelector from '../components/LanguageSelector';
 
 interface Problem {
   question: string;
@@ -96,6 +98,7 @@ interface ResultPageProps {
 }
 
 const ResultPage: React.FC<ResultPageProps> = () => {
+  const { t } = useTranslation();
   const [problems, setProblems] = useState<Problem[]>([]);
   const [userAnswers, setUserAnswers] = useState<any[]>([]);
   const [score, setScore] = useState(0);
@@ -177,9 +180,12 @@ const ResultPage: React.FC<ResultPageProps> = () => {
 
   return (
     <div className="result-page">
-      <HomeButton />
+      <div className="header">
+        <HomeButton />
+        <LanguageSelector />
+      </div>
       {/* 상단 광고 */}
-              <AdComponent size="banner" className="top-ad" />
+      <AdComponent size="banner" className="top-ad" />
       <div className="result-container">
         {/* 제한시간/소요시간 표시 */}
         {(limitSec !== null || elapsedSec !== null) && (
@@ -199,8 +205,8 @@ const ResultPage: React.FC<ResultPageProps> = () => {
         {/* 문제/답안이 없을 때 안내 메시지 */}
         {(problems.length === 0 || userAnswers.length === 0) ? (
           <div style={{ textAlign: 'center', color: '#888', fontSize: 20, margin: '40px 0' }}>
-            채점할 문제가 없습니다.<br />
-            메인 화면에서 문제를 먼저 생성해 주세요.
+            {t('noProblemsToGrade')}<br />
+            {t('generateProblemsFirst')}
           </div>
         ) : (
           <div className="result-list">
@@ -233,7 +239,7 @@ const ResultPage: React.FC<ResultPageProps> = () => {
                         {/* 정수 나눗셈만 몫/나머지, 소수 나눗셈은 소수 한 칸만 */}
                         {isIntDiv && !isDecimalDiv ? (
                           <span className="division-answer" style={{ fontSize: 15, minWidth: 0, wordBreak: 'break-all', whiteSpace: 'normal' }}>
-                            (몫: {(userAnswers[idx] as any)?.q ?? ''}, 나머지: {(userAnswers[idx] as any)?.r ?? ''})
+                            ({t('quotient')}: {(userAnswers[idx] as any)?.q ?? ''}, {t('remainder')}: {(userAnswers[idx] as any)?.r ?? ''})
                           </span>
                         ) : (
                           typeof userAns === 'string' && (
@@ -252,7 +258,7 @@ const ResultPage: React.FC<ResultPageProps> = () => {
                               {userAns || '□'}
                             </span>
                             <span style={{ fontSize: 20, color: '#2563eb', marginLeft: 8, fontWeight: 700 }}>
-                              (정답: {p.answer})
+                              ({t('correctAnswer')}: {p.answer})
                             </span>
                           </>
                         ) : (
@@ -274,7 +280,7 @@ const ResultPage: React.FC<ResultPageProps> = () => {
                               (isIntDiv && !isDecimalDiv && typeof p.answer === 'object' && p.answer !== null ?
                                 (() => {
                                   const ans = p.answer as any;
-                                  return `(몫: ${ans.q}, 나머지: ${ans.r})`;
+                                  return `(${t('quotient')}: ${ans.q}, ${t('remainder')}: ${ans.r})`;
                                 })()
                                 : p.question.includes('/')
                                   ? renderWithFraction(getDisplayAnswer(p.answer))
@@ -296,10 +302,12 @@ const ResultPage: React.FC<ResultPageProps> = () => {
           </div>
         )}
         <div className="result-buttons">
-          <button className="result-button" onClick={() => window.location.href = '/elem/problems'}>다시 풀기</button>
-          <button className="result-button" onClick={() => window.location.href = '/'}>메인으로</button>
+          <button className="result-button" onClick={() => window.location.href = '/elem/problems'}>{t('retryProblems')}</button>
+          <button className="result-button" onClick={() => window.location.href = '/'}>{t('goToMain')}</button>
         </div>
       </div>
+      {/* 하단 광고 */}
+      <AdComponent size="rectangle" className="bottom-ad" />
     </div>
   );
 };

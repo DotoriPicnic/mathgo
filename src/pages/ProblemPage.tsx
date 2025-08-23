@@ -1,11 +1,13 @@
  
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 // QRCodeCanvas import 제거
 import HomeButton from '../components/HomeButton';
 import AdComponent from '../components/AdComponent';
+import LanguageSelector from '../components/LanguageSelector';
 import './ProblemPage.css';
 
 interface Problem {
@@ -73,6 +75,7 @@ interface ProblemPageProps {
 }
 
 const ProblemPage: React.FC<ProblemPageProps> = () => {
+  const { t } = useTranslation();
   const [problems, setProblems] = useState<Problem[]>([]);
   // answers: 나눗셈은 {q, r}, 나머지는 string
   const [answers, setAnswers] = useState<any[]>([]);
@@ -120,30 +123,6 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
     };
     // eslint-disable-next-line
   }, [timeLeft]);
-
-  // mm:ss 포맷 변환 함수
-  const formatTime = (sec: number | null) => {
-    if (sec === null) return '';
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  };
-
-  // 입력 핸들러: 나눗셈은 answers[idx] = {q, r}, 빈칸 나눗셈은 string, 나머지는 string
-  const handleInput = (idx: number, value: string, field?: 'q' | 'r') => {
-    setAnswers(prev => {
-      const copy = [...prev];
-      // 빈칸 나눗셈 문제(÷ □)는 string으로 저장
-      if (problems[idx]?.question.includes('÷ □')) {
-        copy[idx] = value;
-      } else if (typeof copy[idx] === 'object' && copy[idx] !== null && field) {
-        copy[idx] = { ...copy[idx], [field]: value };
-      } else {
-        copy[idx] = value;
-      }
-      return copy;
-    });
-  };
 
   // 2개씩 묶어서 row로 변환 (한 줄에 두 문제)
   const rows: Problem[][] = [];
@@ -196,339 +175,282 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
 
   // PDF용 문제 rows (2열 10행, 입력란 없이)
   const pdfRows: Problem[][] = [];
-  for (let i = 0; i < problems.length; i += 2) {
+  for (let i = 0; i < Math.min(problems.length, 20); i += 2) {
     pdfRows.push(problems.slice(i, i + 2));
   }
 
+  // 채점 페이지로 이동
+  const handleGrade = () => {
+    localStorage.setItem('userAnswers', JSON.stringify(answers));
+    navigate('/elem/result');
+  };
+
+  // 나눗셈 입력 핸들러
+  const handleDivisionChange = (idx: number, field: 'q' | 'r', value: string) => {
+    setAnswers(prev => {
+      const copy = [...prev];
+      if (typeof copy[idx] === 'object' && copy[idx] !== null) {
+        copy[idx] = { ...copy[idx], [field]: value };
+      } else {
+        copy[idx] = { q: '', r: '', [field]: value };
+      }
+      return copy;
+    });
+  };
+
+  // 일반 답안 입력 핸들러
+  const handleAnswerChange = (idx: number, value: string) => {
+    setAnswers(prev => {
+      const copy = [...prev];
+      copy[idx] = value;
+      return copy;
+    });
+  };
+
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f7fafd', width: '100%', overflowX: 'hidden' }}>
-      <HomeButton />
+    <div className="problem-page">
+      <div className="header">
+        <HomeButton />
+        <LanguageSelector />
+      </div>
       {/* 상단 광고 */}
-              <AdComponent size="banner" className="top-ad" />
-      {/* 제한시간 타이머 상단 고정 */}
-      {timeLeft !== null && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          background: '#fff',
-          color: '#2563eb',
-          fontWeight: 900,
-          fontSize: 22,
-          textAlign: 'center',
-          padding: '14px 0 10px 0',
-          zIndex: 1000,
-          boxShadow: '0 2px 8px rgba(37,99,235,0.08)',
-          letterSpacing: 2,
-        }}>
-          ⏰ 남은 시간: {formatTime(timeLeft)}
+      <AdComponent size="banner" className="top-ad" />
+      <div className="problem-container">
+        {/* 상단 제목/입력란 */}
+        <div className="problem-header">
+          <div className="problem-title">
+            <div className="brand">Caluri</div>
+            <div className="workbook-title">{t('problemWorkbook')}</div>
+            {/* 연산명 표시는 분수 문제일 때만 */}
+            {problems.length > 0 && problems[0].question.includes('/') ? (
+              <div className="operation-type">
+                {problems[0].question.includes('+') ? t('fractionAddition')
+                  : problems[0].question.includes('-') ? t('fractionSubtraction')
+                  : problems[0].question.includes('×') ? t('fractionMultiplication')
+                  : problems[0].question.includes('÷') ? t('fractionDivision')
+                  : t('fractionOperation')}
+              </div>
+            ) : null}
+          </div>
+          <div className="problem-info">
+            <div className="date-input">
+              {t('month')} <input type="text" className="date-field" />
+            </div>
+            <div className="date-input">
+              {t('day')} <input type="text" className="date-field" />
+            </div>
+            <div className="name-input">
+              {t('name')} <input type="text" className="name-field" />
+            </div>
+          </div>
         </div>
-      )}
-      {/* 기존 문제 풀이 화면 (입력란 포함) */}
-      <div className="card" style={{ width: '100%', maxWidth: 'calc(100vw - 32px)', margin: '40px auto', padding: '0 16px', boxSizing: 'border-box' }}>
-        <h2 style={{ textAlign: 'center', marginBottom: 32 }}>연산 문제</h2>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 8 }}>
-          {/* 1. 채점하기 버튼 */}
-          <button style={{ background: '#22c55e', padding: '8px 16px', fontSize: 14, borderRadius: 6, border: 'none', color: 'white', cursor: 'pointer' }} onClick={() => {
-            // 채점 전 answers 보정: 분수 문제(문제에 '/'가 포함된 경우)만 /1 보정 적용
-            const fixedAnswers = answers.map((ans, idx) => {
-              const isFraction = problems[idx]?.question.includes('/');
-              if (isFraction && typeof ans === 'string' && ans.includes('/')) {
-                const [numer, denom] = ans.split('/');
-                if (numer && (denom === undefined || denom === '')) {
-                  return numer + '/1';
-                }
-                return ans;
-              } else if (isFraction && typeof ans === 'string' && ans !== '' && !ans.includes('/')) {
-                // 분자만 입력된 경우
-                return ans + '/1';
-              }
-              // 분수가 아니면 입력값 그대로
-              return ans;
-            });
-            localStorage.setItem('userAnswers', JSON.stringify(fixedAnswers));
-            navigate('/elem/result');
-          }}>채점하기</button>
-          {/* 2. PDF 저장 버튼 */}
-          <button style={{ background: '#3b82f6', padding: '8px 16px', fontSize: 14, borderRadius: 6, border: 'none', color: 'white', cursor: 'pointer' }} onClick={handlePdf}>PDF 저장</button>
-          {/* 3. 정답 포함 체크박스 */}
-          <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 14 }}>
-            <input type="checkbox" style={{ marginLeft: 8 }} checked={includeAnswer} onChange={e => setIncludeAnswer(e.target.checked)} /> 정답 포함
-          </label>
-        </div>
-        <div className="problem-container">
+
+        {/* 제한시간 표시 */}
+        {timeLeft !== null && (
+          <div className="timer">
+            {t('timeLeft')}: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+          </div>
+        )}
+
+        {/* 문제 영역 */}
+        <div className="problems-grid">
           {rows.map((row, rowIdx) => (
             <div key={rowIdx} className="problem-row">
               {row.map((p, i) => {
                 const idx = rowIdx * 2 + i;
-                const isDiv = p.question.includes('÷');
-                const isFractionDiv = p.question.includes('/') && p.question.includes('÷');
-                const isIntDiv = p.question.includes('÷') && !p.question.includes('/');
-                const isDecimalDiv = (p.question.includes('소수') || p.question.match(/\d+\.\d+/));
+                const answer = answers[idx] || '';
+                const isDivision = p.question.includes('÷') && !p.question.includes('/');
+                const isDecimalDivision = (p.question.includes('소수') || p.question.match(/\d+\.\d+/));
+                const isComparison = p.question.includes('□') && p.question.match(/\d+\s*□\s*\d+/);
+
                 return (
-                  // 비교 연산 문제만 드롭다운으로 처리 (숫자 □ 숫자 형태)
-                  (p.question.includes('□') && p.question.match(/\d+\s*□\s*\d+/)) ? (
-                    <div key={i} className="problem-item">
-                      <span style={{ fontWeight: 700, color: '#2563eb', marginRight: 4, whiteSpace: 'nowrap', fontSize: 14 }}>Q{idx + 1}.</span>
-                      {renderWithFraction(p.question)}
-                      <select
-                        className="comparison-select"
-                        value={answers[idx] || ''}
-                        onChange={e => handleInput(idx, e.target.value)}
-                        style={{ fontSize: 20, fontWeight: 700, padding: '6px 16px', borderRadius: 8, marginLeft: 6, marginRight: 6 }}
-                      >
-                        <option value="">□</option>
-                        <option value=">">&gt;</option>
-                        <option value="<">&lt;</option>
-                        <option value="=">=</option>
-                      </select>
-                    </div>
-                  ) : (
-                    <div key={i} className="problem-item">
-                      <span style={{ fontWeight: 700, color: '#2563eb', marginRight: 4, whiteSpace: 'nowrap', fontSize: 14 }}>Q{idx + 1}.</span>
-                      {renderWithFraction(p.question)}
-                      {/* 정수 나눗셈만 몫/나머지 입력란, 분수 나눗셈은 아래 분수 입력란 */}
-                      {isIntDiv && !p.question.includes('÷ □') && !isDecimalDiv ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 8 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                            <span style={{ fontSize: 12, color: '#888', whiteSpace: 'nowrap' }}>몫</span>
-                            <input
-                              type="number"
-                              inputMode="numeric"
-                              placeholder=""
-                              style={{ 
-                                width: 28, 
-                                height: 24, 
-                                fontSize: 14, 
-                                textAlign: 'center', 
-                                border: '1.5px solid #bcd0f7', 
-                                borderRadius: 4,
-                                padding: 0
-                              }}
-                              value={answers[idx]?.q || ''}
-                              onChange={e => handleInput(idx, e.target.value, 'q')}
-                            />
-                          </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                            <span style={{ fontSize: 12, color: '#888', whiteSpace: 'nowrap' }}>나머지</span>
-                            <input
-                              type="number"
-                              inputMode="numeric"
-                              placeholder=""
-                              style={{ 
-                                width: 28, 
-                                height: 24, 
-                                fontSize: 14, 
-                                textAlign: 'center', 
-                                border: '1.5px solid #bcd0f7', 
-                                borderRadius: 4,
-                                padding: 0
-                              }}
-                              value={answers[idx]?.r || ''}
-                              onChange={e => handleInput(idx, e.target.value, 'r')}
-                            />
-                          </div>
-                        </div>
-                      ) : isDecimalDiv && isDiv ? (
-                        // 소수 나눗셈: 소수 한 칸만 입력
-                        <input
-                          type="number"
-                          inputMode="decimal"
-                          className="answer-input"
-                          value={answers[idx] || ''}
-                          onChange={e => handleInput(idx, e.target.value)}
-                        />
-                      ) : (
-                        // 분수 문제 입력란 (덧셈, 뺄셈, 곱셈, 나눗셈 모두)
-                        isFractionDiv || p.question.match(/\d+\/\d+/) ? (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 8 }}>
-                            <input
-                              type="number"
-                              inputMode="numeric"
-                              className="answer-input small-placeholder"
-                              style={{ width: 36, minWidth: 0, fontSize: 14, padding: '2px 4px' }}
-                              placeholder="분자"
-                              value={typeof answers[idx] === 'string' && answers[idx].includes('/') ? answers[idx].split('/')[0] : answers[idx]?.numer || ''}
-                              onChange={e => {
-                                const val = e.target.value;
-                                let denom = '';
-                                if (typeof answers[idx] === 'string' && answers[idx].includes('/')) {
-                                  denom = answers[idx].split('/')[1];
-                                } else if (typeof answers[idx] === 'object' && answers[idx] !== null) {
-                                  denom = answers[idx].denom || '';
-                                }
-                                handleInput(idx, val + '/' + denom);
-                              }}
-                            />
-                            <span style={{ fontSize: 16, fontWeight: 700, color: '#222', minWidth: 8 }}>/</span>
-                            <input
-                              type="number"
-                              inputMode="numeric"
-                              className="answer-input small-placeholder"
-                              style={{ width: 36, minWidth: 0, fontSize: 14, padding: '2px 4px' }}
-                              placeholder="분모"
-                              value={(() => {
-                                if (typeof answers[idx] === 'string' && answers[idx].includes('/')) {
-                                  const denom = answers[idx].split('/')[1];
-                                  return denom === undefined ? '' : denom;
-                                }
-                                return answers[idx]?.denom || '';
-                              })()}
-                              onChange={e => {
-                                const val = e.target.value;
-                                let numer = '';
-                                if (typeof answers[idx] === 'string' && answers[idx].includes('/')) {
-                                  numer = answers[idx].split('/')[0];
-                                } else if (typeof answers[idx] === 'object' && answers[idx] !== null) {
-                                  numer = answers[idx].numer || '';
-                                }
-                                handleInput(idx, numer + '/' + val);
-                              }}
-                            />
-                          </span>
-                        ) : (
+                  <div key={i} className="problem-item">
+                    <div className="problem-content">
+                      <span className="problem-number">Q{idx + 1}.</span>
+                      <span className="problem-text">
+                        {renderWithFraction(p.question)}
+                      </span>
+                      {/* 정수 나눗셈만 몫/나머지, 소수 나눗셈은 소수 한 칸만 */}
+                      {isDivision && !isDecimalDivision ? (
+                        <div className="division-input">
+                          <span className="division-label">({t('quotient')}:</span>
                           <input
-                            type="number"
-                            inputMode="numeric"
-                            className="answer-input"
-                            value={answers[idx] || ''}
-                            onChange={e => handleInput(idx, e.target.value)}
+                            type="text"
+                            value={answer.q || ''}
+                            onChange={e => handleDivisionChange(idx, 'q', e.target.value)}
+                            className="division-field"
                           />
-                        )
+                          <span className="division-label">{t('remainder')}:</span>
+                          <input
+                            type="text"
+                            value={answer.r || ''}
+                            onChange={e => handleDivisionChange(idx, 'r', e.target.value)}
+                            className="division-field"
+                          />
+                          <span className="division-label">)</span>
+                        </div>
+                      ) : (
+                        <input
+                          type="text"
+                          value={answer}
+                          onChange={e => handleAnswerChange(idx, e.target.value)}
+                          className="answer-input"
+                          placeholder={isComparison ? '□' : ''}
+                        />
                       )}
                     </div>
-                  )
+                  </div>
                 );
               })}
             </div>
           ))}
         </div>
-        {/* PDF용 영역 (화면에는 보이지 않음) */}
-        <div ref={pdfRef} style={{
+
+        {/* 하단 버튼들 */}
+        <div className="problem-buttons">
+          <label className="answer-checkbox">
+            <input
+              type="checkbox"
+              checked={includeAnswer}
+              onChange={e => setIncludeAnswer(e.target.checked)}
+            />
+            <span>{t('includeAnswer')}</span>
+          </label>
+          <button className="problem-button" onClick={handlePdf}>
+            {t('savePDF')}
+          </button>
+          <button className="problem-button" onClick={handleGrade}>
+            {t('gradeProblems')}
+          </button>
+        </div>
+      </div>
+
+      {/* PDF용 영역 (화면에는 보이지 않음) */}
+      <div ref={pdfRef} style={{
+        width: 794,
+        height: 1123,
+        background: '#fff',
+        position: 'absolute',
+        left: -9999,
+        top: 0,
+        zIndex: -1,
+        padding: '32px 32px 0 32px',
+        boxSizing: 'border-box',
+      }}>
+        {/* 상단 제목/입력란 */}
+        <div style={{ display: 'flex', alignItems: 'center', borderBottom: '3px solid #bbb', paddingBottom: 10, marginBottom: 18 }}>
+          <div style={{ fontWeight: 900, fontSize: 18, background: '#eee', borderRadius: 6, padding: '2px 10px', marginRight: 12 }}>Caluri</div>
+          <div style={{ fontWeight: 800, fontSize: 28, marginRight: 12 }}>{t('problemWorkbook')}</div>
+          {/* 연산명 표시는 분수 문제일 때만 */}
+          {problems.length > 0 && problems[0].question.includes('/') ? (
+            <div style={{ fontWeight: 600, fontSize: 18, color: '#2563eb', marginRight: 12 }}>
+              {problems[0].question.includes('+') ? t('fractionAddition')
+                : problems[0].question.includes('-') ? t('fractionSubtraction')
+                : problems[0].question.includes('×') ? t('fractionMultiplication')
+                : problems[0].question.includes('÷') ? t('fractionDivision')
+                : t('fractionOperation')}
+            </div>
+          ) : null}
+          <div style={{ flex: 1 }} />
+          <div style={{ fontSize: 16, marginRight: 12 }}>{t('month')} <span style={{ borderBottom: '1px solid #bbb', minWidth: 24, display: 'inline-block' }}>&nbsp;&nbsp;&nbsp;</span></div>
+          <div style={{ fontSize: 16, marginRight: 12 }}>{t('day')} <span style={{ borderBottom: '1px solid #bbb', minWidth: 24, display: 'inline-block' }}>&nbsp;&nbsp;&nbsp;</span></div>
+          <div style={{ fontSize: 16 }}>{t('name')} <span style={{ borderBottom: '1px solid #bbb', minWidth: 48, display: 'inline-block' }}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+        </div>
+        {/* 문제 2열 10행, 균등 분할 */}
+        <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: 850, marginTop: 8, marginBottom: 0 }}>
+          {[0, 1].map(col => (
+            <div key={col} style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
+              {pdfRows.map((row, rowIdx) => (
+                row[col] ? (
+                  <div key={rowIdx} style={{ display: 'flex', alignItems: 'center', fontSize: 22, fontWeight: 600, minHeight: 36 }}>
+                    <span style={{ fontSize: 20, fontWeight: 700, marginRight: 10 }}>{col === 0 ? rowIdx + 1 : rowIdx + 11}.</span>
+                    {row[col].question.includes('÷ □') ? (
+                      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: '100%' }}>
+                        <span style={{ fontSize: 16, marginBottom: 2 }}>
+                          {(() => {
+                            const match = row[col].question.match(/([0-9]+) ÷ □ = \(몫: ([0-9]+), 나머지: ([0-9]+)\)/);
+                            if (match) {
+                              return `${match[1]} ÷ □ = ${t('quotient')} ${match[2]}, ${t('remainder')} ${match[3]}`;
+                            }
+                            return row[col].question;
+                          })()}
+                        </span>
+                        <span style={{ display: 'inline-block', borderBottom: '2px solid #222', minWidth: 60, maxWidth: 80, height: 1, marginLeft: 12, marginTop: 12, verticalAlign: 'bottom' }}>&nbsp;</span>
+                      </div>
+                    ) : (
+                      <span style={{ letterSpacing: 2 }}>
+                        {renderWithFraction(row[col].question)}
+                      </span>
+                    )}
+                  </div>
+                ) : <div key={rowIdx} style={{ minHeight: 36 }} />
+              ))}
+            </div>
+          ))}
+        </div>
+        {/* 하단 저작권 문구 추가 */}
+        <div style={{ width: '100%', textAlign: 'right', fontSize: 13, color: '#bbb', marginBottom: 12, position: 'absolute', right: 32, bottom: 0 }}>
+          @https://www.calcuri.com/
+        </div>
+      </div>
+      {/* 정답용 PDF 영역 (화면에는 보이지 않음) */}
+      {includeAnswer && (
+        <div ref={pdfAnswerRef} style={{
           width: 794,
           height: 1123,
           background: '#fff',
           position: 'absolute',
           left: -9999,
           top: 0,
-          zIndex: -1,
+          zIndex: -2,
           padding: '32px 32px 0 32px',
           boxSizing: 'border-box',
         }}>
           {/* 상단 제목/입력란 */}
-          <div style={{ display: 'flex', alignItems: 'center', borderBottom: '3px solid #bbb', paddingBottom: 10, marginBottom: 18 }}>
-            <div style={{ fontWeight: 900, fontSize: 18, background: '#eee', borderRadius: 6, padding: '2px 10px', marginRight: 12 }}>Caluri</div>
-            <div style={{ fontWeight: 800, fontSize: 28, marginRight: 12 }}>연산문제집</div>
-            {/* 연산명 표시는 분수 문제일 때만 */}
+          <div style={{ display: 'flex', alignItems: 'center', borderBottom: '2px solid #bbb', paddingBottom: 6, marginBottom: 10 }}>
+            <div style={{ fontWeight: 900, fontSize: 15, background: '#eee', borderRadius: 6, padding: '2px 10px', marginRight: 8 }}>Caluri</div>
+            <div style={{ fontWeight: 800, fontSize: 20, marginRight: 8 }}>{t('problemWorkbook')}</div>
             {problems.length > 0 && problems[0].question.includes('/') ? (
-              <div style={{ fontWeight: 600, fontSize: 18, color: '#2563eb', marginRight: 12 }}>
-                {problems[0].question.includes('+') ? '분수 덧셈'
-                  : problems[0].question.includes('-') ? '분수 뺄셈'
-                  : problems[0].question.includes('×') ? '분수 곱셈'
-                  : problems[0].question.includes('÷') ? '분수 나눗셈'
-                  : '분수 연산'}
+              <div style={{ fontWeight: 600, fontSize: 13, color: '#2563eb', marginRight: 8 }}>
+                {problems[0].question.includes('+') ? t('fractionAddition')
+                  : problems[0].question.includes('-') ? t('fractionSubtraction')
+                  : problems[0].question.includes('×') ? t('fractionMultiplication')
+                  : problems[0].question.includes('÷') ? t('fractionDivision')
+                  : t('fractionOperation')}
               </div>
             ) : null}
             <div style={{ flex: 1 }} />
-            <div style={{ fontSize: 16, marginRight: 12 }}>월 <span style={{ borderBottom: '1px solid #bbb', minWidth: 24, display: 'inline-block' }}>&nbsp;&nbsp;&nbsp;</span></div>
-            <div style={{ fontSize: 16, marginRight: 12 }}>일 <span style={{ borderBottom: '1px solid #bbb', minWidth: 24, display: 'inline-block' }}>&nbsp;&nbsp;&nbsp;</span></div>
-            <div style={{ fontSize: 16 }}>이름 <span style={{ borderBottom: '1px solid #bbb', minWidth: 48, display: 'inline-block' }}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
           </div>
-          {/* 문제 2열 10행, 균등 분할 */}
-          <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: 850, marginTop: 8, marginBottom: 0 }}>
+          {/* 정답 2열 10행, 폰트 12px로 축소 */}
+          <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: 850, marginTop: 0, marginBottom: 0, alignItems: 'flex-start' }}>
             {[0, 1].map(col => (
-              <div key={col} style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
+              <div key={col} style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: 0 }}>
                 {pdfRows.map((row, rowIdx) => (
                   row[col] ? (
-                    <div key={rowIdx} style={{ display: 'flex', alignItems: 'center', fontSize: 22, fontWeight: 600, minHeight: 36 }}>
-                      <span style={{ fontSize: 20, fontWeight: 700, marginRight: 10 }}>{col === 0 ? rowIdx + 1 : rowIdx + 11}.</span>
-                      {row[col].question.includes('÷ □') ? (
-                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: '100%' }}>
-                          <span style={{ fontSize: 16, marginBottom: 2 }}>
-                            {(() => {
-                              const match = row[col].question.match(/([0-9]+) ÷ □ = \(몫: ([0-9]+), 나머지: ([0-9]+)\)/);
-                              if (match) {
-                                return `${match[1]} ÷ □ = 몫 ${match[2]}, 나머지 ${match[3]}`;
-                              }
-                              return row[col].question;
-                            })()}
-                          </span>
-                          <span style={{ display: 'inline-block', borderBottom: '2px solid #222', minWidth: 60, maxWidth: 80, height: 1, marginLeft: 12, marginTop: 12, verticalAlign: 'bottom' }}>&nbsp;</span>
-                        </div>
-                      ) : (
-                        <span style={{ letterSpacing: 2 }}>
-                          {renderWithFraction(row[col].question)}
-                        </span>
-                      )}
+                    <div key={rowIdx} style={{ display: 'flex', alignItems: 'center', fontSize: 12, fontWeight: 600, minHeight: 10, marginBottom: 0, padding: 0, lineHeight: 1.1 }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, marginRight: 6 }}>{col === 0 ? rowIdx + 1 : rowIdx + 11}.</span>
+                      <span style={{ letterSpacing: 1 }}>{renderWithFraction(row[col].question)}</span>
+                      <span style={{ color: '#2563eb', fontWeight: 700, marginLeft: 8 }}>
+                        {row[col].question.includes('÷') && typeof (row[col].answer as any) === 'object'
+                          ? `${t('quotient')}: ${(row[col].answer as any).q}, ${t('remainder')}: ${(row[col].answer as any).r}`
+                          : renderWithFraction(getDisplayAnswer(row[col].answer))}
+                      </span>
                     </div>
-                  ) : <div key={rowIdx} style={{ minHeight: 36 }} />
+                  ) : <div key={rowIdx} style={{ minHeight: 10, padding: 0 }} />
                 ))}
               </div>
             ))}
           </div>
-          {/* 하단 저작권 문구 추가 */}
+          {/* 하단 여백 최소화 */}
+          <div style={{ height: 12 }} />
+          {/* 정답지 하단에도 동일하게 */}
           <div style={{ width: '100%', textAlign: 'right', fontSize: 13, color: '#bbb', marginBottom: 12, position: 'absolute', right: 32, bottom: 0 }}>
             @https://www.calcuri.com/
           </div>
         </div>
-        {/* 정답용 PDF 영역 (화면에는 보이지 않음) */}
-        {includeAnswer && (
-          <div ref={pdfAnswerRef} style={{
-            width: 794,
-            height: 1123,
-            background: '#fff',
-            position: 'absolute',
-            left: -9999,
-            top: 0,
-            zIndex: -2,
-            padding: '32px 32px 0 32px',
-            boxSizing: 'border-box',
-          }}>
-            {/* 상단 제목/입력란 */}
-            <div style={{ display: 'flex', alignItems: 'center', borderBottom: '2px solid #bbb', paddingBottom: 6, marginBottom: 10 }}>
-              <div style={{ fontWeight: 900, fontSize: 15, background: '#eee', borderRadius: 6, padding: '2px 10px', marginRight: 8 }}>Caluri</div>
-              <div style={{ fontWeight: 800, fontSize: 20, marginRight: 8 }}>연산문제집</div>
-              {problems.length > 0 && problems[0].question.includes('/') ? (
-                <div style={{ fontWeight: 600, fontSize: 13, color: '#2563eb', marginRight: 8 }}>
-                  {problems[0].question.includes('+') ? '분수 덧셈'
-                    : problems[0].question.includes('-') ? '분수 뺄셈'
-                    : problems[0].question.includes('×') ? '분수 곱셈'
-                    : problems[0].question.includes('÷') ? '분수 나눗셈'
-                    : '분수 연산'}
-                </div>
-              ) : null}
-              <div style={{ flex: 1 }} />
-            </div>
-            {/* 정답 2열 10행, 폰트 12px로 축소 */}
-            <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: 850, marginTop: 0, marginBottom: 0, alignItems: 'flex-start' }}>
-              {[0, 1].map(col => (
-                <div key={col} style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: 0 }}>
-                  {pdfRows.map((row, rowIdx) => (
-                    row[col] ? (
-                      <div key={rowIdx} style={{ display: 'flex', alignItems: 'center', fontSize: 12, fontWeight: 600, minHeight: 10, marginBottom: 0, padding: 0, lineHeight: 1.1 }}>
-                        <span style={{ fontSize: 12, fontWeight: 700, marginRight: 6 }}>{col === 0 ? rowIdx + 1 : rowIdx + 11}.</span>
-                        <span style={{ letterSpacing: 1 }}>{renderWithFraction(row[col].question)}</span>
-                        <span style={{ color: '#2563eb', fontWeight: 700, marginLeft: 8 }}>
-                          {row[col].question.includes('÷') && typeof (row[col].answer as any) === 'object'
-                            ? `몫: ${(row[col].answer as any).q}, 나머지: ${(row[col].answer as any).r}`
-                            : renderWithFraction(getDisplayAnswer(row[col].answer))}
-                        </span>
-                      </div>
-                    ) : <div key={rowIdx} style={{ minHeight: 10, padding: 0 }} />
-                  ))}
-                </div>
-              ))}
-            </div>
-            {/* 하단 여백 최소화 */}
-            <div style={{ height: 12 }} />
-            {/* 정답지 하단에도 동일하게 */}
-            <div style={{ width: '100%', textAlign: 'right', fontSize: 13, color: '#bbb', marginBottom: 12, position: 'absolute', right: 32, bottom: 0 }}>
-              @https://www.calcuri.com/
-            </div>
-          </div>
-        )}
-      </div>
+      )}
+      {/* 하단 광고 */}
+      <AdComponent size="rectangle" className="bottom-ad" />
     </div>
   );
 };

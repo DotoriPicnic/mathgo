@@ -113,6 +113,27 @@ const ko = {
     // 비교 연산
     comparisonOperationType: 'A ㅁ B 비교 연산',
     
+    // ProblemPage
+    problemWorkbook: '연산문제집',
+    fractionOperation: '분수 연산',
+    month: '월',
+    day: '일',
+    name: '이름',
+    quotient: '몫',
+    remainder: '나머지',
+    includeAnswer: '정답 포함',
+    savePDF: 'PDF 저장',
+    gradeProblems: '채점하기',
+    timeLeft: '남은 시간',
+    submitAnswers: '답안 제출',
+    
+    // ResultPage
+    noProblemsToGrade: '채점할 문제가 없습니다.',
+    generateProblemsFirst: '메인 화면에서 문제를 먼저 생성해 주세요.',
+    correctAnswer: '정답',
+    retryProblems: '다시 풀기',
+    goToMain: '메인으로',
+    
     // 공통
     back: '뒤로',
     next: '다음',
@@ -236,6 +257,27 @@ const en = {
     // 비교 연산
     comparisonOperationType: 'A □ B Comparison',
     
+    // ProblemPage
+    problemWorkbook: 'Math Workbook',
+    fractionOperation: 'Fraction Operation',
+    month: 'Month',
+    day: 'Day',
+    name: 'Name',
+    quotient: 'Quotient',
+    remainder: 'Remainder',
+    includeAnswer: 'Include Answer',
+    savePDF: 'Save PDF',
+    gradeProblems: 'Grade Problems',
+    timeLeft: 'Time Left',
+    submitAnswers: 'Submit Answers',
+    
+    // ResultPage
+    noProblemsToGrade: 'No problems to grade.',
+    generateProblemsFirst: 'Please generate problems from the main page first.',
+    correctAnswer: 'Correct Answer',
+    retryProblems: 'Try Again',
+    goToMain: 'Go to Main',
+    
     // 공통
     back: 'Back',
     next: 'Next',
@@ -358,6 +400,27 @@ const zh = {
     
     // 비교 연산
     comparisonOperationType: 'A □ B 比较运算',
+    
+    // ProblemPage
+    problemWorkbook: '运算练习册',
+    fractionOperation: '分数运算',
+    month: '月',
+    day: '日',
+    name: '姓名',
+    quotient: '商',
+    remainder: '余数',
+    includeAnswer: '包含答案',
+    savePDF: '保存PDF',
+    gradeProblems: '评分',
+    timeLeft: '剩余时间',
+    submitAnswers: '提交答案',
+    
+    // ResultPage
+    noProblemsToGrade: '没有可评分的题目。',
+    generateProblemsFirst: '请先从主页生成题目。',
+    correctAnswer: '正确答案',
+    retryProblems: '重新练习',
+    goToMain: '返回主页',
     
     // 공통
     back: '返回',
