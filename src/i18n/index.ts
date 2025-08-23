@@ -116,9 +116,6 @@ const ko = {
     // ProblemPage
     problemWorkbook: '연산문제집',
     fractionOperation: '분수 연산',
-    month: '월',
-    day: '일',
-    name: '이름',
     quotient: '몫',
     remainder: '나머지',
     includeAnswer: '정답 포함',
@@ -260,9 +257,6 @@ const en = {
     // ProblemPage
     problemWorkbook: 'Math Workbook',
     fractionOperation: 'Fraction Operation',
-    month: 'Month',
-    day: 'Day',
-    name: 'Name',
     quotient: 'Quotient',
     remainder: 'Remainder',
     includeAnswer: 'Include Answer',
@@ -404,9 +398,6 @@ const zh = {
     // ProblemPage
     problemWorkbook: '运算练习册',
     fractionOperation: '分数运算',
-    month: '月',
-    day: '日',
-    name: '姓名',
     quotient: '商',
     remainder: '余数',
     includeAnswer: '包含答案',

@@ -216,7 +216,7 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
       {/* 상단 광고 */}
       <AdComponent size="banner" className="top-ad" />
       <div className="problem-container">
-        {/* 상단 제목/입력란 */}
+        {/* 상단 제목 */}
         <div className="problem-header">
           <div className="problem-title">
             <div className="brand">Caluri</div>
@@ -231,17 +231,6 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
                   : t('fractionOperation')}
               </div>
             ) : null}
-          </div>
-          <div className="problem-info">
-            <div className="date-input">
-              {t('month')} <input type="text" className="date-field" />
-            </div>
-            <div className="date-input">
-              {t('day')} <input type="text" className="date-field" />
-            </div>
-            <div className="name-input">
-              {t('name')} <input type="text" className="name-field" />
-            </div>
           </div>
         </div>
 
@@ -337,7 +326,7 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
         padding: '32px 32px 0 32px',
         boxSizing: 'border-box',
       }}>
-        {/* 상단 제목/입력란 */}
+        {/* 상단 제목 */}
         <div style={{ display: 'flex', alignItems: 'center', borderBottom: '3px solid #bbb', paddingBottom: 10, marginBottom: 18 }}>
           <div style={{ fontWeight: 900, fontSize: 18, background: '#eee', borderRadius: 6, padding: '2px 10px', marginRight: 12 }}>Caluri</div>
           <div style={{ fontWeight: 800, fontSize: 28, marginRight: 12 }}>{t('problemWorkbook')}</div>
@@ -352,9 +341,6 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
             </div>
           ) : null}
           <div style={{ flex: 1 }} />
-          <div style={{ fontSize: 16, marginRight: 12 }}>{t('month')} <span style={{ borderBottom: '1px solid #bbb', minWidth: 24, display: 'inline-block' }}>&nbsp;&nbsp;&nbsp;</span></div>
-          <div style={{ fontSize: 16, marginRight: 12 }}>{t('day')} <span style={{ borderBottom: '1px solid #bbb', minWidth: 24, display: 'inline-block' }}>&nbsp;&nbsp;&nbsp;</span></div>
-          <div style={{ fontSize: 16 }}>{t('name')} <span style={{ borderBottom: '1px solid #bbb', minWidth: 48, display: 'inline-block' }}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
         </div>
         {/* 문제 2열 10행, 균등 분할 */}
         <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: 850, marginTop: 8, marginBottom: 0 }}>
@@ -406,7 +392,7 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
           padding: '32px 32px 0 32px',
           boxSizing: 'border-box',
         }}>
-          {/* 상단 제목/입력란 */}
+          {/* 상단 제목 */}
           <div style={{ display: 'flex', alignItems: 'center', borderBottom: '2px solid #bbb', paddingBottom: 6, marginBottom: 10 }}>
             <div style={{ fontWeight: 900, fontSize: 15, background: '#eee', borderRadius: 6, padding: '2px 10px', marginRight: 8 }}>Caluri</div>
             <div style={{ fontWeight: 800, fontSize: 20, marginRight: 8 }}>{t('problemWorkbook')}</div>
