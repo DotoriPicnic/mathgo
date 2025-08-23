@@ -15,6 +15,25 @@ interface Problem {
   answer: number;
 }
 
+// [Question 컴포넌트 - 칩 스타일 문제 번호]
+interface QuestionProps {
+  number: number;
+  text: string;
+}
+
+function Question({ number, text }: QuestionProps) {
+  return (
+    <div className="flex items-center space-x-3">
+      <span className="bg-blue-500 text-white px-3 py-1 rounded-full font-bold text-sm">
+        Q{number}
+      </span>
+      <span className="text-lg font-semibold text-gray-800 tracking-wide">
+        {renderWithFraction(text)}
+      </span>
+    </div>
+  );
+}
+
 // [분수 표시용 컴포넌트 추가]
 function Fraction({ value }: { value: string }) {
   const match = value.match(/^(\d+)\/(\d+)$/);
@@ -361,25 +380,30 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
             <div key={col} style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between' }}>
               {pdfRows.map((row, rowIdx) => (
                 row[col] ? (
-                  <div key={rowIdx} style={{ display: 'flex', alignItems: 'center', fontSize: 22, fontWeight: 600, minHeight: 36 }}>
-                    <span style={{ fontSize: 18, fontWeight: 700, marginRight: 12, color: '#666', minWidth: 25, textAlign: 'right' }}>{(col === 0 ? rowIdx + 1 : rowIdx + 11).toString().padStart(2, ' ')}</span>
+                  <div key={rowIdx} style={{ minHeight: 36, paddingBottom: 8 }}>
                     {row[col].question.includes('÷ □') ? (
-                      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: '100%' }}>
-                        <span style={{ fontSize: 16, marginBottom: 2 }}>
-                          {(() => {
-                            const match = row[col].question.match(/([0-9]+) ÷ □ = \(몫: ([0-9]+), 나머지: ([0-9]+)\)/);
-                            if (match) {
-                              return `${match[1]} ÷ □ = ${t('quotient')} ${match[2]}, ${t('remainder')} ${match[3]}`;
-                            }
-                            return row[col].question;
-                          })()}
+                      <div className="flex items-center space-x-3">
+                        <span className="bg-blue-500 text-white px-3 py-1 rounded-full font-bold text-sm">
+                          Q{col === 0 ? rowIdx + 1 : rowIdx + 11}
                         </span>
-                        <span style={{ display: 'inline-block', borderBottom: '2px solid #222', minWidth: 60, maxWidth: 80, height: 1, marginLeft: 12, marginTop: 12, verticalAlign: 'bottom' }}>&nbsp;</span>
+                        <div className="flex items-center space-x-3">
+                          <span className="text-lg font-semibold text-gray-800">
+                            {(() => {
+                              const match = row[col].question.match(/([0-9]+) ÷ □ = \(몫: ([0-9]+), 나머지: ([0-9]+)\)/);
+                              if (match) {
+                                return `${match[1]} ÷ □ = ${t('quotient')} ${match[2]}, ${t('remainder')} ${match[3]}`;
+                              }
+                              return row[col].question;
+                            })()}
+                          </span>
+                          <span className="border-b-2 border-gray-800 min-w-[60px] max-w-[80px] h-1">&nbsp;</span>
+                        </div>
                       </div>
                     ) : (
-                      <span style={{ letterSpacing: 2 }}>
-                        {renderWithFraction(row[col].question)}
-                      </span>
+                      <Question 
+                        number={col === 0 ? rowIdx + 1 : rowIdx + 11} 
+                        text={row[col].question} 
+                      />
                     )}
                   </div>
                 ) : <div key={rowIdx} style={{ minHeight: 36 }} />
@@ -426,14 +450,18 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
               <div key={col} style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: 0 }}>
                 {pdfRows.map((row, rowIdx) => (
                   row[col] ? (
-                    <div key={rowIdx} style={{ display: 'flex', alignItems: 'center', fontSize: 12, fontWeight: 600, minHeight: 10, marginBottom: 0, padding: 0, lineHeight: 1.1 }}>
-                      <span style={{ fontSize: 11, fontWeight: 700, marginRight: 8, color: '#666', minWidth: 20, textAlign: 'right' }}>{(col === 0 ? rowIdx + 1 : rowIdx + 11).toString().padStart(2, ' ')}</span>
-                      <span style={{ letterSpacing: 1 }}>{renderWithFraction(row[col].question)}</span>
-                      <span style={{ color: '#2563eb', fontWeight: 700, marginLeft: 8 }}>
-                        {row[col].question.includes('÷') && typeof (row[col].answer as any) === 'object'
-                          ? `${t('quotient')}: ${(row[col].answer as any).q}, ${t('remainder')}: ${(row[col].answer as any).r}`
-                          : renderWithFraction(getDisplayAnswer(row[col].answer))}
-                      </span>
+                    <div key={rowIdx} style={{ minHeight: 10, marginBottom: 2, padding: 0, lineHeight: 1.1 }}>
+                      <div className="flex items-center space-x-2">
+                        <span className="bg-blue-500 text-white px-2 py-0.5 rounded-full font-bold text-xs">
+                          Q{col === 0 ? rowIdx + 1 : rowIdx + 11}
+                        </span>
+                        <span className="text-xs font-medium text-gray-800">{renderWithFraction(row[col].question)}</span>
+                        <span className="text-blue-600 font-bold text-xs ml-2">
+                          {row[col].question.includes('÷') && typeof (row[col].answer as any) === 'object'
+                            ? `${t('quotient')}: ${(row[col].answer as any).q}, ${t('remainder')}: ${(row[col].answer as any).r}`
+                            : renderWithFraction(getDisplayAnswer(row[col].answer))}
+                        </span>
+                      </div>
                     </div>
                   ) : <div key={rowIdx} style={{ minHeight: 10, padding: 0 }} />
                 ))}
