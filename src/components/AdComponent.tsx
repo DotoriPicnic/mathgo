@@ -10,11 +10,18 @@ declare global {
 }
 
 interface AdComponentProps {
+  slot: string;
   size?: 'banner' | 'sidebar' | 'rectangle';
   className?: string;
+  style?: React.CSSProperties;
 }
 
-const AdComponent: React.FC<AdComponentProps> = ({ size = 'banner', className = '' }) => {
+const AdComponent: React.FC<AdComponentProps> = ({ 
+  slot, 
+  size = 'banner', 
+  className = '',
+  style = {}
+}) => {
   // 광고 활성화 여부 확인 (Vite에서는 import.meta.env 사용)
   const adsEnabled = import.meta.env.VITE_ADS_ENABLED === 'true';
   
@@ -63,24 +70,27 @@ const AdComponent: React.FC<AdComponentProps> = ({ size = 'banner', className = 
   const adSize = getAdSize();
 
   const publisherId = import.meta.env.VITE_ADSENSE_PUBLISHER_ID;
-  const adSlot = import.meta.env.VITE_ADSENSE_BANNER_SLOT;
   
-  if (!canShowAds || !publisherId || !adSlot) {
+  if (!canShowAds || !publisherId || !slot) {
     return null;
   }
   
   return (
-    <div className={`ad-container adsense ${className}`} style={{ 
-      width: adSize.width, 
-      height: adSize.height, 
-      margin: '10px auto',
-      textAlign: 'center'
-    }}>
+    <div 
+      className={`ad-container adsense ${className}`} 
+      style={{ 
+        width: adSize.width, 
+        height: adSize.height, 
+        margin: '20px auto',
+        textAlign: 'center',
+        ...style
+      }}
+    >
       <ins
         className="adsbygoogle"
         style={{ display: 'block' }}
         data-ad-client={publisherId}
-        data-ad-slot={adSlot}
+        data-ad-slot={slot}
         data-ad-format="auto"
         data-full-width-responsive="true"
       />

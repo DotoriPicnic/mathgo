@@ -214,7 +214,7 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
         <LanguageSelector />
       </div>
       {/* 상단 광고 */}
-      <AdComponent size="banner" className="top-ad" />
+      <AdComponent slot="problempage-banner-top" size="banner" className="top-ad" />
       <div className="problem-container">
         {/* 상단 제목 */}
         <div className="problem-header">
@@ -311,6 +311,19 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
           <button className="problem-button" onClick={handleGrade}>
             {t('gradeProblems')}
           </button>
+        </div>
+
+        {/* 정답 확인 버튼 아래 광고 */}
+        <div style={{ 
+          marginTop: '2rem',
+          marginBottom: '2rem',
+          display: 'flex',
+          justifyContent: 'center'
+        }}>
+          <AdComponent 
+            slot="problempage-banner-1" 
+            size="banner"
+          />
         </div>
       </div>
 
@@ -436,7 +449,7 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
         </div>
       )}
       {/* 하단 광고 */}
-      <AdComponent size="rectangle" className="bottom-ad" />
+      <AdComponent slot="problempage-rectangle-1" size="rectangle" className="bottom-ad" />
     </div>
   );
 };

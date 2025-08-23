@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Navigation from "../components/Navigation";
+import AdComponent from "../components/AdComponent";
 
 const MainPage: React.FC = () => {
   const { t } = useTranslation();
@@ -182,6 +183,18 @@ const MainPage: React.FC = () => {
               </p>
             </div>
 
+            {/* 인피드 광고 */}
+            <AdComponent 
+              slot="mainpage-infeed-1" 
+              size="rectangle"
+              style={{ 
+                gridColumn: 'span 1',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            />
+
             <div className="card" style={{ textAlign: 'center' }}>
               <div style={{
                 width: '4rem',
@@ -236,6 +249,20 @@ const MainPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Footer 위 배너 광고 */}
+      <div style={{ 
+        maxWidth: '80rem', 
+        margin: '0 auto', 
+        padding: '0 1rem',
+        marginTop: '2rem',
+        marginBottom: '2rem'
+      }}>
+        <AdComponent 
+          slot="mainpage-banner-1" 
+          size="banner"
+        />
+      </div>
 
       {/* Footer */}
       <footer style={{ backgroundColor: '#f9fafb', padding: '3rem 0' }}>

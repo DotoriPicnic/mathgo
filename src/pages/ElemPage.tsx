@@ -813,7 +813,7 @@ const ElemPage: React.FC<ElemPageProps> = () => {
         <LanguageSelector />
       </div>
       {/* 상단 광고 */}
-      <AdComponent size="banner" className="top-ad" />
+      <AdComponent slot="elempage-banner-1" size="banner" className="top-ad" />
       <form onSubmit={handleGenerate} className="elem-form">
         <div className="elem-emoji">✏️</div>
         <h2 className="elem-title">
@@ -966,7 +966,7 @@ const ElemPage: React.FC<ElemPageProps> = () => {
         <button type="submit" className="submit-button">{t('generateProblems')}</button>
       </form>
       {/* 하단 광고 */}
-      <AdComponent size="rectangle" className="bottom-ad" />
+      <AdComponent slot="elempage-rectangle-1" size="rectangle" className="bottom-ad" />
     </div>
   );
 };

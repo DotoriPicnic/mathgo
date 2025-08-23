@@ -185,7 +185,7 @@ const ResultPage: React.FC<ResultPageProps> = () => {
         <LanguageSelector />
       </div>
       {/* 상단 광고 */}
-      <AdComponent size="banner" className="top-ad" />
+      <AdComponent slot="resultpage-banner-1" size="banner" className="top-ad" />
       <div className="result-container">
         {/* 제한시간/소요시간 표시 */}
         {(limitSec !== null || elapsedSec !== null) && (
@@ -307,7 +307,7 @@ const ResultPage: React.FC<ResultPageProps> = () => {
         </div>
       </div>
       {/* 하단 광고 */}
-      <AdComponent size="rectangle" className="bottom-ad" />
+      <AdComponent slot="resultpage-banner-2" size="rectangle" className="bottom-ad" />
     </div>
   );
 };
