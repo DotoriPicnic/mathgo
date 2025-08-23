@@ -27,7 +27,7 @@ const Navigation: React.FC = () => {
             {/* Logo */}
             <div className="flex items-center">
               <Link to="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-lg">C</span>
                 </div>
                 <span className="text-xl font-bold text-gray-900">Calcuri</span>
@@ -42,8 +42,8 @@ const Navigation: React.FC = () => {
                   to={item.path}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-200 hover:scale-105 ${
                     isActive(item.path)
-                      ? 'bg-primary-100 text-primary-700'
-                      : 'text-gray-600 hover:text-primary-600 hover:bg-primary-50'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
                   }`}
                 >
                   <span>{item.icon}</span>
@@ -57,7 +57,7 @@ const Navigation: React.FC = () => {
               <LanguageSelector />
               <Link
                 to="/"
-                className="flex items-center space-x-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl transition-all duration-200 hover:scale-105"
+                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-200 hover:scale-105"
               >
                 <span>🏠</span>
                 <span className="font-medium">홈</span>
@@ -73,7 +73,7 @@ const Navigation: React.FC = () => {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">C</span>
               </div>
               <span className="text-xl font-bold text-gray-900">Calcuri</span>
@@ -82,7 +82,7 @@ const Navigation: React.FC = () => {
             {/* Hamburger Menu */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-lg text-gray-600 hover:text-primary-600 hover:bg-primary-50 transition-colors"
+              className="p-2 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -101,8 +101,8 @@ const Navigation: React.FC = () => {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${
                       isActive(item.path)
-                        ? 'bg-primary-100 text-primary-700'
-                        : 'text-gray-600 hover:text-primary-600 hover:bg-primary-50'
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
                     }`}
                   >
                     <span className="text-lg">{item.icon}</span>

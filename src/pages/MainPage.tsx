@@ -11,14 +11,14 @@ const MainPage: React.FC = () => {
       title: "덧셈과 뺄셈",
       description: "기본 연산 마스터하기",
       icon: "➕",
-      color: "bg-primary-500",
+      color: "bg-blue-500",
       path: "/elem"
     },
     {
       title: "곱셈과 나눗셈",
       description: "구구단부터 나눗셈까지",
       icon: "✖️",
-      color: "bg-mint-500",
+      color: "bg-teal-500",
       path: "/elem"
     },
     {
@@ -38,7 +38,7 @@ const MainPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-mint-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50">
       <Navigation />
       
       {/* Hero Section */}
@@ -67,8 +67,8 @@ const MainPage: React.FC = () => {
         </div>
         
         {/* Decorative Elements */}
-        <div className="absolute top-20 left-10 w-20 h-20 bg-primary-200 rounded-full opacity-20 animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-16 h-16 bg-mint-200 rounded-full opacity-20 animate-pulse delay-1000"></div>
+        <div className="absolute top-20 left-10 w-20 h-20 bg-blue-200 rounded-full opacity-20 animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-16 h-16 bg-teal-200 rounded-full opacity-20 animate-pulse delay-1000"></div>
         <div className="absolute bottom-20 left-20 w-12 h-12 bg-yellow-200 rounded-full opacity-20 animate-pulse delay-500"></div>
       </section>
 
@@ -144,7 +144,7 @@ const MainPage: React.FC = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="card text-center">
-              <div className="w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+              <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-4 mx-auto">
                 <span className="text-2xl">📝</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">
@@ -156,7 +156,7 @@ const MainPage: React.FC = () => {
             </div>
 
             <div className="card text-center">
-              <div className="w-16 h-16 bg-mint-100 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+              <div className="w-16 h-16 bg-teal-100 rounded-2xl flex items-center justify-center mb-4 mx-auto">
                 <span className="text-2xl">⏰</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">
@@ -205,7 +205,7 @@ const MainPage: React.FC = () => {
               {t('contactEmail')} 
               <a 
                 href="mailto:calcuriofficial@gmail.com" 
-                className="text-primary-600 hover:text-primary-700 underline ml-1"
+                className="text-blue-600 hover:text-blue-700 underline ml-1"
               >
                 calcuriofficial@gmail.com
               </a>

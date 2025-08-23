@@ -58,7 +58,7 @@ const LanguageSelector: React.FC = () => {
             <button
               key={language.code}
               className={`w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors ${
-                i18n.language === language.code ? 'bg-primary-50 text-primary-700' : 'text-gray-700'
+                i18n.language === language.code ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
               }`}
               onClick={() => handleLanguageChange(language.code)}
             >
