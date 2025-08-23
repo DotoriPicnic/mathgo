@@ -528,6 +528,50 @@ function getBlankExample(type: string, carry: 'all' | 'with' | 'without') {
   return '';
 }
 
+// 문제 유형 번역 매핑 함수
+const getProblemTypeLabel = (t: any, value: string) => {
+  const mapping: { [key: string]: string } = {
+    '한자릿수 + 한자릿수': t('singleDigitAddition'),
+    '두자릿수 + 한자릿수': t('doubleDigitSingleAddition'),
+    '두자릿수 + 두자릿수': t('doubleDigitAddition'),
+    '세자릿수 + 세자릿수': t('tripleDigitAddition'),
+    '한자릿수 - 한자릿수': t('singleDigitSubtraction'),
+    '두자릿수 - 한자릿수': t('doubleDigitSingleSubtraction'),
+    '두자릿수 - 두자릿수': t('doubleDigitSubtraction'),
+    '세자릿수 - 세자릿수': t('tripleDigitSubtraction'),
+    '한자릿수 × 한자릿수': t('singleDigitMultiplication'),
+    '두자릿수 × 한자릿수': t('doubleDigitSingleMultiplication'),
+    '두자릿수 × 두자릿수': t('doubleDigitMultiplication'),
+    '두자릿수 ÷ 한자릿수': t('doubleDigitDivision'),
+    '세자릿수 ÷ 한자릿수': t('tripleDigitDivision'),
+    '세자릿수 ÷ 두자릿수': t('tripleDigitDoubleDivision'),
+    '빈칸 문제 한자릿수': t('blankSingleDigit'),
+    '빈칸 문제 두자릿수': t('blankDoubleDigit'),
+    '빈칸 문제 세자릿수': t('blankTripleDigit'),
+    '빈칸 문제 한자릿수(뺄셈)': t('blankSingleDigitSubtraction'),
+    '빈칸 문제 두자릿수(뺄셈)': t('blankDoubleDigitSubtraction'),
+    '빈칸 문제 세자릿수(뺄셈)': t('blankTripleDigitSubtraction'),
+    '빈칸 문제 한자릿수(곱셈)': t('blankSingleDigitMultiplication'),
+    '빈칸 문제 두자릿수(곱셈)': t('blankDoubleDigitMultiplication'),
+    '빈칸 문제 한자릿수(나눗셈)': t('blankSingleDigitDivision'),
+    '빈칸 문제 두자릿수(나눗셈)': t('blankDoubleDigitDivision'),
+    '분수 덧셈': t('fractionAddition'),
+    '분수 뺄셈': t('fractionSubtraction'),
+    '분수 곱셈': t('fractionMultiplication'),
+    '분수 나눗셈': t('fractionDivision'),
+    '소수 덧셈 (소수점 한자릿수)': t('decimalAdditionSingle'),
+    '소수 덧셈 (소수점 두자릿수)': t('decimalAdditionDouble'),
+    '소수 뺄셈 (소수점 한자릿수)': t('decimalSubtractionSingle'),
+    '소수 뺄셈 (소수점 두자릿수)': t('decimalSubtractionDouble'),
+    '소수 곱셈 (소수점 한자릿수)': t('decimalMultiplicationSingle'),
+    '소수 곱셈 (소수점 두자릿수)': t('decimalMultiplicationDouble'),
+    '소수 나눗셈 (소수점 한자릿수)': t('decimalDivisionSingle'),
+    '소수 나눗셈 (소수점 두자릿수)': t('decimalDivisionDouble'),
+    'A ㅁ B 비교 연산': t('comparisonOperationType'),
+  };
+  return mapping[value] || value;
+};
+
 // 문제 유형 필터링 함수 추가
 const problemTypes = [
   { label: '한자릿수 + 한자릿수', value: '한자릿수 + 한자릿수' },
@@ -575,55 +619,76 @@ const decimalTypes = [
   { label: '소수 나눗셈 (소수점 두자릿수)', value: '소수 나눗셈 (소수점 두자릿수)' },
 ];
 
-function getFilteredProblemTypes(op: string) {
+function getFilteredProblemTypes(op: string, t: any) {
   if (op === '비교 연산') {
     return [
-      { label: 'A ㅁ B 비교 연산', value: 'A ㅁ B 비교 연산' }
+      { label: getProblemTypeLabel(t, 'A ㅁ B 비교 연산'), value: 'A ㅁ B 비교 연산' }
     ];
   }
   if (op === '덧셈') {
-    return problemTypes.filter(t =>
-      typeof t.value === 'string' && (
-        t.value.includes('+') ||
-        (t.value.startsWith('빈칸 문제') &&
-          !t.value.includes('(뺄셈)') &&
-          !t.value.includes('(곱셈)') &&
-          !t.value.includes('(나눗셈)'))
+    return problemTypes.filter(type =>
+      typeof type.value === 'string' && (
+        type.value.includes('+') ||
+        (type.value.startsWith('빈칸 문제') &&
+          !type.value.includes('(뺄셈)') &&
+          !type.value.includes('(곱셈)') &&
+          !type.value.includes('(나눗셈)'))
       )
-    );
+    ).map(type => ({
+      label: getProblemTypeLabel(t, type.value),
+      value: type.value
+    }));
   }
   if (op === '뺄셈') {
-    return problemTypes.filter(t =>
-      typeof t.value === 'string' && (
-        t.value.includes('-') ||
-        (t.value.startsWith('빈칸 문제') && t.value.includes('(뺄셈)'))
+    return problemTypes.filter(type =>
+      typeof type.value === 'string' && (
+        type.value.includes('-') ||
+        (type.value.startsWith('빈칸 문제') && type.value.includes('(뺄셈)'))
       )
-    );
+    ).map(type => ({
+      label: getProblemTypeLabel(t, type.value),
+      value: type.value
+    }));
   }
   if (op === '곱셈') {
-    return problemTypes.filter(t =>
-      typeof t.value === 'string' && (
-        t.value.includes('×') ||
-        (t.value.startsWith('빈칸 문제') && t.value.includes('(곱셈)'))
+    return problemTypes.filter(type =>
+      typeof type.value === 'string' && (
+        type.value.includes('×') ||
+        (type.value.startsWith('빈칸 문제') && type.value.includes('(곱셈)'))
       )
-    );
+    ).map(type => ({
+      label: getProblemTypeLabel(t, type.value),
+      value: type.value
+    }));
   }
   if (op === '나눗셈') {
-    return problemTypes.filter(t =>
-      typeof t.value === 'string' && (
-        t.value.includes('÷') ||
-        (t.value.startsWith('빈칸 문제') && t.value.includes('(나눗셈)'))
+    return problemTypes.filter(type =>
+      typeof type.value === 'string' && (
+        type.value.includes('÷') ||
+        (type.value.startsWith('빈칸 문제') && type.value.includes('(나눗셈)'))
       )
-    );
+    ).map(type => ({
+      label: getProblemTypeLabel(t, type.value),
+      value: type.value
+    }));
   }
   if (op === '분수') {
-    return fractionTypes;
+    return fractionTypes.map(type => ({
+      label: getProblemTypeLabel(t, type.value),
+      value: type.value
+    }));
   }
   if (op === '소수') {
-    return decimalTypes;
+    return decimalTypes.map(type => ({
+      label: getProblemTypeLabel(t, type.value),
+      value: type.value
+    }));
   }
   // 분수 등 기타 연산은 추후 확장
-  return problemTypes;
+  return problemTypes.map(type => ({
+    label: getProblemTypeLabel(t, type.value),
+    value: type.value
+  }));
 }
 
 interface ElemPageProps {
@@ -687,7 +752,7 @@ const ElemPage: React.FC<ElemPageProps> = () => {
 
   // 연산 종류 변경 시 문제 유형도 자동 변경
   React.useEffect(() => {
-    const filtered = getFilteredProblemTypes(op);
+    const filtered = getFilteredProblemTypes(op, t);
     if (filtered.length > 0) {
       // 분수 연산일 때는 fractionTypes의 첫 번째 값으로 명확히 지정
       if (op === '분수') {
@@ -697,7 +762,7 @@ const ElemPage: React.FC<ElemPageProps> = () => {
       }
     }
     // eslint-disable-next-line
-  }, [op]);
+  }, [op, t]);
 
   // 한자릿수 - 한자릿수 및 빈칸 문제 한자릿수(뺄셈) 선택 시 내림있는 계산만 옵션 자동 변경
   React.useEffect(() => {
@@ -797,8 +862,8 @@ const ElemPage: React.FC<ElemPageProps> = () => {
               onChange={e => setType(e.target.value)}
               style={{ minWidth: 180 }}
             >
-              {getFilteredProblemTypes(op).map(t => (
-                <option key={t.value} value={t.value}>{t.label}</option>
+              {getFilteredProblemTypes(op, t).map(problemType => (
+                <option key={problemType.value} value={problemType.value}>{problemType.label}</option>
               ))}
             </select>
           ) : (
@@ -806,25 +871,20 @@ const ElemPage: React.FC<ElemPageProps> = () => {
               className="custom-dropdown"
               onClick={() => setShowTypeList(v => !v)}
             >
-              {(op === '분수'
-                ? fractionTypes.find(t => t.value === type)
-                : op === '소수'
-                  ? decimalTypes.find(t => t.value === type)
-                  : problemTypes.find(t => t.value === type)
-              )?.label}
+              {getProblemTypeLabel(t, type)}
               <span className="dropdown-arrow">▼</span>
               {showTypeList && (
                 <ul className="dropdown-list">
-                  {getFilteredProblemTypes(op).map(t => (
+                  {getFilteredProblemTypes(op, t).map(problemType => (
                     <li
-                      key={t.value}
+                      key={problemType.value}
                       onClick={() => {
-                        setType(t.value);
+                        setType(problemType.value);
                         setTimeout(() => setShowTypeList(false), 0);
                       }}
-                      className={`dropdown-item ${t.value === type ? 'selected' : ''}`}
+                      className={`dropdown-item ${problemType.value === type ? 'selected' : ''}`}
                     >
-                      {t.label}
+                      {problemType.label}
                     </li>
                   ))}
                 </ul>
