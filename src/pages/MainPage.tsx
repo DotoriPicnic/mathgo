@@ -115,13 +115,13 @@ const MainPage: React.FC = () => {
               color: '#111827',
               marginBottom: '1rem'
             }}>
-              주요 기능
+              {t('featuresTitle')}
             </h2>
             <p style={{
               fontSize: '1.125rem',
               color: '#4b5563'
             }}>
-              Calcuri만의 특별한 학습 도구들을 경험해보세요
+              {t('featuresSubtitle')}
             </p>
           </div>
 

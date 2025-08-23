@@ -13,6 +13,17 @@ const ko = {
     footerDescription: '초등학생 수학 학습을 위한 무료 도구입니다',
     contactEmail: '문의/건의:',
     
+    // 네비게이션
+    elementary: '초등',
+    middle: '중등',
+    high: '고등',
+    preparing: '준비중',
+    home: '홈',
+    
+    // 주요 기능 섹션
+    featuresTitle: '주요 기능',
+    featuresSubtitle: 'Calcuri만의 특별한 학습 도구들을 경험해보세요',
+    
     // 기능 카드
     featureCard1: {
       title: '📝 다양한 유형',
@@ -36,7 +47,6 @@ const ko = {
     korean: '한국어',
     english: 'English',
     chinese: '中文',
-    home: '홈',
     
     // ElemPage
     elemTitle: '초등학교 연산 문제 생성',
@@ -154,6 +164,17 @@ const en = {
     footerDescription: 'Free tool for elementary math learning',
     contactEmail: 'Contact/Suggestions:',
     
+    // 네비게이션
+    elementary: 'Elementary',
+    middle: 'Middle',
+    high: 'High',
+    preparing: 'Preparing',
+    home: 'Home',
+    
+    // 주요 기능 섹션
+    featuresTitle: 'Key Features',
+    featuresSubtitle: 'Experience Calcuri\'s special learning tools',
+    
     // 기능 카드
     featureCard1: {
       title: '📝 Various Types',
@@ -177,7 +198,6 @@ const en = {
     korean: '한국어',
     english: 'English',
     chinese: '中文',
-    home: 'Home',
     
     // ElemPage
     elemTitle: 'Elementary Math Problem Generator',
@@ -295,6 +315,17 @@ const zh = {
     footerDescription: '小学生数学学习的免费工具',
     contactEmail: '联系/建议：',
     
+    // 네비게이션
+    elementary: '小学',
+    middle: '初中',
+    high: '高中',
+    preparing: '准备中',
+    home: '首页',
+    
+    // 주요 기능 섹션
+    featuresTitle: '主要功能',
+    featuresSubtitle: '体验Calcuri独特的学习工具',
+    
     // 기능 카드
     featureCard1: {
       title: '📝 多种类型',
@@ -318,7 +349,6 @@ const zh = {
     korean: '한국어',
     english: 'English',
     chinese: '中文',
-    home: '首页',
     
     // ElemPage
     elemTitle: '小学数学题生成器',

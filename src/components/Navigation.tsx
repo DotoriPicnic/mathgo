@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import LanguageSelector from './LanguageSelector';
 
 const Navigation: React.FC = () => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { t } = useTranslation();
 
   const menuItems = [
-    { path: '/elem', label: '초등', icon: '📚', active: true },
-    { path: '/middle', label: '중등', icon: '📖', active: false },
-    { path: '/high', label: '고등', icon: '📘', active: false },
+    { path: '/elem', label: t('elementary'), icon: '📚', active: true },
+    { path: '/middle', label: t('middle'), icon: '📖', active: false },
+    { path: '/high', label: t('high'), icon: '📘', active: false },
   ];
 
   const isActive = (path: string) => {
@@ -107,7 +109,7 @@ const Navigation: React.FC = () => {
                 >
                   <span>{item.icon}</span>
                   <span style={{ fontWeight: '500' }}>{item.label}</span>
-                  {!item.active && <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>(준비중)</span>}
+                  {!item.active && <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>({t('preparing')})</span>}
                 </Link>
               ))}
             </div>
@@ -143,7 +145,7 @@ const Navigation: React.FC = () => {
                 }}
               >
                 <span>🏠</span>
-                <span>홈</span>
+                <span>{t('home')}</span>
               </Link>
             </div>
           </div>
@@ -267,7 +269,7 @@ const Navigation: React.FC = () => {
                   >
                     <span style={{ fontSize: '1.125rem' }}>{item.icon}</span>
                     <span style={{ fontWeight: '500' }}>{item.label}</span>
-                    {!item.active && <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>(준비중)</span>}
+                    {!item.active && <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>({t('preparing')})</span>}
                   </Link>
                 ))}
                 <div style={{
