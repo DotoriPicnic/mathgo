@@ -7,11 +7,9 @@ const Navigation: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const menuItems = [
-    { path: '/elem', label: '초등', icon: '📚' },
-    { path: '/middle', label: '중등', icon: '📖' },
-    { path: '/high', label: '고등', icon: '📘' },
-    { path: '/random', label: '랜덤 문제', icon: '🎲' },
-    { path: '/history', label: '기록 보기', icon: '📊' },
+    { path: '/elem', label: '초등', icon: '📚', active: true },
+    { path: '/middle', label: '중등', icon: '📖', active: false },
+    { path: '/high', label: '고등', icon: '📘', active: false },
   ];
 
   const isActive = (path: string) => {
@@ -75,7 +73,7 @@ const Navigation: React.FC = () => {
               {menuItems.map((item) => (
                 <Link
                   key={item.path}
-                  to={item.path}
+                  to={item.active ? item.path : '#'}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -85,23 +83,31 @@ const Navigation: React.FC = () => {
                     transition: 'all 0.2s',
                     textDecoration: 'none',
                     color: isActive(item.path) ? '#1d4ed8' : '#4b5563',
-                    backgroundColor: isActive(item.path) ? '#dbeafe' : 'transparent'
+                    backgroundColor: isActive(item.path) ? '#dbeafe' : 'transparent',
+                    opacity: item.active ? 1 : 0.5,
+                    cursor: item.active ? 'pointer' : 'not-allowed'
                   }}
                   onMouseEnter={(e) => {
-                    if (!isActive(item.path)) {
+                    if (item.active && !isActive(item.path)) {
                       e.currentTarget.style.color = '#2563eb';
                       e.currentTarget.style.backgroundColor = '#eff6ff';
                     }
                   }}
                   onMouseLeave={(e) => {
-                    if (!isActive(item.path)) {
+                    if (item.active && !isActive(item.path)) {
                       e.currentTarget.style.color = '#4b5563';
                       e.currentTarget.style.backgroundColor = 'transparent';
+                    }
+                  }}
+                  onClick={(e) => {
+                    if (!item.active) {
+                      e.preventDefault();
                     }
                   }}
                 >
                   <span>{item.icon}</span>
                   <span style={{ fontWeight: '500' }}>{item.label}</span>
+                  {!item.active && <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>(준비중)</span>}
                 </Link>
               ))}
             </div>
@@ -225,8 +231,13 @@ const Navigation: React.FC = () => {
                 {menuItems.map((item) => (
                   <Link
                     key={item.path}
-                    to={item.path}
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    to={item.active ? item.path : '#'}
+                    onClick={(e) => {
+                      if (!item.active) {
+                        e.preventDefault();
+                      }
+                      setIsMobileMenuOpen(false);
+                    }}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -237,16 +248,18 @@ const Navigation: React.FC = () => {
                       textDecoration: 'none',
                       color: isActive(item.path) ? '#1d4ed8' : '#4b5563',
                       backgroundColor: isActive(item.path) ? '#dbeafe' : 'transparent',
-                      marginBottom: '0.25rem'
+                      marginBottom: '0.25rem',
+                      opacity: item.active ? 1 : 0.5,
+                      cursor: item.active ? 'pointer' : 'not-allowed'
                     }}
                     onMouseEnter={(e) => {
-                      if (!isActive(item.path)) {
+                      if (item.active && !isActive(item.path)) {
                         e.currentTarget.style.color = '#2563eb';
                         e.currentTarget.style.backgroundColor = '#eff6ff';
                       }
                     }}
                     onMouseLeave={(e) => {
-                      if (!isActive(item.path)) {
+                      if (item.active && !isActive(item.path)) {
                         e.currentTarget.style.color = '#4b5563';
                         e.currentTarget.style.backgroundColor = 'transparent';
                       }
@@ -254,6 +267,7 @@ const Navigation: React.FC = () => {
                   >
                     <span style={{ fontSize: '1.125rem' }}>{item.icon}</span>
                     <span style={{ fontWeight: '500' }}>{item.label}</span>
+                    {!item.active && <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>(준비중)</span>}
                   </Link>
                 ))}
                 <div style={{

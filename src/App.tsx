@@ -7,14 +7,12 @@ import ProblemPage from './pages/ProblemPage';
 import ResultPage from './pages/ResultPage';
 import QrAnswerPage from './pages/QrAnswerPage';
 import ConsentManager from './components/ConsentManager';
-import Navigation from './components/Navigation';
 import FloatingHomeButton from './components/FloatingHomeButton';
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
-        <Navigation />
         <main>
           <Routes>
             <Route path="/" element={<MainPage />} />

@@ -5,37 +5,6 @@ import Navigation from "../components/Navigation";
 
 const MainPage: React.FC = () => {
   const { t } = useTranslation();
-  
-  const popularUnits = [
-    {
-      title: "덧셈과 뺄셈",
-      description: "기본 연산 마스터하기",
-      icon: "➕",
-      color: "#3b82f6",
-      path: "/elem"
-    },
-    {
-      title: "곱셈과 나눗셈",
-      description: "구구단부터 나눗셈까지",
-      icon: "✖️",
-      color: "#14b8a6",
-      path: "/elem"
-    },
-    {
-      title: "분수 연산",
-      description: "분수의 덧셈과 뺄셈",
-      icon: "🔢",
-      color: "#f59e0b",
-      path: "/elem"
-    },
-    {
-      title: "소수 연산",
-      description: "소수점 계산 연습",
-      icon: "📊",
-      color: "#8b5cf6",
-      path: "/elem"
-    }
-  ];
 
   return (
     <div style={{
@@ -92,9 +61,6 @@ const MainPage: React.FC = () => {
               <Link to="/elem" className="btn-primary" style={{ fontSize: '1.125rem', padding: '1rem 2rem' }}>
                 {t('startButton')}
               </Link>
-              <button className="btn-secondary" style={{ fontSize: '1.125rem', padding: '1rem 2rem' }}>
-                무료 체험하기
-              </button>
             </div>
           </div>
         </div>
@@ -133,73 +99,6 @@ const MainPage: React.FC = () => {
           opacity: 0.2,
           animation: 'pulse 2s infinite 0.5s'
         }}></div>
-      </section>
-
-      {/* Popular Units Section */}
-      <section style={{ padding: '4rem 0' }}>
-        <div style={{
-          maxWidth: '80rem',
-          margin: '0 auto',
-          padding: '0 1rem'
-        }}>
-          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-            <h2 style={{
-              fontSize: '2rem',
-              fontWeight: 'bold',
-              color: '#111827',
-              marginBottom: '1rem'
-            }}>
-              인기 단원
-            </h2>
-            <p style={{
-              fontSize: '1.125rem',
-              color: '#4b5563'
-            }}>
-              가장 많이 풀리는 수학 문제들을 확인해보세요
-            </p>
-          </div>
-
-          {/* Desktop Grid */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '1.5rem',
-            marginBottom: '2rem'
-          }}>
-            {popularUnits.map((unit, index) => (
-              <Link
-                key={index}
-                to={unit.path}
-                className="card"
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <div style={{
-                  width: '4rem',
-                  height: '4rem',
-                  backgroundColor: unit.color,
-                  borderRadius: '1rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: '1rem'
-                }}>
-                  <span style={{ fontSize: '1.5rem' }}>{unit.icon}</span>
-                </div>
-                <h3 style={{
-                  fontSize: '1.25rem',
-                  fontWeight: 'bold',
-                  color: '#111827',
-                  marginBottom: '0.5rem'
-                }}>
-                  {unit.title}
-                </h3>
-                <p style={{ color: '#4b5563' }}>
-                  {unit.description}
-                </p>
-              </Link>
-            ))}
-          </div>
-        </div>
       </section>
 
       {/* Features Section */}
