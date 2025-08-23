@@ -1,0 +1,10 @@
+[33m8b61d5b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Fix Vercel deployment: Add explicit Vite framework configuration and use npx for build
+[33m26d94ae[m Fix project structure: Remove duplicate mathgo folder that was causing Vercel confusion
+[33m9d3bbde[m Simplify Vercel config: Remove custom build settings and let Vercel auto-detect
+[33m7eecb03[m Fix build: Use npx for vite build command in both package.json and vercel.json
+[33m7a327ea[m Fix Vercel deployment: Move essential build dependencies to dependencies and restore Vercel config
+[33m9a9fdba[m Fix build: Install vite globally before building
+[33mae2d11c[m Simplify build configuration: Remove custom build command and use default vite build
+[33m9fa314e[m Fix build: Use direct path to vite binary and add framework specification
+[33m8ecbdde[m Fix build script: Use npx for vite build command
+[33mc8eeb42[m Fix Vercel deployment: Add missing i18n dependencies and move vite to dependencies
