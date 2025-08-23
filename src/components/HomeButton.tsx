@@ -29,7 +29,7 @@ const HomeButton: React.FC = () => {
       aria-label="홈으로"
     >
       <svg width="24" height="24" fill="#2563eb" viewBox="0 0 24 24">
-        <path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-5h-6v5H4a1 1 0 0 1-1-1V11.5z" stroke="#2563eb" strokeWidth="1.5" fill="none"/>
+        <path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-5h-6v5H4a1 1 0 0 1-1-1V11.5z" stroke="#2563eb" strokeWidth="1.5" fill="#2563eb"/>
       </svg>
     </button>
   );
