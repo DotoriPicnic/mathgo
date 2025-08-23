@@ -1,20 +1,27 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import "./MainPage.css";
 import HomeButton from "../components/HomeButton";
+import LanguageSelector from "../components/LanguageSelector";
 
 const MainPage: React.FC = () => {
+  const { t } = useTranslation();
+  
   return (
     <div className="main-page">
-      <HomeButton />
+      <div className="header">
+        <HomeButton />
+        <LanguageSelector />
+      </div>
       <div className="main-container">
-        <h1 className="main-title">초등 수학 문제집</h1>
-        <p className="main-subtitle">초등학생을 위한 맞춤형 수학 문제를 만들어보세요!</p>
-        <p className="main-description">초등 수학 연산 문제를 자동으로 생성해주는 서비스입니다. 모바일 환경에서도 간편하게 사용할 수 있습니다.</p>
+        <h1 className="main-title">{t('mainTitle')}</h1>
+        <p className="main-subtitle">{t('mainSubtitle')}</p>
+        <p className="main-description">{t('mainDescription')}</p>
         
         <div className="start-button-container">
           <Link to="/elem" className="start-button">
-            시작하기
+            {t('startButton')}
           </Link>
         </div>
         
@@ -41,9 +48,9 @@ const MainPage: React.FC = () => {
         </div>
         
         <div className="footer">
-          <p>초등학생 수학 학습을 위한 무료 도구입니다</p>
+          <p>{t('footerDescription')}</p>
           <p>
-            문의/건의: <a href="mailto:calcuriofficial@gmail.com" style={{ color: '#2563eb', textDecoration: 'underline' }}>calcuriofficial@gmail.com</a>
+            {t('contactEmail')} <a href="mailto:calcuriofficial@gmail.com" style={{ color: '#2563eb', textDecoration: 'underline' }}>calcuriofficial@gmail.com</a>
           </p>
         </div>
       </div>
