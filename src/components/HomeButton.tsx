@@ -28,8 +28,9 @@ const HomeButton: React.FC = () => {
       }}
       aria-label="홈으로"
     >
-      <svg width="24" height="24" fill="#2563eb" viewBox="0 0 24 24">
-        <path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-5h-6v5H4a1 1 0 0 1-1-1V11.5z" stroke="#2563eb" strokeWidth="1.5" fill="#2563eb"/>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="#2563eb" strokeWidth="2" fill="none"/>
+        <polyline points="9,22 9,12 15,12 15,22" stroke="#2563eb" strokeWidth="2" fill="none"/>
       </svg>
     </button>
   );
