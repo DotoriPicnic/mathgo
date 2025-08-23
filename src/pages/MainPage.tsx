@@ -27,23 +27,23 @@ const MainPage: React.FC = () => {
         
         <div className="feature-cards">
           <div className="feature-card">
-            <h3>📝 다양한 유형</h3>
-            <p>덧셈, 뺄셈, 곱셈, 나눗셈 문제를 제공합니다</p>
+            <h3>{t('featureCard1.title')}</h3>
+            <p>{t('featureCard1.description')}</p>
           </div>
           
           <div className="feature-card">
-            <h3>⏰ 타이머 기능</h3>
-            <p>시간 제한을 설정하여 실전 연습을 할 수 있습니다</p>
+            <h3>{t('featureCard2.title')}</h3>
+            <p>{t('featureCard2.description')}</p>
           </div>
           
           <div className="feature-card">
-            <h3>📄 PDF 출력</h3>
-            <p>문제를 PDF로 출력하여 오프라인에서도 사용할 수 있습니다</p>
+            <h3>{t('featureCard3.title')}</h3>
+            <p>{t('featureCard3.description')}</p>
           </div>
           
           <div className="feature-card">
-            <h3>📱 모바일 친화적</h3>
-            <p>모바일 환경에서도 편리하게 사용할 수 있습니다</p>
+            <h3>{t('featureCard4.title')}</h3>
+            <p>{t('featureCard4.description')}</p>
           </div>
         </div>
         

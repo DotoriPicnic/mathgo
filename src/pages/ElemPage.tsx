@@ -1,7 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import HomeButton from '../components/HomeButton';
 import AdComponent from '../components/AdComponent';
+import LanguageSelector from '../components/LanguageSelector';
 import './ElemPage.css';
 
 // 문제 생성 함수 (연산별, 올림 옵션별)
@@ -629,6 +631,7 @@ interface ElemPageProps {
 
 const ElemPage: React.FC<ElemPageProps> = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [op, setOp] = useState(() => {
     const savedOp = localStorage.getItem('lastOperation');
     return savedOp || '덧셈';
@@ -709,14 +712,14 @@ const ElemPage: React.FC<ElemPageProps> = () => {
   // carry 옵션 라벨 동적 처리
   const carryLabels = op === '뺄셈'
     ? {
-        with: '내림 있는 계산만',
-        without: '내림 없는 계산만',
-        all: '섞어서',
+        with: t('borrowWith'),
+        without: t('borrowWithout'),
+        all: t('borrowAll'),
       }
     : {
-        with: '올림 있는 계산만',
-        without: '올림 없는 계산만',
-        all: '섞어서',
+        with: t('carryWith'),
+        without: t('carryWithout'),
+        all: t('carryAll'),
       };
 
   // 라디오 버튼 노출 조건 함수 추가
@@ -729,29 +732,32 @@ const ElemPage: React.FC<ElemPageProps> = () => {
 
   // 연산 종류 배열 추가 (덧셈 위에 비교 연산)
   const operationTypes = [
-    { label: '비교 연산', value: '비교 연산' },
-    { label: '덧셈', value: '덧셈' },
-    { label: '뺄셈', value: '뺄셈' },
-    { label: '곱셈', value: '곱셈' },
-    { label: '나눗셈', value: '나눗셈' },
-    { label: '분수', value: '분수' },
-    { label: '소수 (서비스 준비중)', value: '소수', disabled: true },
+    { label: t('comparisonOperation'), value: '비교 연산' },
+    { label: t('addition'), value: '덧셈' },
+    { label: t('subtraction'), value: '뺄셈' },
+    { label: t('multiplication'), value: '곱셈' },
+    { label: t('division'), value: '나눗셈' },
+    { label: t('fraction'), value: '분수' },
+    { label: t('decimal'), value: '소수', disabled: true },
   ];
 
   return (
     <div className="elem-page">
-      <HomeButton />
+      <div className="header">
+        <HomeButton />
+        <LanguageSelector />
+      </div>
       {/* 상단 광고 */}
       <AdComponent size="banner" className="top-ad" />
       <form onSubmit={handleGenerate} className="elem-form">
         <div className="elem-emoji">✏️</div>
         <h2 className="elem-title">
-          초등학교 연산 문제 생성
+          {t('elemTitle')}
         </h2>
         {/* 빈칸 문제 예시 미리보기 */}
         {type.startsWith('빈칸 문제') && example && (
           <div className="example-preview">
-            예시: {example.split('□').map((part, idx, arr) => (
+            {t('example')} {example.split('□').map((part, idx, arr) => (
               idx < arr.length - 1 ? (
                 <React.Fragment key={idx}>
                   {part}
@@ -763,7 +769,7 @@ const ElemPage: React.FC<ElemPageProps> = () => {
         )}
         {/* 연산 종류 */}
         <div className="form-group">
-          <label className="form-label">연산 종류:</label>
+          <label className="form-label">{t('operationType')}</label>
           <select value={op} onChange={e => {
             const newOp = e.target.value;
             setOp(newOp);
@@ -783,7 +789,7 @@ const ElemPage: React.FC<ElemPageProps> = () => {
         </div>
         {/* 문제 유형 (드롭다운) */}
         <div className="form-group" ref={typeRef}>
-          <label className="form-label">문제 유형:</label>
+          <label className="form-label">{t('problemType')}</label>
           {op === '비교 연산' ? (
             <select
               className="form-select"
@@ -853,7 +859,7 @@ const ElemPage: React.FC<ElemPageProps> = () => {
                 {op === '뺄셈' && (
                   type === '한자릿수 - 한자릿수' ||
                   type === '빈칸 문제 한자릿수(뺄셈)'
-                ) && ' (불가능)'}
+                ) && t('impossible')}
               </span>
             </label>
             <label className={`radio-option ${carry === 'without' ? 'selected' : ''}`}>
@@ -883,21 +889,21 @@ const ElemPage: React.FC<ElemPageProps> = () => {
         ) : null}
         {/* 제한 시간 */}
         <div className="time-limit-group">
-          <label className="form-label">제한 시간:</label>
+          <label className="form-label">{t('timeLimit')}</label>
           <div className="time-limit-row">
             <div className="time-limit-checkbox">
               <input type="checkbox" checked={useLimit} onChange={e => setUseLimit(e.target.checked)} />
-              <span style={{ color: useLimit ? '#222' : '#aaa', fontWeight: 500 }}>제한 시간 사용</span>
+              <span style={{ color: useLimit ? '#222' : '#aaa', fontWeight: 500 }}>{t('useTimeLimit')}</span>
             </div>
             <input type="number" min={1} value={limit} disabled={!useLimit} onChange={e => setLimit(Math.max(1, Number(e.target.value)))} className="time-limit-input" />
             <div className="time-limit-buttons">
               <button type="button" disabled={!useLimit} onClick={() => handleLimitChange(1)} className="time-limit-button">▲</button>
               <button type="button" disabled={!useLimit} onClick={() => handleLimitChange(-1)} className="time-limit-button">▼</button>
             </div>
-            <span style={{ color: useLimit ? '#222' : '#aaa', fontWeight: 500 }}>분</span>
+            <span style={{ color: useLimit ? '#222' : '#aaa', fontWeight: 500 }}>{t('minutes')}</span>
           </div>
         </div>
-        <button type="submit" className="submit-button">문제 생성</button>
+        <button type="submit" className="submit-button">{t('generateProblems')}</button>
       </form>
       {/* 하단 광고 */}
       <AdComponent size="rectangle" className="bottom-ad" />
