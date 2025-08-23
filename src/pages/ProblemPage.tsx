@@ -23,11 +23,23 @@ interface QuestionProps {
 
 function Question({ number, text }: QuestionProps) {
   return (
-    <div className="flex items-center space-x-3">
-      <span className="bg-blue-500 text-white px-3 py-1 rounded-full font-bold text-sm">
+    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <span style={{ 
+        backgroundColor: '#3b82f6', 
+        color: 'white', 
+        padding: '4px 12px', 
+        borderRadius: '9999px', 
+        fontWeight: 'bold', 
+        fontSize: '14px' 
+      }}>
         Q{number}
       </span>
-      <span className="text-lg font-semibold text-gray-800 tracking-wide">
+      <span style={{ 
+        fontSize: '18px', 
+        fontWeight: '600', 
+        color: '#1f2937',
+        letterSpacing: '0.025em'
+      }}>
         {renderWithFraction(text)}
       </span>
     </div>
@@ -112,7 +124,17 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
     if (data) {
       const arr = JSON.parse(data) as Problem[];
       setProblems(arr);
-      setAnswers(arr.map(p => p.question.includes('÷') ? { q: '', r: '' } : ''));
+      setAnswers(arr.map(p => {
+        // 소수 연산 LV3의 나눗셈은 소수 결과를 반환하므로 객체가 아님
+        if (p.question.includes('÷') && p.question.includes('.')) {
+          return '';
+        }
+        // 기존 나눗셈은 몫/나머지 객체
+        if (p.question.includes('÷')) {
+          return { q: '', r: '' };
+        }
+        return '';
+      }));
     }
     const limitStr = localStorage.getItem('limit');
     if (limitStr && !isNaN(Number(limitStr)) && Number(limitStr) > 0) {
@@ -268,47 +290,75 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
                 const idx = rowIdx * 2 + i;
                 const answer = answers[idx] || '';
                 const isDivision = p.question.includes('÷') && !p.question.includes('/');
-                const isDecimalDivision = (p.question.includes('소수') || p.question.match(/\d+\.\d+/));
+                const isDecimalDivision = (p.question.includes('소수') || p.question.match(/\d+\.\d+/) || p.question.includes('decimal_lv'));
                 const isComparison = p.question.includes('□') && p.question.match(/\d+\s*□\s*\d+/);
 
-                return (
-                  <div key={i} className="problem-item">
-                    <div className="problem-content">
-                      <span className="problem-number">Q{idx + 1}.</span>
-                      <span className="problem-text">
-                        {renderWithFraction(p.question)}
-                      </span>
-                      {/* 정수 나눗셈만 몫/나머지, 소수 나눗셈은 소수 한 칸만 */}
-                      {isDivision && !isDecimalDivision ? (
-                        <div className="division-input">
-                          <span className="division-label">({t('quotient')}:</span>
-                          <input
-                            type="text"
-                            value={answer.q || ''}
-                            onChange={e => handleDivisionChange(idx, 'q', e.target.value)}
-                            className="division-field"
-                          />
-                          <span className="division-label">{t('remainder')}:</span>
-                          <input
-                            type="text"
-                            value={answer.r || ''}
-                            onChange={e => handleDivisionChange(idx, 'r', e.target.value)}
-                            className="division-field"
-                          />
-                          <span className="division-label">)</span>
-                        </div>
-                      ) : (
-                        <input
-                          type="text"
-                          value={answer}
-                          onChange={e => handleAnswerChange(idx, e.target.value)}
-                          className="answer-input"
-                          placeholder={isComparison ? '□' : ''}
-                        />
-                      )}
-                    </div>
-                  </div>
-                );
+                                                  return (
+                   <div key={i} className="problem-item">
+                                           <div className="problem-content" style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'nowrap', minWidth: 0, width: '100%', overflow: 'visible' }}>
+                       <span style={{ 
+                         backgroundColor: '#3b82f6', 
+                         color: 'white', 
+                         padding: '4px 12px', 
+                         borderRadius: '9999px', 
+                         fontWeight: 'bold', 
+                         fontSize: '14px' 
+                       }}>
+                         Q{idx + 1}
+                       </span>
+                                               <span style={{ 
+                          fontSize: p.question.includes('의 배수 중') || p.question.includes('의 약수 중') ? '13px' : '18px', 
+                          fontWeight: p.question.includes('의 배수 중') || p.question.includes('의 약수 중') ? '500' : '600', 
+                          color: '#1f2937',
+                          letterSpacing: '0.025em',
+                          whiteSpace: 'nowrap',
+                          flexShrink: 0,
+                          maxWidth: p.question.includes('의 배수 중') || p.question.includes('의 약수 중') ? '70%' : 'none'
+                        }}>
+                          {renderWithFraction(p.question)}
+                        </span>
+                                               {/* 정수 나눗셈만 몫/나머지, 소수 나눗셈은 소수 한 칸만 */}
+                        {isDivision && !isDecimalDivision ? (
+                          <div className="division-input" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <span className="division-label">({t('quotient')}:</span>
+                            <input
+                              type="text"
+                              value={answer.q || ''}
+                              onChange={e => handleDivisionChange(idx, 'q', e.target.value)}
+                              className="division-field"
+                              style={{ width: '40px', textAlign: 'center' }}
+                            />
+                            <span className="division-label">{t('remainder')}:</span>
+                            <input
+                              type="text"
+                              value={answer.r || ''}
+                              onChange={e => handleDivisionChange(idx, 'r', e.target.value)}
+                              className="division-field"
+                              style={{ width: '40px', textAlign: 'center' }}
+                            />
+                            <span className="division-label">)</span>
+                          </div>
+                        ) : (
+                                                     <input
+                             type="text"
+                             value={answer}
+                             onChange={e => handleAnswerChange(idx, e.target.value)}
+                             className="answer-input"
+                             placeholder={isComparison ? '□' : ''}
+                             style={{ 
+                               width: (p.question.includes('의 배수 중') || p.question.includes('의 약수 중')) ? '35px' : 
+                                      p.question.length < 8 ? '50px' : p.question.length < 12 ? '60px' : '80px', 
+                               textAlign: 'center',
+                               minWidth: '35px',
+                               maxWidth: '60px',
+                               flexShrink: 0,
+                               fontSize: '14px'
+                             }}
+                           />
+                        )}
+                     </div>
+                   </div>
+                 );
               })}
             </div>
           ))}
@@ -455,9 +505,17 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
                         <span className="bg-blue-500 text-white px-2 py-0.5 rounded-full font-bold text-xs">
                           Q{col === 0 ? rowIdx + 1 : rowIdx + 11}
                         </span>
-                        <span className="text-xs font-medium text-gray-800">{renderWithFraction(row[col].question)}</span>
+                        <span 
+                          className="font-medium text-gray-800" 
+                          style={{ 
+                            fontSize: row[col].question.includes('의 배수 중') || row[col].question.includes('의 약수 중') ? '10px' : '12px',
+                            fontWeight: row[col].question.includes('의 배수 중') || row[col].question.includes('의 약수 중') ? '500' : '600'
+                          }}
+                        >
+                          {renderWithFraction(row[col].question)}
+                        </span>
                         <span className="text-blue-600 font-bold text-xs ml-2">
-                          {row[col].question.includes('÷') && typeof (row[col].answer as any) === 'object'
+                          {row[col].question.includes('÷') && typeof (row[col].answer as any) === 'object' && !row[col].question.includes('.')
                             ? `${t('quotient')}: ${(row[col].answer as any).q}, ${t('remainder')}: ${(row[col].answer as any).r}`
                             : renderWithFraction(getDisplayAnswer(row[col].answer))}
                         </span>

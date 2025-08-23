@@ -516,12 +516,42 @@ function generateProblems(
       } else if (type.startsWith('소수 곱셈')) {
         a = (Math.random() * (decimalPlaces === 1 ? 9 : 99) + 0.1).toFixed(decimalPlaces);
         b = (Math.random() * (decimalPlaces === 1 ? 9 : 99) + 0.1).toFixed(decimalPlaces);
-        ans = (parseFloat(a) * parseFloat(b)).toFixed(decimalPlaces + 1);
+        // 부동소수점 정밀도 문제 해결을 위해 정수로 변환하여 계산
+        const aNum = parseFloat(a);
+        const bNum = parseFloat(b);
+        const aDecimalPlaces = (a.toString().split('.')[1] || '').length;
+        const bDecimalPlaces = (b.toString().split('.')[1] || '').length;
+        const totalDecimalPlaces = aDecimalPlaces + bDecimalPlaces;
+        
+        // 정수로 변환하여 계산
+        const aInt = Math.round(aNum * Math.pow(10, aDecimalPlaces));
+        const bInt = Math.round(bNum * Math.pow(10, bDecimalPlaces));
+        const resultInt = aInt * bInt;
+        const result = resultInt / Math.pow(10, totalDecimalPlaces);
+        
+        ans = result.toFixed(Math.min(totalDecimalPlaces, decimalPlaces + 1));
         q = `${a} × ${b} =`;
       } else if (type.startsWith('소수 나눗셈')) {
         a = (Math.random() * (decimalPlaces === 1 ? 9 : 99) + 0.1).toFixed(decimalPlaces);
         b = (Math.random() * (decimalPlaces === 1 ? 9 : 99) + 0.1).toFixed(decimalPlaces);
-        ans = parseFloat(b) !== 0 ? (parseFloat(a) / parseFloat(b)).toFixed(decimalPlaces + 1) : '?';
+        // 부동소수점 정밀도 문제 해결을 위해 정수로 변환하여 계산
+        const aNum = parseFloat(a);
+        const bNum = parseFloat(b);
+        if (bNum === 0) {
+          ans = '?';
+        } else {
+          const aDecimalPlaces = (a.toString().split('.')[1] || '').length;
+          const bDecimalPlaces = (b.toString().split('.')[1] || '').length;
+          const maxDecimalPlaces = Math.max(aDecimalPlaces, bDecimalPlaces);
+          
+          // 정수로 변환하여 계산
+          const aInt = Math.round(aNum * Math.pow(10, maxDecimalPlaces));
+          const bInt = Math.round(bNum * Math.pow(10, maxDecimalPlaces));
+          const resultInt = aInt / bInt;
+          const result = resultInt / Math.pow(10, maxDecimalPlaces);
+          
+          ans = result.toFixed(decimalPlaces + 1);
+        }
         q = `${a} ÷ ${b} =`;
       } else {
         a = (Math.random() * 9 + 0.1).toFixed(1);
@@ -632,9 +662,17 @@ function generateDecimalProblems(level: number): { question: string; answer: num
       // decimal × integer
       const decimal = Math.floor(Math.random() * 99) + 1 + Math.random() * 0.99;
       const integer = Math.floor(Math.random() * 9) + 1;
+      const decimalStr = decimal.toFixed(2);
+      const decimalPlaces = 2;
+      
+      // 정수로 변환하여 계산
+      const decimalInt = Math.round(decimal * Math.pow(10, decimalPlaces));
+      const resultInt = decimalInt * integer;
+      const result = resultInt / Math.pow(10, decimalPlaces);
+      
       return {
-        question: `${decimal.toFixed(2)} × ${integer} =`,
-        answer: parseFloat((decimal * integer).toFixed(2))
+        question: `${decimalStr} × ${integer} =`,
+        answer: parseFloat(result.toFixed(2))
       };
     }
   } else {
@@ -652,9 +690,19 @@ function generateDecimalProblems(level: number): { question: string; answer: num
     } else {
       const decimal1 = Math.floor(Math.random() * 99) + 1 + Math.random() * 0.99;
       const decimal2 = Math.floor(Math.random() * 99) + 1 + Math.random() * 0.99;
+      const decimal1Str = decimal1.toFixed(2);
+      const decimal2Str = decimal2.toFixed(2);
+      const decimalPlaces = 2;
+      
+      // 정수로 변환하여 계산
+      const decimal1Int = Math.round(decimal1 * Math.pow(10, decimalPlaces));
+      const decimal2Int = Math.round(decimal2 * Math.pow(10, decimalPlaces));
+      const resultInt = decimal1Int * decimal2Int;
+      const result = resultInt / Math.pow(10, decimalPlaces * 2);
+      
       return {
-        question: `${decimal1.toFixed(2)} × ${decimal2.toFixed(2)} =`,
-        answer: parseFloat((decimal1 * decimal2).toFixed(2))
+        question: `${decimal1Str} × ${decimal2Str} =`,
+        answer: parseFloat(result.toFixed(2))
       };
     }
   }
@@ -765,22 +813,34 @@ function generateFactorProblems(level: number): { question: string; answer: numb
   } else {
     // GCD or LCM of two numbers
     const isGCD = Math.random() < 0.5;
-    const a = Math.floor(Math.random() * 20) + 10; // 10-29
-    const b = Math.floor(Math.random() * 20) + 10; // 10-29
     
     if (isGCD) {
-      // GCD
+      // GCD - 서로소가 아닌 수들로 문제 생성
+      let a, b;
+      let attempts = 0;
+      do {
+        // 공약수가 있는 수들로 생성
+        const commonFactor = Math.floor(Math.random() * 8) + 2; // 2-9
+        const factor1 = Math.floor(Math.random() * 8) + 2; // 2-9
+        const factor2 = Math.floor(Math.random() * 8) + 2; // 2-9
+        a = commonFactor * factor1;
+        b = commonFactor * factor2;
+        attempts++;
+      } while (a === b && attempts < 10); // 같은 수가 나오지 않도록
+      
       const gcd = (x: number, y: number): number => y === 0 ? x : gcd(y, x % y);
       return {
-        question: `${a}와 ${b}의 최대공약수는?`,
+        question: `${a}, ${b}의 최대공약수는?`,
         answer: gcd(a, b)
       };
     } else {
       // LCM
+      const a = Math.floor(Math.random() * 20) + 10; // 10-29
+      const b = Math.floor(Math.random() * 20) + 10; // 10-29
       const gcd = (x: number, y: number): number => y === 0 ? x : gcd(y, x % y);
       const lcm = (a * b) / gcd(a, b);
       return {
-        question: `${a}와 ${b}의 최소공배수는?`,
+        question: `${a}, ${b}의 최소공배수는?`,
         answer: lcm
       };
     }
@@ -1209,14 +1269,13 @@ const ElemPage: React.FC<ElemPageProps> = () => {
   );
 
   // 연산 종류 배열 추가 (덧셈 위에 비교 연산)
-  const operationTypes = [
+  const operationTypes: { label: string; value: string; disabled?: boolean }[] = [
     { label: t('comparisonOperation'), value: '비교 연산' },
     { label: t('addition'), value: '덧셈' },
     { label: t('subtraction'), value: '뺄셈' },
     { label: t('multiplication'), value: '곱셈' },
     { label: t('division'), value: '나눗셈' },
     { label: t('fraction'), value: '분수' },
-    { label: t('decimal'), value: '소수', disabled: true },
     { label: '소수 연산', value: '소수연산' },
     { label: '혼합 연산', value: '혼합연산' },
     { label: '약수와 배수', value: '약수배수' },
@@ -1236,19 +1295,35 @@ const ElemPage: React.FC<ElemPageProps> = () => {
         <h2 className="elem-title">
           {t('elemTitle')}
         </h2>
-        {/* 빈칸 문제 예시 미리보기 */}
-        {type.startsWith('빈칸 문제') && example && !['소수연산', '혼합연산', '약수배수', '단위변환'].includes(op) && (
-          <div className="example-preview">
-            {t('example')} {example.split('□').map((part, idx, arr) => (
-              idx < arr.length - 1 ? (
-                <React.Fragment key={idx}>
-                  {part}
-                  <span style={{ fontSize: 26, fontWeight: 900, margin: '0 4px', verticalAlign: 'middle' }}>□</span>
-                </React.Fragment>
-              ) : part
-            ))}
-          </div>
-        )}
+                 {/* 빈칸 문제 예시 미리보기 */}
+         {type.startsWith('빈칸 문제') && example && !['소수연산', '혼합연산', '약수배수', '단위변환'].includes(op) && (
+           <div className="example-preview">
+             {t('example')} {example.split('□').map((part, idx, arr) => (
+               idx < arr.length - 1 ? (
+                 <React.Fragment key={idx}>
+                   {part}
+                   <span style={{ fontSize: 26, fontWeight: 900, margin: '0 4px', verticalAlign: 'middle' }}>□</span>
+                 </React.Fragment>
+               ) : part
+             ))}
+           </div>
+         )}
+         
+         {/* 소수 연산 주의사항 */}
+         {op === '소수연산' && (
+           <div className="example-preview" style={{ 
+             backgroundColor: '#fef3c7', 
+             border: '1px solid #f59e0b', 
+             borderRadius: '8px', 
+             padding: '12px 16px',
+             marginBottom: '16px',
+             color: '#92400e',
+             fontSize: '14px',
+             fontWeight: '500'
+           }}>
+             ⚠️ <strong>주의사항:</strong> 소수 연산에서는 소수점 세자리에서 반올림하여 소수점 두자리까지만 표시됩니다.
+           </div>
+         )}
         {/* 연산 종류 */}
         <div className="form-group">
           <label className="form-label">{t('operationType')}</label>
