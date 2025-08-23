@@ -1,25 +1,32 @@
 import './i18n';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import './App.css'
+import './index.css';
 import MainPage from './pages/MainPage';
 import ElemPage from './pages/ElemPage';
 import ProblemPage from './pages/ProblemPage';
 import ResultPage from './pages/ResultPage';
 import QrAnswerPage from './pages/QrAnswerPage';
 import ConsentManager from './components/ConsentManager';
+import Navigation from './components/Navigation';
+import FloatingHomeButton from './components/FloatingHomeButton';
 
 function App() {
-
   return (
     <Router>
-        <Routes>
-          <Route path="/" element={<MainPage />} />
-          <Route path="/elem" element={<ElemPage />} />
-          <Route path="/elem/problems" element={<ProblemPage />} />
-          <Route path="/elem/result" element={<ResultPage />} />
-          <Route path="/qr-answer" element={<QrAnswerPage />} />
-        </Routes>
+      <div className="min-h-screen bg-gray-50">
+        <Navigation />
+        <main>
+          <Routes>
+            <Route path="/" element={<MainPage />} />
+            <Route path="/elem" element={<ElemPage />} />
+            <Route path="/elem/problems" element={<ProblemPage />} />
+            <Route path="/elem/result" element={<ResultPage />} />
+            <Route path="/qr-answer" element={<QrAnswerPage />} />
+          </Routes>
+        </main>
+        <FloatingHomeButton />
         <ConsentManager onConsentChange={() => {}} />
+      </div>
     </Router>
   );
 }
