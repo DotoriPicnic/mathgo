@@ -362,7 +362,7 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
               {pdfRows.map((row, rowIdx) => (
                 row[col] ? (
                   <div key={rowIdx} style={{ display: 'flex', alignItems: 'center', fontSize: 22, fontWeight: 600, minHeight: 36 }}>
-                    <span style={{ fontSize: 20, fontWeight: 700, marginRight: 10 }}>{col === 0 ? rowIdx + 1 : rowIdx + 11}.</span>
+                    <span style={{ fontSize: 18, fontWeight: 700, marginRight: 12, color: '#666', minWidth: 25, textAlign: 'right' }}>{(col === 0 ? rowIdx + 1 : rowIdx + 11).toString().padStart(2, ' ')}</span>
                     {row[col].question.includes('÷ □') ? (
                       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: '100%' }}>
                         <span style={{ fontSize: 16, marginBottom: 2 }}>
@@ -427,7 +427,7 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
                 {pdfRows.map((row, rowIdx) => (
                   row[col] ? (
                     <div key={rowIdx} style={{ display: 'flex', alignItems: 'center', fontSize: 12, fontWeight: 600, minHeight: 10, marginBottom: 0, padding: 0, lineHeight: 1.1 }}>
-                      <span style={{ fontSize: 12, fontWeight: 700, marginRight: 6 }}>{col === 0 ? rowIdx + 1 : rowIdx + 11}.</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, marginRight: 8, color: '#666', minWidth: 20, textAlign: 'right' }}>{(col === 0 ? rowIdx + 1 : rowIdx + 11).toString().padStart(2, ' ')}</span>
                       <span style={{ letterSpacing: 1 }}>{renderWithFraction(row[col].question)}</span>
                       <span style={{ color: '#2563eb', fontWeight: 700, marginLeft: 8 }}>
                         {row[col].question.includes('÷') && typeof (row[col].answer as any) === 'object'
