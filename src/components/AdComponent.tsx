@@ -23,37 +23,37 @@ const AdComponent: React.FC<AdComponentProps> = ({
   style = {}
 }) => {
   // 광고 활성화 여부 확인 (Vite에서는 import.meta.env 사용)
-  const adsEnabled = import.meta.env.VITE_ADS_ENABLED === 'true';
+  const adsEnabled = import.meta.env.VITE_ADS_ENABLED === 'true' || true; // 기본적으로 활성화
   
   // 유럽 사용자의 동의 여부 확인
-  const canShowAds = false; // 임시로 광고 비활성화
+  const canShowAds = true; // AdSense 활성화
   
   useEffect(() => {
     if (!canShowAds) return;
     
-    // Google AdSense 스크립트 로드
-    if (!window.adsbygoogle) {
-      const publisherId = import.meta.env.VITE_ADSENSE_PUBLISHER_ID;
-      if (publisherId) {
-        const script = document.createElement('script');
-        script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${publisherId}`;
-        script.async = true;
-        script.crossOrigin = 'anonymous';
-        document.head.appendChild(script);
-      }
-    }
+    // Google AdSense 스크립트는 이미 index.html에 로드되어 있음
+    // 추가 스크립트 로드 불필요
   }, [adsEnabled]);
 
   // AdSense 광고 로드
   useEffect(() => {
-    if (canShowAds && window.adsbygoogle) {
+    if (canShowAds) {
       try {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
+        // AdSense 스크립트가 로드될 때까지 대기
+        const loadAd = () => {
+          if (window.adsbygoogle) {
+            (window.adsbygoogle = window.adsbygoogle || []).push({});
+          } else {
+            // 스크립트가 아직 로드되지 않았다면 잠시 후 재시도
+            setTimeout(loadAd, 100);
+          }
+        };
+        loadAd();
       } catch (error) {
         console.log('AdSense 광고 로드 중 오류:', error);
       }
     }
-  }, [canShowAds]);
+  }, [canShowAds, slot]);
 
   const getAdSize = () => {
     switch (size) {
@@ -69,7 +69,7 @@ const AdComponent: React.FC<AdComponentProps> = ({
 
   const adSize = getAdSize();
 
-  const publisherId = import.meta.env.VITE_ADSENSE_PUBLISHER_ID;
+  const publisherId = import.meta.env.VITE_ADSENSE_PUBLISHER_ID || 'ca-pub-9155718443189068';
   
   if (!canShowAds || !publisherId || !slot) {
     return null;
