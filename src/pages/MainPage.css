@@ -12,6 +12,7 @@
   align-items: center;
   margin-bottom: 20px;
   padding: 0 20px;
+  flex-shrink: 0;
 }
 
 .main-container {
@@ -27,6 +28,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  min-height: 0;
 }
 
 .main-title {
@@ -102,9 +104,20 @@
 }
 
 @media (max-width: 768px) {
+  .main-page {
+    padding: 15px;
+  }
+  
+  .header {
+    margin-bottom: 15px;
+    padding: 0 10px;
+  }
+  
   .main-container {
     padding: 25px 20px;
-    margin: 10px;
+    margin: 0;
+    border-radius: 15px;
+    min-height: auto;
   }
   
   .main-title {
