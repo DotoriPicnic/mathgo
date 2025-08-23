@@ -275,7 +275,7 @@ const MainPage: React.FC = () => {
             <p style={{ color: '#4b5563', marginBottom: '1rem' }}>
               {t('footerDescription')}
             </p>
-            <p style={{ color: '#4b5563' }}>
+            <p style={{ color: '#4b5563', marginBottom: '1rem' }}>
               {t('contactEmail')} 
               <a 
                 href="mailto:calcuriofficial@gmail.com" 
@@ -284,6 +284,34 @@ const MainPage: React.FC = () => {
                 calcuriofficial@gmail.com
               </a>
             </p>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'center', 
+              gap: '2rem', 
+              marginTop: '1rem',
+              flexWrap: 'wrap'
+            }}>
+              <Link 
+                to="/privacy" 
+                style={{ 
+                  color: '#6b7280', 
+                  textDecoration: 'none',
+                  fontSize: '0.875rem'
+                }}
+              >
+                개인정보처리방침
+              </Link>
+              <Link 
+                to="/terms" 
+                style={{ 
+                  color: '#6b7280', 
+                  textDecoration: 'none',
+                  fontSize: '0.875rem'
+                }}
+              >
+                이용약관
+              </Link>
+            </div>
           </div>
         </div>
       </footer>

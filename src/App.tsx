@@ -6,6 +6,8 @@ import ElemPage from './pages/ElemPage';
 import ProblemPage from './pages/ProblemPage';
 import ResultPage from './pages/ResultPage';
 import QrAnswerPage from './pages/QrAnswerPage';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 import ConsentManager from './components/ConsentManager';
 import FloatingHomeButton from './components/FloatingHomeButton';
 
@@ -20,6 +22,8 @@ function App() {
             <Route path="/elem/problems" element={<ProblemPage />} />
             <Route path="/elem/result" element={<ResultPage />} />
             <Route path="/qr-answer" element={<QrAnswerPage />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
           </Routes>
         </main>
         <FloatingHomeButton />
