@@ -34,16 +34,44 @@ const LanguageSelector: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div style={{ position: 'relative' }} ref={dropdownRef}>
       <button 
-        className="flex items-center space-x-2 px-3 py-2 bg-white hover:bg-gray-50 border border-gray-200 rounded-xl transition-all duration-200 hover:scale-105"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          padding: '0.5rem 0.75rem',
+          backgroundColor: 'white',
+          border: '1px solid #d1d5db',
+          borderRadius: '0.75rem',
+          transition: 'all 0.2s',
+          cursor: 'pointer'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = '#f9fafb';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = 'white';
+        }}
         onClick={() => setIsOpen(!isOpen)}
         aria-label={t('language')}
       >
-        <span className="text-lg">{currentLanguage.flag}</span>
-        <span className="font-medium text-gray-700 hidden sm:block">{currentLanguage.name}</span>
+        <span style={{ fontSize: '1.125rem' }}>{currentLanguage.flag}</span>
+        <span style={{ 
+          fontWeight: '500', 
+          color: '#374151',
+          display: window.innerWidth >= 640 ? 'block' : 'none'
+        }}>
+          {currentLanguage.name}
+        </span>
         <svg 
-          className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          style={{
+            width: '1rem',
+            height: '1rem',
+            color: '#6b7280',
+            transition: 'transform 0.2s',
+            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)'
+          }}
           fill="none" 
           stroke="currentColor" 
           viewBox="0 0 24 24"
@@ -53,17 +81,50 @@ const LanguageSelector: React.FC = () => {
       </button>
       
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-lg border border-gray-200 py-2 z-50">
+        <div style={{
+          position: 'absolute',
+          right: 0,
+          top: '100%',
+          marginTop: '0.5rem',
+          width: '12rem',
+          backgroundColor: 'white',
+          borderRadius: '1rem',
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+          border: '1px solid #d1d5db',
+          padding: '0.5rem 0',
+          zIndex: 50
+        }}>
           {languages.map((language) => (
             <button
               key={language.code}
-              className={`w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors ${
-                i18n.language === language.code ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
-              }`}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                padding: '0.75rem 1rem',
+                textAlign: 'left',
+                border: 'none',
+                background: 'transparent',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s',
+                color: i18n.language === language.code ? '#1d4ed8' : '#374151',
+                backgroundColor: i18n.language === language.code ? '#dbeafe' : 'transparent'
+              }}
+              onMouseEnter={(e) => {
+                if (i18n.language !== language.code) {
+                  e.currentTarget.style.backgroundColor = '#f9fafb';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (i18n.language !== language.code) {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }
+              }}
               onClick={() => handleLanguageChange(language.code)}
             >
-              <span className="text-lg">{language.flag}</span>
-              <span className="font-medium">{language.name}</span>
+              <span style={{ fontSize: '1.125rem' }}>{language.flag}</span>
+              <span style={{ fontWeight: '500' }}>{language.name}</span>
             </button>
           ))}
         </div>

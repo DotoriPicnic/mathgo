@@ -21,46 +21,123 @@ const Navigation: React.FC = () => {
   return (
     <>
       {/* Desktop Navigation */}
-      <nav className="hidden lg:block sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+      <nav style={{
+        display: 'none',
+        position: 'sticky',
+        top: 0,
+        zIndex: 40,
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(8px)',
+        borderBottom: '1px solid #e5e7eb',
+        padding: '0 1rem'
+      }} className="lg:block">
+        <div style={{
+          maxWidth: '80rem',
+          margin: '0 auto',
+          padding: '0 1rem'
+        }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            height: '4rem'
+          }}>
             {/* Logo */}
-            <div className="flex items-center">
-              <Link to="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">C</span>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Link to="/" style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                textDecoration: 'none',
+                color: 'inherit'
+              }}>
+                <div style={{
+                  width: '2rem',
+                  height: '2rem',
+                  backgroundColor: '#2563eb',
+                  borderRadius: '0.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.125rem' }}>C</span>
                 </div>
-                <span className="text-xl font-bold text-gray-900">Calcuri</span>
+                <span style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#111827' }}>Calcuri</span>
               </Link>
             </div>
 
             {/* Center Menu */}
-            <div className="hidden lg:flex items-center space-x-8">
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '2rem'
+            }}>
               {menuItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-200 hover:scale-105 ${
-                    isActive(item.path)
-                      ? 'bg-blue-100 text-blue-700'
-                      : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
-                  }`}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '0.75rem',
+                    transition: 'all 0.2s',
+                    textDecoration: 'none',
+                    color: isActive(item.path) ? '#1d4ed8' : '#4b5563',
+                    backgroundColor: isActive(item.path) ? '#dbeafe' : 'transparent'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive(item.path)) {
+                      e.currentTarget.style.color = '#2563eb';
+                      e.currentTarget.style.backgroundColor = '#eff6ff';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive(item.path)) {
+                      e.currentTarget.style.color = '#4b5563';
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }
+                  }}
                 >
                   <span>{item.icon}</span>
-                  <span className="font-medium">{item.label}</span>
+                  <span style={{ fontWeight: '500' }}>{item.label}</span>
                 </Link>
               ))}
             </div>
 
             {/* Right Side */}
-            <div className="flex items-center space-x-4">
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1rem'
+            }}>
               <LanguageSelector />
               <Link
                 to="/"
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-200 hover:scale-105"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.5rem 1rem',
+                  backgroundColor: '#2563eb',
+                  color: 'white',
+                  borderRadius: '0.75rem',
+                  transition: 'all 0.2s',
+                  textDecoration: 'none',
+                  fontWeight: '500'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#1d4ed8';
+                  e.currentTarget.style.transform = 'scale(1.05)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#2563eb';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
               >
                 <span>🏠</span>
-                <span className="font-medium">홈</span>
+                <span>홈</span>
               </Link>
             </div>
           </div>
@@ -68,23 +145,70 @@ const Navigation: React.FC = () => {
       </nav>
 
       {/* Mobile Navigation */}
-      <nav className="lg:hidden sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+      <nav style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 40,
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(8px)',
+        borderBottom: '1px solid #e5e7eb',
+        padding: '0 1rem'
+      }} className="lg:hidden">
+        <div style={{
+          maxWidth: '80rem',
+          margin: '0 auto',
+          padding: '0 1rem'
+        }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            height: '4rem'
+          }}>
             {/* Logo */}
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">C</span>
+            <Link to="/" style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              textDecoration: 'none',
+              color: 'inherit'
+            }}>
+              <div style={{
+                width: '2rem',
+                height: '2rem',
+                backgroundColor: '#2563eb',
+                borderRadius: '0.5rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <span style={{ color: 'white', fontWeight: 'bold', fontSize: '1.125rem' }}>C</span>
               </div>
-              <span className="text-xl font-bold text-gray-900">Calcuri</span>
+              <span style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#111827' }}>Calcuri</span>
             </Link>
 
             {/* Hamburger Menu */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+              style={{
+                padding: '0.5rem',
+                borderRadius: '0.5rem',
+                color: '#4b5563',
+                border: 'none',
+                background: 'transparent',
+                cursor: 'pointer',
+                transition: 'colors 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = '#2563eb';
+                e.currentTarget.style.backgroundColor = '#eff6ff';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = '#4b5563';
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg style={{ width: '1.5rem', height: '1.5rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
@@ -92,25 +216,58 @@ const Navigation: React.FC = () => {
 
           {/* Mobile Menu */}
           {isMobileMenuOpen && (
-            <div className="lg:hidden border-t border-gray-200 bg-white">
-              <div className="px-2 pt-2 pb-3 space-y-1">
+            <div style={{
+              borderTop: '1px solid #e5e7eb',
+              backgroundColor: 'white',
+              padding: '0.5rem'
+            }}>
+              <div style={{ padding: '0.5rem' }}>
                 {menuItems.map((item) => (
                   <Link
                     key={item.path}
                     to={item.path}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${
-                      isActive(item.path)
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
-                    }`}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.75rem',
+                      padding: '0.75rem 1rem',
+                      borderRadius: '0.75rem',
+                      transition: 'colors 0.2s',
+                      textDecoration: 'none',
+                      color: isActive(item.path) ? '#1d4ed8' : '#4b5563',
+                      backgroundColor: isActive(item.path) ? '#dbeafe' : 'transparent',
+                      marginBottom: '0.25rem'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive(item.path)) {
+                        e.currentTarget.style.color = '#2563eb';
+                        e.currentTarget.style.backgroundColor = '#eff6ff';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive(item.path)) {
+                        e.currentTarget.style.color = '#4b5563';
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                      }
+                    }}
                   >
-                    <span className="text-lg">{item.icon}</span>
-                    <span className="font-medium">{item.label}</span>
+                    <span style={{ fontSize: '1.125rem' }}>{item.icon}</span>
+                    <span style={{ fontWeight: '500' }}>{item.label}</span>
                   </Link>
                 ))}
-                <div className="pt-4 pb-3 border-t border-gray-200">
-                  <div className="flex items-center justify-between px-4">
+                <div style={{
+                  paddingTop: '1rem',
+                  paddingBottom: '0.75rem',
+                  borderTop: '1px solid #e5e7eb',
+                  marginTop: '0.5rem'
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0 1rem'
+                  }}>
                     <LanguageSelector />
                   </div>
                 </div>

@@ -2,35 +2,104 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  * {
-    box-sizing: border-box;
-  }
-  
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+/* 기본 스타일 */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f8fafc;
+}
+
+/* 기본 버튼 스타일 */
+.btn-primary {
+  background-color: #2563eb;
+  color: white;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+  transform: scale(1.05);
+}
+
+.btn-secondary {
+  background-color: #14b8a6;
+  color: white;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-secondary:hover {
+  background-color: #0d9488;
+  transform: scale(1.05);
+}
+
+/* 카드 스타일 */
+.card {
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  transition: all 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+/* 플로팅 홈 버튼 */
+.floating-home {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  background-color: #2563eb;
+  color: white;
+  border-radius: 50%;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 50;
+  text-decoration: none;
+}
+
+.floating-home:hover {
+  background-color: #1d4ed8;
+  transform: scale(1.05);
+}
+
+/* 반응형 숨김 */
+@media (min-width: 1024px) {
+  .lg\\:hidden {
+    display: none;
   }
 }
 
-@layer components {
-  .btn-primary {
-    @apply bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-2xl shadow-lg transition-all duration-200 hover:scale-105;
-  }
-  
-  .btn-secondary {
-    @apply bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-2xl shadow-lg transition-all duration-200 hover:scale-105;
-  }
-  
-  .card {
-    @apply bg-white rounded-2xl shadow-lg p-6 transition-all duration-200 hover:scale-105;
-  }
-  
-  .floating-home {
-    @apply fixed bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-105 z-50;
+@media (max-width: 1023px) {
+  .lg\\:block {
+    display: none;
   }
 }
