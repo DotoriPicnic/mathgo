@@ -12,6 +12,70 @@ function generateProblems(
   type: string,
   carry: 'all' | 'with' | 'without',
 ): { question: string; answer: any }[] {
+  // 새로운 카테고리 처리
+  if (type.startsWith('decimal_lv')) {
+    const level = parseInt(type.split('_')[1].replace('lv', ''));
+    const problems = [];
+    const problemSet = new Set();
+    let tryCount = 0;
+    while (problems.length < 20 && tryCount < 200) {
+      tryCount++;
+      const problem = generateDecimalProblems(level);
+      if (!problemSet.has(problem.question)) {
+        problemSet.add(problem.question);
+        problems.push(problem);
+      }
+    }
+    return problems;
+  }
+  
+  if (type.startsWith('mixed_lv')) {
+    const level = parseInt(type.split('_')[1].replace('lv', ''));
+    const problems = [];
+    const problemSet = new Set();
+    let tryCount = 0;
+    while (problems.length < 20 && tryCount < 200) {
+      tryCount++;
+      const problem = generateMixedProblems(level);
+      if (!problemSet.has(problem.question)) {
+        problemSet.add(problem.question);
+        problems.push(problem);
+      }
+    }
+    return problems;
+  }
+  
+  if (type.startsWith('factor_lv')) {
+    const level = parseInt(type.split('_')[1].replace('lv', ''));
+    const problems = [];
+    const problemSet = new Set();
+    let tryCount = 0;
+    while (problems.length < 20 && tryCount < 200) {
+      tryCount++;
+      const problem = generateFactorProblems(level);
+      if (!problemSet.has(problem.question)) {
+        problemSet.add(problem.question);
+        problems.push(problem);
+      }
+    }
+    return problems;
+  }
+  
+  if (type.startsWith('unit_lv')) {
+    const level = parseInt(type.split('_')[1].replace('lv', ''));
+    const problems = [];
+    const problemSet = new Set();
+    let tryCount = 0;
+    while (problems.length < 20 && tryCount < 200) {
+      tryCount++;
+      const problem = generateUnitProblems(level);
+      if (!problemSet.has(problem.question)) {
+        problemSet.add(problem.question);
+        problems.push(problem);
+      }
+    }
+    return problems;
+  }
   const problems = [];
   const problemSet = new Set(); // 중복 방지용
   let tryCount = 0;
@@ -518,6 +582,286 @@ function generateProblems(
   return problems;
 }
 
+// 새로운 카테고리 문제 생성 함수들
+function generateDecimalProblems(level: number): { question: string; answer: number } {
+  if (level === 1) {
+    // 1-digit decimal addition/subtraction
+    const a = Math.floor(Math.random() * 9) + 1;
+    const b = Math.floor(Math.random() * 9) + 1;
+    const decimalA = a + Math.random() * 0.9;
+    const decimalB = b + Math.random() * 0.9;
+    const operation = Math.random() < 0.5 ? '+' : '-';
+    
+    if (operation === '+') {
+      return {
+        question: `${decimalA.toFixed(1)} + ${decimalB.toFixed(1)} =`,
+        answer: parseFloat((decimalA + decimalB).toFixed(1))
+      };
+    } else {
+      const larger = Math.max(decimalA, decimalB);
+      const smaller = Math.min(decimalA, decimalB);
+      return {
+        question: `${larger.toFixed(1)} - ${smaller.toFixed(1)} =`,
+        answer: parseFloat((larger - smaller).toFixed(1))
+      };
+    }
+  } else if (level === 2) {
+    // 2-digit decimal addition/subtraction, decimal × integer
+    const operation = Math.random() < 0.33 ? '+' : Math.random() < 0.5 ? '-' : '×';
+    
+    if (operation === '+' || operation === '-') {
+      const a = Math.floor(Math.random() * 99) + 1;
+      const b = Math.floor(Math.random() * 99) + 1;
+      const decimalA = a + Math.random() * 0.99;
+      const decimalB = b + Math.random() * 0.99;
+      
+      if (operation === '+') {
+        return {
+          question: `${decimalA.toFixed(2)} + ${decimalB.toFixed(2)} =`,
+          answer: parseFloat((decimalA + decimalB).toFixed(2))
+        };
+      } else {
+        const larger = Math.max(decimalA, decimalB);
+        const smaller = Math.min(decimalA, decimalB);
+        return {
+          question: `${larger.toFixed(2)} - ${smaller.toFixed(2)} =`,
+          answer: parseFloat((larger - smaller).toFixed(2))
+        };
+      }
+    } else {
+      // decimal × integer
+      const decimal = Math.floor(Math.random() * 99) + 1 + Math.random() * 0.99;
+      const integer = Math.floor(Math.random() * 9) + 1;
+      return {
+        question: `${decimal.toFixed(2)} × ${integer} =`,
+        answer: parseFloat((decimal * integer).toFixed(2))
+      };
+    }
+  } else {
+    // decimal ÷ integer, decimal × decimal (round to 2 decimal places)
+    const operation = Math.random() < 0.5 ? '÷' : '×';
+    
+    if (operation === '÷') {
+      const integer = Math.floor(Math.random() * 8) + 2; // 2-9
+      const result = Math.floor(Math.random() * 99) + 1 + Math.random() * 0.99;
+      const decimal = result * integer;
+      return {
+        question: `${decimal.toFixed(2)} ÷ ${integer} =`,
+        answer: parseFloat(result.toFixed(2))
+      };
+    } else {
+      const decimal1 = Math.floor(Math.random() * 99) + 1 + Math.random() * 0.99;
+      const decimal2 = Math.floor(Math.random() * 99) + 1 + Math.random() * 0.99;
+      return {
+        question: `${decimal1.toFixed(2)} × ${decimal2.toFixed(2)} =`,
+        answer: parseFloat((decimal1 * decimal2).toFixed(2))
+      };
+    }
+  }
+}
+
+function generateMixedProblems(level: number): { question: string; answer: number } {
+  if (level === 1) {
+    // No parentheses, order of operations
+    const a = Math.floor(Math.random() * 9) + 1;
+    const b = Math.floor(Math.random() * 9) + 1;
+    const c = Math.floor(Math.random() * 9) + 1;
+    const operations = ['+', '-', '×'];
+    const op1 = operations[Math.floor(Math.random() * operations.length)];
+    const op2 = operations[Math.floor(Math.random() * operations.length)];
+    
+    let question = `${a} ${op1} ${b} ${op2} ${c}`;
+    let answer = 0;
+    
+    if (op1 === '×' && op2 !== '×') {
+      answer = a * b;
+      if (op2 === '+') answer += c;
+      else answer -= c;
+    } else if (op2 === '×' && op1 !== '×') {
+      answer = b * c;
+      if (op1 === '+') answer = a + answer;
+      else answer = a - answer;
+    } else {
+      if (op1 === '+') answer = a + b;
+      else if (op1 === '-') answer = a - b;
+      else answer = a * b;
+      
+      if (op2 === '+') answer += c;
+      else if (op2 === '-') answer -= c;
+      else answer *= c;
+    }
+    
+    return {
+      question: `${question} =`,
+      answer: answer
+    };
+  } else if (level === 2) {
+    // With parentheses
+    const a = Math.floor(Math.random() * 9) + 1;
+    const b = Math.floor(Math.random() * 9) + 1;
+    const c = Math.floor(Math.random() * 9) + 1;
+    const operations = ['+', '-', '×'];
+    const op1 = operations[Math.floor(Math.random() * operations.length)];
+    const op2 = operations[Math.floor(Math.random() * operations.length)];
+    
+    let question = `(${a} ${op1} ${b}) ${op2} ${c}`;
+    let answer = 0;
+    
+    // Calculate inside parentheses first
+    if (op1 === '+') answer = a + b;
+    else if (op1 === '-') answer = a - b;
+    else answer = a * b;
+    
+    // Then apply second operation
+    if (op2 === '+') answer += c;
+    else if (op2 === '-') answer -= c;
+    else answer *= c;
+    
+    return {
+      question: `${question} =`,
+      answer: answer
+    };
+  } else {
+    // With parentheses and multiple operations
+    const a = Math.floor(Math.random() * 9) + 1;
+    const b = Math.floor(Math.random() * 9) + 1;
+    const c = Math.floor(Math.random() * 9) + 1;
+    const d = Math.floor(Math.random() * 9) + 1;
+    
+    const question = `${a} + (${b} × ${c}) - ${d}`;
+    const answer = a + (b * c) - d;
+    
+    return {
+      question: `${question} =`,
+      answer: answer
+    };
+  }
+}
+
+function generateFactorProblems(level: number): { question: string; answer: number } {
+  if (level === 1) {
+    // Find a multiple
+    const base = Math.floor(Math.random() * 9) + 2; // 2-10
+    const multiplier = Math.floor(Math.random() * 9) + 1; // 1-9
+    const multiple = base * multiplier;
+    
+    return {
+      question: `${base}의 배수 중 ${multiple}보다 작은 가장 큰 수는?`,
+      answer: multiple - base
+    };
+  } else if (level === 2) {
+    // Find a divisor
+    const number = Math.floor(Math.random() * 50) + 10; // 10-59
+    const divisors = [];
+    for (let i = 1; i <= number; i++) {
+      if (number % i === 0) divisors.push(i);
+    }
+    const randomDivisor = divisors[Math.floor(Math.random() * divisors.length)];
+    
+    return {
+      question: `${number}의 약수 중 ${randomDivisor}보다 큰 가장 작은 수는?`,
+      answer: divisors[divisors.indexOf(randomDivisor) + 1] || number
+    };
+  } else {
+    // GCD or LCM of two numbers
+    const isGCD = Math.random() < 0.5;
+    const a = Math.floor(Math.random() * 20) + 10; // 10-29
+    const b = Math.floor(Math.random() * 20) + 10; // 10-29
+    
+    if (isGCD) {
+      // GCD
+      const gcd = (x: number, y: number): number => y === 0 ? x : gcd(y, x % y);
+      return {
+        question: `${a}와 ${b}의 최대공약수는?`,
+        answer: gcd(a, b)
+      };
+    } else {
+      // LCM
+      const gcd = (x: number, y: number): number => y === 0 ? x : gcd(y, x % y);
+      const lcm = (a * b) / gcd(a, b);
+      return {
+        question: `${a}와 ${b}의 최소공배수는?`,
+        answer: lcm
+      };
+    }
+  }
+}
+
+function generateUnitProblems(level: number): { question: string; answer: number | string } {
+  if (level === 1) {
+    // Length (cm ↔ m)
+    const isCmToM = Math.random() < 0.5;
+    if (isCmToM) {
+      const cm = Math.floor(Math.random() * 900) + 100; // 100-999 cm
+      return {
+        question: `${cm}cm = ?m`,
+        answer: cm / 100
+      };
+    } else {
+      const m = Math.floor(Math.random() * 9) + 1; // 1-9 m
+      const cm = Math.floor(Math.random() * 100); // 0-99 cm
+      const totalCm = m * 100 + cm;
+      return {
+        question: `${m}.${cm.toString().padStart(2, '0')}m = ?cm`,
+        answer: totalCm
+      };
+    }
+  } else if (level === 2) {
+    // Weight (g ↔ kg)
+    const isGToKg = Math.random() < 0.5;
+    if (isGToKg) {
+      const g = Math.floor(Math.random() * 9000) + 1000; // 1000-9999 g
+      return {
+        question: `${g}g = ?kg`,
+        answer: g / 1000
+      };
+    } else {
+      const kg = Math.floor(Math.random() * 9) + 1; // 1-9 kg
+      const g = Math.floor(Math.random() * 1000); // 0-999 g
+      const totalG = kg * 1000 + g;
+      return {
+        question: `${kg}.${g.toString().padStart(3, '0')}kg = ?g`,
+        answer: totalG
+      };
+    }
+  } else {
+    // Time calculation (hh:mm ± minutes)
+    const isAddition = Math.random() < 0.5;
+    const hours = Math.floor(Math.random() * 12) + 1; // 1-12 hours
+    const minutes = Math.floor(Math.random() * 60); // 0-59 minutes
+    const addMinutes = Math.floor(Math.random() * 60) + 1; // 1-60 minutes
+    
+    if (isAddition) {
+      let newHours = hours;
+      let newMinutes = minutes + addMinutes;
+      if (newMinutes >= 60) {
+        newHours += Math.floor(newMinutes / 60);
+        newMinutes = newMinutes % 60;
+      }
+      if (newHours > 12) newHours = newHours % 12;
+      if (newHours === 0) newHours = 12;
+      
+      return {
+        question: `${hours}시 ${minutes}분 + ${addMinutes}분 = ?`,
+        answer: `${newHours}시 ${newMinutes}분`
+      };
+    } else {
+      let newHours = hours;
+      let newMinutes = minutes - addMinutes;
+      if (newMinutes < 0) {
+        newHours -= Math.ceil(Math.abs(newMinutes) / 60);
+        newMinutes = 60 + (newMinutes % 60);
+      }
+      if (newHours <= 0) newHours = 12 + (newHours % 12);
+      
+      return {
+        question: `${hours}시 ${minutes}분 - ${addMinutes}분 = ?`,
+        answer: `${newHours}시 ${newMinutes}분`
+      };
+    }
+  }
+}
+
 // [문제 유형 미리보기용 예시 생성 함수 추가]
 function getBlankExample(type: string, carry: 'all' | 'with' | 'without') {
   if (type.startsWith('빈칸 문제')) {
@@ -568,6 +912,19 @@ const getProblemTypeLabel = (t: any, value: string) => {
     '소수 나눗셈 (소수점 한자릿수)': t('decimalDivisionSingle'),
     '소수 나눗셈 (소수점 두자릿수)': t('decimalDivisionDouble'),
     'A ㅁ B 비교 연산': t('comparisonOperationType'),
+    // 새로운 카테고리들
+    'decimal_lv1': '소수 연산 Lv1',
+    'decimal_lv2': '소수 연산 Lv2',
+    'decimal_lv3': '소수 연산 Lv3',
+    'mixed_lv1': '혼합 연산 Lv1',
+    'mixed_lv2': '혼합 연산 Lv2',
+    'mixed_lv3': '혼합 연산 Lv3',
+    'factor_lv1': '약수와 배수 Lv1',
+    'factor_lv2': '약수와 배수 Lv2',
+    'factor_lv3': '약수와 배수 Lv3',
+    'unit_lv1': '단위 변환 Lv1',
+    'unit_lv2': '단위 변환 Lv2',
+    'unit_lv3': '단위 변환 Lv3',
   };
   return mapping[value] || value;
 };
@@ -590,8 +947,6 @@ const problemTypes = [
   { label: '두자릿수 ÷ 한자릿수', value: '두자릿수 ÷ 한자릿수' },
   { label: '세자릿수 ÷ 한자릿수', value: '세자릿수 ÷ 한자릿수' },
   { label: '세자릿수 ÷ 두자릿수', value: '세자릿수 ÷ 두자릿수' },
-  { label: '빈칸 문제 한자릿수(나눗셈)', value: '빈칸 문제 한자릿수(나눗셈)' },
-  { label: '빈칸 문제 두자릿수(나눗셈)', value: '빈칸 문제 두자릿수(나눗셈)' },
   { label: '빈칸 문제 한자릿수', value: '빈칸 문제 한자릿수' },
   { label: '빈칸 문제 두자릿수', value: '빈칸 문제 두자릿수' },
   { label: '빈칸 문제 세자릿수', value: '빈칸 문제 세자릿수' },
@@ -617,6 +972,31 @@ const decimalTypes = [
   { label: '소수 곱셈 (소수점 두자릿수)', value: '소수 곱셈 (소수점 두자릿수)' },
   { label: '소수 나눗셈 (소수점 한자릿수)', value: '소수 나눗셈 (소수점 한자릿수)' },
   { label: '소수 나눗셈 (소수점 두자릿수)', value: '소수 나눗셈 (소수점 두자릿수)' },
+];
+
+// 새로운 카테고리 문제 유형들
+const decimalCategoryTypes = [
+  { label: '소수 연산 Lv1', value: 'decimal_lv1' },
+  { label: '소수 연산 Lv2', value: 'decimal_lv2' },
+  { label: '소수 연산 Lv3', value: 'decimal_lv3' },
+];
+
+const mixedCategoryTypes = [
+  { label: '혼합 연산 Lv1', value: 'mixed_lv1' },
+  { label: '혼합 연산 Lv2', value: 'mixed_lv2' },
+  { label: '혼합 연산 Lv3', value: 'mixed_lv3' },
+];
+
+const factorCategoryTypes = [
+  { label: '약수와 배수 Lv1', value: 'factor_lv1' },
+  { label: '약수와 배수 Lv2', value: 'factor_lv2' },
+  { label: '약수와 배수 Lv3', value: 'factor_lv3' },
+];
+
+const unitCategoryTypes = [
+  { label: '단위 변환 Lv1', value: 'unit_lv1' },
+  { label: '단위 변환 Lv2', value: 'unit_lv2' },
+  { label: '단위 변환 Lv3', value: 'unit_lv3' },
 ];
 
 function getFilteredProblemTypes(op: string, t: any) {
@@ -684,6 +1064,30 @@ function getFilteredProblemTypes(op: string, t: any) {
       value: type.value
     }));
   }
+  if (op === '소수연산') {
+    return decimalCategoryTypes.map(type => ({
+      label: type.label,
+      value: type.value
+    }));
+  }
+  if (op === '혼합연산') {
+    return mixedCategoryTypes.map(type => ({
+      label: type.label,
+      value: type.value
+    }));
+  }
+  if (op === '약수배수') {
+    return factorCategoryTypes.map(type => ({
+      label: type.label,
+      value: type.value
+    }));
+  }
+  if (op === '단위변환') {
+    return unitCategoryTypes.map(type => ({
+      label: type.label,
+      value: type.value
+    }));
+  }
   // 분수 등 기타 연산은 추후 확장
   return problemTypes.map(type => ({
     label: getProblemTypeLabel(t, type.value),
@@ -743,12 +1147,12 @@ const ElemPage: React.FC<ElemPageProps> = () => {
   }, [showTypeList]);
 
   React.useEffect(() => {
-    if (type.startsWith('빈칸 문제')) {
+    if (type.startsWith('빈칸 문제') && !['소수연산', '혼합연산', '약수배수', '단위변환'].includes(op)) {
       setExample(getBlankExample(type, carry));
     } else {
       setExample('');
     }
-  }, [type, carry]);
+  }, [type, carry, op]);
 
   // 연산 종류 변경 시 문제 유형도 자동 변경
   React.useEffect(() => {
@@ -757,6 +1161,14 @@ const ElemPage: React.FC<ElemPageProps> = () => {
       // 분수 연산일 때는 fractionTypes의 첫 번째 값으로 명확히 지정
       if (op === '분수') {
         setType(fractionTypes[0].value);
+      } else if (op === '소수연산') {
+        setType(decimalCategoryTypes[0].value);
+      } else if (op === '혼합연산') {
+        setType(mixedCategoryTypes[0].value);
+      } else if (op === '약수배수') {
+        setType(factorCategoryTypes[0].value);
+      } else if (op === '단위변환') {
+        setType(unitCategoryTypes[0].value);
       } else {
         setType(filtered[0].value);
       }
@@ -789,10 +1201,11 @@ const ElemPage: React.FC<ElemPageProps> = () => {
 
   // 라디오 버튼 노출 조건 함수 추가
   const showDecimalCarryRadio = (
-    type === '소수 덧셈 (소수점 한자릿수)' ||
+    (type === '소수 덧셈 (소수점 한자릿수)' ||
     type === '소수 덧셈 (소수점 두자릿수)' ||
     type === '소수 뺄셈 (소수점 한자릿수)' ||
-    type === '소수 뺄셈 (소수점 두자릿수)'
+    type === '소수 뺄셈 (소수점 두자릿수)') &&
+    op === '소수'
   );
 
   // 연산 종류 배열 추가 (덧셈 위에 비교 연산)
@@ -804,6 +1217,10 @@ const ElemPage: React.FC<ElemPageProps> = () => {
     { label: t('division'), value: '나눗셈' },
     { label: t('fraction'), value: '분수' },
     { label: t('decimal'), value: '소수', disabled: true },
+    { label: '소수 연산', value: '소수연산' },
+    { label: '혼합 연산', value: '혼합연산' },
+    { label: '약수와 배수', value: '약수배수' },
+    { label: '단위 변환', value: '단위변환' },
   ];
 
   return (
@@ -820,7 +1237,7 @@ const ElemPage: React.FC<ElemPageProps> = () => {
           {t('elemTitle')}
         </h2>
         {/* 빈칸 문제 예시 미리보기 */}
-        {type.startsWith('빈칸 문제') && example && (
+        {type.startsWith('빈칸 문제') && example && !['소수연산', '혼합연산', '약수배수', '단위변환'].includes(op) && (
           <div className="example-preview">
             {t('example')} {example.split('□').map((part, idx, arr) => (
               idx < arr.length - 1 ? (
@@ -893,7 +1310,7 @@ const ElemPage: React.FC<ElemPageProps> = () => {
           )}
         </div>
         {/* 올림/내림 옵션 (라디오 버튼처럼 동작) */}
-        {op === '덧셈' || op === '뺄셈' ? (
+        {(op === '덧셈' || op === '뺄셈') && !['소수연산', '혼합연산', '약수배수', '단위변환'].includes(op) ? (
           <div className="radio-group">
             <label className={`radio-option ${carry === 'with' ? 'selected' : ''}`}>
               <input 
