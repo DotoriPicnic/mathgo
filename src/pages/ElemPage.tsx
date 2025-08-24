@@ -11,6 +11,7 @@ function generateProblems(
   op: string,
   type: string,
   carry: 'all' | 'with' | 'without',
+  t: any,
 ): { question: string; answer: any }[] {
   // 새로운 카테고리 처리
   if (type.startsWith('decimal_lv')) {
@@ -52,7 +53,7 @@ function generateProblems(
     let tryCount = 0;
     while (problems.length < 20 && tryCount < 200) {
       tryCount++;
-      const problem = generateFactorProblems(level);
+      const problem = generateFactorProblems(level, t);
       if (!problemSet.has(problem.question)) {
         problemSet.add(problem.question);
         problems.push(problem);
@@ -68,7 +69,7 @@ function generateProblems(
     let tryCount = 0;
     while (problems.length < 20 && tryCount < 200) {
       tryCount++;
-      const problem = generateUnitProblems(level);
+      const problem = generateUnitProblems(level, t);
       if (!problemSet.has(problem.question)) {
         problemSet.add(problem.question);
         problems.push(problem);
@@ -786,7 +787,7 @@ function generateMixedProblems(level: number): { question: string; answer: numbe
   }
 }
 
-function generateFactorProblems(level: number): { question: string; answer: number } {
+function generateFactorProblems(level: number, t: any): { question: string; answer: number } {
   if (level === 1) {
     // Find a multiple
     const base = Math.floor(Math.random() * 9) + 2; // 2-10
@@ -794,7 +795,7 @@ function generateFactorProblems(level: number): { question: string; answer: numb
     const multiple = base * multiplier;
     
     return {
-      question: `${base}의 배수 중 ${multiple}보다 작은 가장 큰 수는?`,
+      question: `${base}${t('factorMultipleLv1').replace('{multiple}', multiple.toString())}`,
       answer: multiple - base
     };
   } else if (level === 2) {
@@ -807,7 +808,7 @@ function generateFactorProblems(level: number): { question: string; answer: numb
     const randomDivisor = divisors[Math.floor(Math.random() * divisors.length)];
     
     return {
-      question: `${number}의 약수 중 ${randomDivisor}보다 큰 가장 작은 수는?`,
+      question: `${number}${t('factorMultipleLv2').replace('{divisor}', randomDivisor.toString())}`,
       answer: divisors[divisors.indexOf(randomDivisor) + 1] || number
     };
   } else {
@@ -830,7 +831,7 @@ function generateFactorProblems(level: number): { question: string; answer: numb
       
       const gcd = (x: number, y: number): number => y === 0 ? x : gcd(y, x % y);
       return {
-        question: `${a}, ${b}의 최대공약수는?`,
+        question: `${a}${t('factorMultipleLv3Gcd').replace('{b}', b.toString())}`,
         answer: gcd(a, b)
       };
     } else {
@@ -840,21 +841,21 @@ function generateFactorProblems(level: number): { question: string; answer: numb
       const gcd = (x: number, y: number): number => y === 0 ? x : gcd(y, x % y);
       const lcm = (a * b) / gcd(a, b);
       return {
-        question: `${a}, ${b}의 최소공배수는?`,
+        question: `${a}${t('factorMultipleLv3Lcm').replace('{b}', b.toString())}`,
         answer: lcm
       };
     }
   }
 }
 
-function generateUnitProblems(level: number): { question: string; answer: number | string } {
+function generateUnitProblems(level: number, t: any): { question: string; answer: number | string } {
   if (level === 1) {
     // Length (cm ↔ m)
     const isCmToM = Math.random() < 0.5;
     if (isCmToM) {
       const cm = Math.floor(Math.random() * 900) + 100; // 100-999 cm
       return {
-        question: `${cm}cm = ?m`,
+        question: `${cm}${t('unitConversionLv1CmToM')}`,
         answer: cm / 100
       };
     } else {
@@ -862,7 +863,7 @@ function generateUnitProblems(level: number): { question: string; answer: number
       const cm = Math.floor(Math.random() * 100); // 0-99 cm
       const totalCm = m * 100 + cm;
       return {
-        question: `${m}.${cm.toString().padStart(2, '0')}m = ?cm`,
+        question: `${m}.${cm.toString().padStart(2, '0')}${t('unitConversionLv1MToCm')}`,
         answer: totalCm
       };
     }
@@ -872,7 +873,7 @@ function generateUnitProblems(level: number): { question: string; answer: number
     if (isGToKg) {
       const g = Math.floor(Math.random() * 9000) + 1000; // 1000-9999 g
       return {
-        question: `${g}g = ?kg`,
+        question: `${g}${t('unitConversionLv2GToKg')}`,
         answer: g / 1000
       };
     } else {
@@ -880,7 +881,7 @@ function generateUnitProblems(level: number): { question: string; answer: number
       const g = Math.floor(Math.random() * 1000); // 0-999 g
       const totalG = kg * 1000 + g;
       return {
-        question: `${kg}.${g.toString().padStart(3, '0')}kg = ?g`,
+        question: `${kg}.${g.toString().padStart(3, '0')}${t('unitConversionLv2KgToG')}`,
         answer: totalG
       };
     }
@@ -902,7 +903,7 @@ function generateUnitProblems(level: number): { question: string; answer: number
       if (newHours === 0) newHours = 12;
       
       return {
-        question: `${hours}시 ${minutes}분 + ${addMinutes}분 = ?`,
+        question: `${hours}${t('unitConversionLv3TimeAdd').replace('{minutes}', minutes.toString()).replace('{addMinutes}', addMinutes.toString())}`,
         answer: `${newHours}시 ${newMinutes}분`
       };
     } else {
@@ -915,7 +916,7 @@ function generateUnitProblems(level: number): { question: string; answer: number
       if (newHours <= 0) newHours = 12 + (newHours % 12);
       
       return {
-        question: `${hours}시 ${minutes}분 - ${addMinutes}분 = ?`,
+        question: `${hours}${t('unitConversionLv3TimeSub').replace('{minutes}', minutes.toString()).replace('{subMinutes}', addMinutes.toString())}`,
         answer: `${newHours}시 ${newMinutes}분`
       };
     }
@@ -923,10 +924,10 @@ function generateUnitProblems(level: number): { question: string; answer: number
 }
 
 // [문제 유형 미리보기용 예시 생성 함수 추가]
-function getBlankExample(type: string, carry: 'all' | 'with' | 'without') {
+function getBlankExample(type: string, carry: 'all' | 'with' | 'without', t: any) {
   if (type.startsWith('빈칸 문제')) {
     // 임시로 1개만 생성
-    const ex = generateProblems('덧셈', type, carry)[0];
+    const ex = generateProblems('덧셈', type, carry, t)[0];
     return ex?.question || '';
   }
   return '';
@@ -973,18 +974,18 @@ const getProblemTypeLabel = (t: any, value: string) => {
     '소수 나눗셈 (소수점 두자릿수)': t('decimalDivisionDouble'),
     'A ㅁ B 비교 연산': t('comparisonOperationType'),
     // 새로운 카테고리들
-    'decimal_lv1': '소수 연산 Lv1',
-    'decimal_lv2': '소수 연산 Lv2',
-    'decimal_lv3': '소수 연산 Lv3',
-    'mixed_lv1': '혼합 연산 Lv1',
-    'mixed_lv2': '혼합 연산 Lv2',
-    'mixed_lv3': '혼합 연산 Lv3',
-    'factor_lv1': '약수와 배수 Lv1',
-    'factor_lv2': '약수와 배수 Lv2',
-    'factor_lv3': '약수와 배수 Lv3',
-    'unit_lv1': '단위 변환 Lv1',
-    'unit_lv2': '단위 변환 Lv2',
-    'unit_lv3': '단위 변환 Lv3',
+    'decimal_lv1': `${t('decimalOperation')} Lv1`,
+    'decimal_lv2': `${t('decimalOperation')} Lv2`,
+    'decimal_lv3': `${t('decimalOperation')} Lv3`,
+    'mixed_lv1': `${t('mixedOperation')} Lv1`,
+    'mixed_lv2': `${t('mixedOperation')} Lv2`,
+    'mixed_lv3': `${t('mixedOperation')} Lv3`,
+    'factor_lv1': `${t('factorMultiple')} Lv1`,
+    'factor_lv2': `${t('factorMultiple')} Lv2`,
+    'factor_lv3': `${t('factorMultiple')} Lv3`,
+    'unit_lv1': `${t('unitConversion')} Lv1`,
+    'unit_lv2': `${t('unitConversion')} Lv2`,
+    'unit_lv3': `${t('unitConversion')} Lv3`,
   };
   return mapping[value] || value;
 };
@@ -1179,7 +1180,7 @@ const ElemPage: React.FC<ElemPageProps> = () => {
 
   const handleGenerate = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    const problems = generateProblems(op, type, carry);
+    const problems = generateProblems(op, type, carry, t);
     localStorage.setItem('problems', JSON.stringify(problems));
     localStorage.setItem('limit', useLimit ? String(limit * 60) : '');
     navigate('/elem/problems');
@@ -1208,11 +1209,11 @@ const ElemPage: React.FC<ElemPageProps> = () => {
 
   React.useEffect(() => {
     if (type.startsWith('빈칸 문제') && !['소수연산', '혼합연산', '약수배수', '단위변환'].includes(op)) {
-      setExample(getBlankExample(type, carry));
+      setExample(getBlankExample(type, carry, t));
     } else {
       setExample('');
     }
-  }, [type, carry, op]);
+  }, [type, carry, op, t]);
 
   // 연산 종류 변경 시 문제 유형도 자동 변경
   React.useEffect(() => {
