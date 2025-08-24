@@ -273,7 +273,7 @@ function generateProblems(
     } else if (type === '빈칸 문제 한자릿수(뺄셈)') {
       do {
         a = Math.floor(Math.random() * 9) + 1;
-        const answer = Math.floor(Math.random() * a) + 1; // a보다 작은 수
+        const answer = Math.floor(Math.random() * (a - 1)) + 1; // 1 ~ (a-1)
         const b = a - answer;
         ans = answer;
         q = `${a} - □ = ${b}`;
@@ -285,7 +285,7 @@ function generateProblems(
     } else if (type === '빈칸 문제 두자릿수(뺄셈)') {
       do {
         a = Math.floor(Math.random() * 90) + 10;
-        const answer = Math.floor(Math.random() * a) + 1; // a보다 작은 수
+        const answer = Math.floor(Math.random() * (a - 1)) + 1; // 1 ~ (a-1)
         const b = a - answer;
         ans = answer;
         q = `${a} - □ = ${b}`;
@@ -297,7 +297,7 @@ function generateProblems(
     } else if (type === '빈칸 문제 세자릿수(뺄셈)') {
       do {
         a = Math.floor(Math.random() * 900) + 100;
-        const answer = Math.floor(Math.random() * a) + 1; // a보다 작은 수
+        const answer = Math.floor(Math.random() * (a - 1)) + 1; // 1 ~ (a-1)
         const b = a - answer;
         ans = answer;
         q = `${a} - □ = ${b}`;
