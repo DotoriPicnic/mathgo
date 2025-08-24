@@ -222,7 +222,7 @@ function generateSystemProblems(level: number): { question: string; answer: stri
     const x = Math.floor(Math.random() * 5) + 1; // 1-5
     const y = Math.floor(Math.random() * 5) + 1; // 1-5
     
-    const question = `x + y = ${x + y}, x - y = ${x - y}`;
+    const question = `x + y = ${x + y}, x - y = ${x - y}일 때 x, y = (    )`;
     const answer = `x=${x}, y=${y}`;
     
     return { question, answer, type: 'system', level: 1 };
@@ -232,7 +232,7 @@ function generateSystemProblems(level: number): { question: string; answer: stri
     const y = Math.floor(Math.random() * 4) + 1; // 1-4
     const a = Math.floor(Math.random() * 3) + 2; // 2-4
     
-    const question = `${a}x + y = ${a * x + y}, x - y = ${x - y}`;
+    const question = `${a}x + y = ${a * x + y}, x - y = ${x - y}일 때 x, y = (    )`;
     const answer = `x=${x}, y=${y}`;
     
     return { question, answer, type: 'system', level: 2 };
@@ -243,7 +243,7 @@ function generateSystemProblems(level: number): { question: string; answer: stri
     const a = Math.floor(Math.random() * 3) + 2; // 2-4
     const b = Math.floor(Math.random() * 3) + 2; // 2-4
     
-    const question = `${a}x + ${b}y = ${a * x + b * y}, x - y = ${x - y}`;
+    const question = `${a}x + ${b}y = ${a * x + b * y}, x - y = ${x - y}일 때 x, y = (    )`;
     const answer = `x=${x}, y=${y}`;
     
     return { question, answer, type: 'system', level: 3 };
@@ -257,7 +257,7 @@ function generateFunctionProblems(level: number): { question: string; answer: nu
     const b = Math.floor(Math.random() * 10) + 1; // 1-10
     const x = Math.floor(Math.random() * 10) + 1; // 1-10
     
-    const question = `y = ${a}x + ${b}, x = ${x} → y = ?`;
+    const question = `y = ${a}x + ${b}, x = ${x}일 때 y = (    )`;
     const answer = a * x + b;
     
     return { question, answer, type: 'function', level: 1 };
@@ -267,7 +267,7 @@ function generateFunctionProblems(level: number): { question: string; answer: nu
     const b = Math.floor(Math.random() * 10) + 1; // 1-10
     const x = Math.floor(Math.random() * 10) + 1; // 1-10
     
-    const question = `y = ${a}x + ${b}, x = ${x} → y = ?`;
+    const question = `y = ${a}x + ${b}, x = ${x}일 때 y = (    )`;
     const answer = a * x + b;
     
     return { question, answer, type: 'function', level: 2 };
@@ -277,7 +277,7 @@ function generateFunctionProblems(level: number): { question: string; answer: nu
     const b = Math.floor(Math.random() * 15) + 1; // 1-15
     const x = Math.floor(Math.random() * 10) + 1; // 1-10
     
-    const question = `y = ${a}x - ${b}, x = ${x} → y = ?`;
+    const question = `y = ${a}x - ${b}, x = ${x}일 때 y = (    )`;
     const answer = a * x - b;
     
     return { question, answer, type: 'function', level: 3 };

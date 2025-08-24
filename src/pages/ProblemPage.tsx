@@ -270,17 +270,8 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
           questionSpan.style.fontSize = '14px';
           questionSpan.style.fontWeight = 'bold';
           
-          // 일차함수 문제 형식 수정
+          // 문제 텍스트 처리 (이미 PDF 친화적 형식으로 생성됨)
           let questionText = problem.question;
-          if (problem.type === 'function') {
-            // y = 4x + 3, x = 5 → y = ? → y = 4x + 3, x = 5일 때 y = ?
-            questionText = questionText.replace(/→/g, '일 때');
-            questionText = questionText.replace(/y = \?/g, 'y = (    )');
-          } else if (problem.type === 'system') {
-            // x + y = 5, x - y = 1 → x + y = 5, x - y = 1일 때 x, y = ?
-            questionText = questionText.replace(/→/g, '일 때');
-            questionText = questionText.replace(/x = \d+, y = \d+/g, 'x, y = (    )');
-          }
           
           questionSpan.textContent = `${startIdx + rowIdx * 2 + colIdx + 1}. ${questionText}`;
           
