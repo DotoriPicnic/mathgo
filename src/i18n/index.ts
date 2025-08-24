@@ -307,10 +307,10 @@ const en = {
     decimalWarning: '⚠️ Note: In decimal operations, results are rounded to two decimal places from three decimal places.',
     
     // 약수와 배수 문제 텍스트
-    factorMultipleLv1: ' multiples less than {multiple} is?',
-    factorMultipleLv2: ' divisors greater than {divisor} is?',
-    factorMultipleLv3Gcd: ', {b} greatest common divisor is?',
-    factorMultipleLv3Lcm: ', {b} least common multiple is?',
+    factorMultipleLv1: ' multiples < {multiple}?',
+    factorMultipleLv2: ' divisors > {divisor}?',
+    factorMultipleLv3Gcd: ', {b} GCD?',
+    factorMultipleLv3Lcm: ', {b} LCM?',
     
     // 단위 변환 문제 텍스트
     unitConversionLv1CmToM: 'cm = ?m',
@@ -481,10 +481,10 @@ const zh = {
     decimalWarning: '⚠️ 注意：小数运算中，结果从三位小数四舍五入到两位小数。',
     
     // 약수와 배수 문제 텍스트
-    factorMultipleLv1: '的倍数中小于{multiple}的最大数是？',
-    factorMultipleLv2: '的因数中大于{divisor}的最小数是？',
-    factorMultipleLv3Gcd: '，{b}的最大公约数是？',
-    factorMultipleLv3Lcm: '，{b}的最小公倍数是？',
+    factorMultipleLv1: '的倍数 < {multiple}?',
+    factorMultipleLv2: '的因数 > {divisor}?',
+    factorMultipleLv3Gcd: '，{b}最大公约数?',
+    factorMultipleLv3Lcm: '，{b}最小公倍数?',
     
     // 단위 변환 문제 텍스트
     unitConversionLv1CmToM: 'cm = ?m',

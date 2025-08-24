@@ -62,7 +62,7 @@
   white-space: nowrap;
   min-width: 80px;
   display: inline-block;
-  font-size: 15px;
+  font-size: 14px;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 280px;
@@ -74,7 +74,7 @@
   white-space: nowrap;
   min-width: 100px;
   display: inline-block;
-  font-size: 15px;
+  font-size: 14px;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 180px;
@@ -185,13 +185,13 @@
   .question-text {
     min-width: auto;
     max-width: 100%;
-    font-size: 16px;
+    font-size: 14px;
   }
   
   .question-text-division {
     min-width: auto;
     max-width: 100%;
-    font-size: 16px;
+    font-size: 14px;
   }
   
   .answer-input {
