@@ -269,7 +269,20 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
           const questionSpan = document.createElement('span');
           questionSpan.style.fontSize = '14px';
           questionSpan.style.fontWeight = 'bold';
-          questionSpan.textContent = `${startIdx + rowIdx * 2 + colIdx + 1}. ${problem.question}`;
+          
+          // 일차함수 문제 형식 수정
+          let questionText = problem.question;
+          if (problem.type === 'function') {
+            // y = 4x + 3, x = 5 → y = ? → y = 4x + 3, x = 5일 때 y = ?
+            questionText = questionText.replace(/→/g, '일 때');
+            questionText = questionText.replace(/y = \?/g, 'y = (    )');
+          } else if (problem.type === 'system') {
+            // x + y = 5, x - y = 1 → x + y = 5, x - y = 1일 때 x, y = ?
+            questionText = questionText.replace(/→/g, '일 때');
+            questionText = questionText.replace(/x = \d+, y = \d+/g, 'x, y = (    )');
+          }
+          
+          questionSpan.textContent = `${startIdx + rowIdx * 2 + colIdx + 1}. ${questionText}`;
           
           const answerBox = document.createElement('div');
           answerBox.style.width = '20mm';
@@ -360,7 +373,21 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
           const answerText = document.createElement('div');
           answerText.style.fontSize = '14px';
           answerText.style.fontWeight = 'bold';
-          answerText.textContent = String(problems[i + j].answer);
+          
+          // 정답 형식 처리
+          let answerDisplay = String(problems[i + j].answer);
+          if (problems[i + j].type === 'system') {
+            // 연립방정식: "x=3, y=2" 형식
+            answerDisplay = answerDisplay;
+          } else if (problems[i + j].type === 'function') {
+            // 일차함수: 숫자만 표시
+            answerDisplay = String(problems[i + j].answer);
+          } else if (problems[i + j].type === 'probability') {
+            // 확률: 분수 또는 소수
+            answerDisplay = String(problems[i + j].answer);
+          }
+          
+          answerText.textContent = answerDisplay;
           
           answerDiv.appendChild(problemNum);
           answerDiv.appendChild(answerText);
