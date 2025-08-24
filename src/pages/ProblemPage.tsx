@@ -42,66 +42,10 @@ function Question({ number, text }: QuestionProps) {
         color: '#1f2937',
         letterSpacing: '0.025em'
       }}>
-        {renderWithFraction(text)}
+        {text}
       </span>
     </div>
   );
-}
-
-// [분수 표시용 컴포넌트 추가]
-function Fraction({ value }: { value: string }) {
-  const match = value.match(/^(\d+)\/(\d+)$/);
-  if (!match) return value;
-  return (
-    <span className="fraction" style={{ display: 'inline-block', verticalAlign: 'middle', fontSize: '1em', margin: '0 2px' }}>
-      <span className="top" style={{ display: 'block', textAlign: 'center', fontSize: '0.95em' }}>{match[1]}</span>
-      <span className="line" style={{ display: 'block', borderTop: '2px solid #222', width: '100%', margin: '0 0', height: 2 }}></span>
-      <span className="bottom" style={{ display: 'block', textAlign: 'center', fontSize: '0.95em' }}>{match[2]}</span>
-    </span>
-  );
-}
-
-// [문제 문자열에서 분수 자동 변환 함수]
-function renderWithFraction(str: string) {
-  // 1개 이상 분수(3/4) 패턴을 찾아 Fraction으로 변환
-  const parts = str.split(/(\d+\/\d+)/g);
-  return parts.map((part, idx) =>
-    /^\d+\/\d+$/.test(part) ? <Fraction key={idx} value={part} /> : part
-  );
-}
-
-// [정답 표시용 약분 함수]
-function parseFraction(str: string): { n: number, d: number } | null {
-  if (/^[-+]?\d+$/.test(str)) {
-    return { n: parseInt(str, 10), d: 1 };
-  }
-  if (/^[-+]?\d+\/\d+$/.test(str)) {
-    const [n, d] = str.split('/').map(Number);
-    return { n, d };
-  }
-  if (/^[-+]?\d*\.\d+$/.test(str)) {
-    const f = parseFloat(str);
-    const s = str.split('.')[1].length;
-    const d = Math.pow(10, s);
-    const n = Math.round(f * d);
-    return { n, d };
-  }
-  return null;
-}
-function gcd(a: number, b: number): number {
-  return b === 0 ? Math.abs(a) : gcd(b, a % b);
-}
-function normalizeFrac(frac: { n: number, d: number }) {
-  const g = gcd(frac.n, frac.d);
-  return { n: frac.n / g, d: frac.d / g };
-}
-function getDisplayAnswer(answer: string | number) {
-  if (typeof answer === 'number') return String(answer);
-  const frac = parseFraction(answer);
-  if (!frac) return answer;
-  const norm = normalizeFrac(frac);
-  if (norm.d === 1) return String(norm.n);
-  return `${norm.n}/${norm.d}`;
 }
 
 interface ProblemPageProps {
@@ -490,7 +434,7 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
                           lineHeight: '1.4',
                           marginRight: isDivision && !isDecimalDivision ? '4px' : '0'
                         }}>
-                          {renderWithFraction(p.question)}
+                          {p.question}
                         </span>
                                                {/* 정수 나눗셈만 몫/나머지, 소수 나눗셈은 소수 한 칸만 */}
                         {isDivision && !isDecimalDivision ? (
@@ -681,47 +625,46 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
           {/* 상단 제목 */}
           <div style={{ display: 'flex', alignItems: 'center', borderBottom: '2px solid #bbb', paddingBottom: 6, marginBottom: 10 }}>
             <div style={{ fontWeight: 900, fontSize: 15, background: '#eee', borderRadius: 6, padding: '2px 10px', marginRight: 8 }}>Caluri</div>
-            <div style={{ fontWeight: 800, fontSize: 20, marginRight: 8 }}>{t('problemWorkbook')}</div>
-            {problems.length > 0 && problems[0].question.includes('/') ? (
-              <div style={{ fontWeight: 600, fontSize: 13, color: '#2563eb', marginRight: 8 }}>
-                {problems[0].question.includes('+') ? t('fractionAddition')
-                  : problems[0].question.includes('-') ? t('fractionSubtraction')
-                  : problems[0].question.includes('×') ? t('fractionMultiplication')
-                  : problems[0].question.includes('÷') ? t('fractionDivision')
-                  : t('fractionOperation')}
-              </div>
-            ) : null}
+            <div style={{ fontWeight: 800, fontSize: 20, marginRight: 8 }}>{t('answerSheet')}</div>
             <div style={{ flex: 1 }} />
           </div>
-          {/* 정답 2열 10행, 폰트 12px로 축소 */}
-          <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: 850, marginTop: 0, marginBottom: 0, alignItems: 'flex-start' }}>
-            {[0, 1].map(col => (
-              <div key={col} style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: 0 }}>
-                {pdfRows.map((row, rowIdx) => (
-                  row[col] ? (
-                    <div key={rowIdx} style={{ minHeight: 10, marginBottom: 2, padding: 0, lineHeight: 1.1 }}>
-                      <div className="flex items-center space-x-2">
-                        <span className="bg-blue-500 text-white px-2 py-0.5 rounded-full font-bold text-xs">
-                          Q{col === 0 ? rowIdx + 1 : rowIdx + 11}
+          {/* 정답 10열 10행으로 배치 (100개까지 표시 가능) */}
+          <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: 850, marginTop: 0, marginBottom: 0 }}>
+            {Array.from({ length: Math.ceil(problems.length / 10) }, (_, row) => (
+              <div key={row} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', height: '20px' }}>
+                {Array.from({ length: 10 }, (_, col) => {
+                  const problemIdx = row * 10 + col;
+                  if (problemIdx < problems.length) {
+                    const problem = problems[problemIdx];
+                    return (
+                      <div key={col} style={{ 
+                        flex: '1', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        fontSize: '10px',
+                        fontWeight: 'bold',
+                        color: '#2563eb',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '4px',
+                        margin: '0 2px',
+                        padding: '2px 4px',
+                        minWidth: '60px'
+                      }}>
+                        <span style={{ marginRight: '4px', color: '#666', fontSize: '8px' }}>
+                          {problemIdx + 1}
                         </span>
-                        <span 
-                          className="font-medium text-gray-800" 
-                          style={{ 
-                            fontSize: row[col].question.includes('의 배수 중') || row[col].question.includes('의 약수 중') ? '10px' : '12px',
-                            fontWeight: row[col].question.includes('의 배수 중') || row[col].question.includes('의 약수 중') ? '500' : '600'
-                          }}
-                        >
-                          {renderWithFraction(row[col].question)}
-                        </span>
-                        <span className="text-blue-600 font-bold text-xs ml-2">
-                          {row[col].question.includes('÷') && typeof (row[col].answer as any) === 'object' && !row[col].question.includes('.')
-                            ? `${t('quotient')}: ${(row[col].answer as any).q}, ${t('remainder')}: ${(row[col].answer as any).r}`
-                            : renderWithFraction(getDisplayAnswer(row[col].answer))}
+                        <span>
+                          {problem.question.includes('÷') && typeof problem.answer === 'object' && problem.answer !== null && 'q' in problem.answer && 'r' in problem.answer
+                            ? `${(problem.answer as any).q},${(problem.answer as any).r}`
+                            : String(problem.answer)}
                         </span>
                       </div>
-                    </div>
-                  ) : <div key={rowIdx} style={{ minHeight: 10, padding: 0 }} />
-                ))}
+                    );
+                  } else {
+                    return <div key={col} style={{ flex: '1', margin: '0 2px' }} />;
+                  }
+                })}
               </div>
             ))}
           </div>
