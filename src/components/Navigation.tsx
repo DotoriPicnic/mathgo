@@ -28,7 +28,8 @@ const Navigation: React.FC = () => {
         backgroundColor: 'rgba(255, 255, 255, 0.95)',
         backdropFilter: 'blur(8px)',
         borderBottom: '1px solid #e5e7eb',
-        padding: '0 1rem'
+        padding: '0 1rem',
+        display: 'none'
       }} className="lg:block">
         <div style={{
           maxWidth: '80rem',

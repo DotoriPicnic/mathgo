@@ -12,6 +12,7 @@ function generateProblems(
   type: string,
   carry: 'all' | 'with' | 'without',
   t: any,
+  count: number = 20,
 ): { question: string; answer: any }[] {
   // 새로운 카테고리 처리
   if (type.startsWith('decimal_lv')) {
@@ -19,7 +20,7 @@ function generateProblems(
     const problems = [];
     const problemSet = new Set();
     let tryCount = 0;
-    while (problems.length < 20 && tryCount < 200) {
+    while (problems.length < count && tryCount < count * 10) {
       tryCount++;
       const problem = generateDecimalProblems(level);
       if (!problemSet.has(problem.question)) {
@@ -35,7 +36,7 @@ function generateProblems(
     const problems = [];
     const problemSet = new Set();
     let tryCount = 0;
-    while (problems.length < 20 && tryCount < 200) {
+    while (problems.length < count && tryCount < count * 10) {
       tryCount++;
       const problem = generateMixedProblems(level);
       if (!problemSet.has(problem.question)) {
@@ -51,7 +52,7 @@ function generateProblems(
     const problems = [];
     const problemSet = new Set();
     let tryCount = 0;
-    while (problems.length < 20 && tryCount < 200) {
+    while (problems.length < count && tryCount < count * 10) {
       tryCount++;
       const problem = generateFactorProblems(level, t);
       if (!problemSet.has(problem.question)) {
@@ -67,7 +68,7 @@ function generateProblems(
     const problems = [];
     const problemSet = new Set();
     let tryCount = 0;
-    while (problems.length < 20 && tryCount < 200) {
+    while (problems.length < count && tryCount < count * 10) {
       tryCount++;
       const problem = generateUnitProblems(level, t);
       if (!problemSet.has(problem.question)) {
@@ -80,7 +81,7 @@ function generateProblems(
   const problems = [];
   const problemSet = new Set(); // 중복 방지용
   let tryCount = 0;
-  while (problems.length < 20 && tryCount < 200) {
+  while (problems.length < count && tryCount < count * 10) {
     tryCount++;
     let a = 0, b = 0, q = '', ans: any = 0, hasCarry = false;
     if (type === '한자릿수 + 한자릿수') {
@@ -1170,12 +1171,14 @@ const ElemPage: React.FC<ElemPageProps> = () => {
   const [useLimit, setUseLimit] = useState(false);
   // 제한 시간(분)
   const [limit, setLimit] = useState(5);
+  // 문제 수
+  const [problemCount, setProblemCount] = useState(20);
   // [문제 유형 미리보기용 예시 상태]
   const [example, setExample] = useState('');
 
   const handleGenerate = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    const problems = generateProblems(op, type, carry, t);
+    const problems = generateProblems(op, type, carry, t, problemCount);
     localStorage.setItem('problems', JSON.stringify(problems));
     localStorage.setItem('limit', useLimit ? String(limit * 60) : '');
     navigate('/elem/problems');
@@ -1423,6 +1426,17 @@ const ElemPage: React.FC<ElemPageProps> = () => {
             </label>
           </div>
         ) : null}
+        {/* 문제 수 선택 */}
+        <div className="form-group">
+          <label className="form-label">문제 수:</label>
+          <select value={problemCount} onChange={e => setProblemCount(Number(e.target.value))} className="form-select">
+            <option value={20}>20문제</option>
+            <option value={40}>40문제</option>
+            <option value={60}>60문제</option>
+            <option value={80}>80문제</option>
+            <option value={100}>100문제</option>
+          </select>
+        </div>
         {/* 제한 시간 */}
         <div className="time-limit-group">
           <label className="form-label">{t('timeLimit')}</label>

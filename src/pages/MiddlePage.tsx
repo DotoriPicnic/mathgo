@@ -224,19 +224,19 @@ function generateProbabilityProblems(level: number): { question: string; answer:
     const multiple = multiples[Math.floor(Math.random() * multiples.length)];
     const favorable = 6 / multiple;
     
-    const question = `Probability of rolling a multiple of ${multiple} with one die`;
+    const question = `주사위에서 ${multiple}의 배수가 나올 확률`;
     const answer = `${favorable}/6`;
     
     return { question, answer, type: 'probability', level: 1 };
   } else if (level === 2) {
     // Coin tosses
-    const question = `Probability of 2 coins both heads`;
+    const question = `동전 2개를 던져 모두 앞면이 나올 확률`;
     const answer = `1/4`;
     
     return { question, answer, type: 'probability', level: 2 };
   } else {
     // Dice + Coin
-    const question = `Probability of rolling an even number and getting heads (1 die + 1 coin)`;
+    const question = `주사위에서 짝수가 나오고 동전에서 앞면이 나올 확률`;
     const answer = `3/12`;
     
     return { question, answer, type: 'probability', level: 3 };
@@ -247,12 +247,13 @@ function generateProbabilityProblems(level: number): { question: string; answer:
 function generateMiddleProblems(
   type: string,
   level: number,
+  count: number = 20,
 ): { question: string; answer: any; type: string; level: number }[] {
   const problems = [];
   const problemSet = new Set(); // 중복 방지용
   let tryCount = 0;
   
-  while (problems.length < 20 && tryCount < 200) {
+  while (problems.length < count && tryCount < count * 10) {
     tryCount++;
     let problem;
     
@@ -366,17 +367,29 @@ interface MiddlePageProps {
 const MiddlePage: React.FC<MiddlePageProps> = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [category, setCategory] = useState('integer');
-  const [type, setType] = useState('integer_lv1');
+  
+  // localStorage에서 이전 선택 상태 복원
+  const [category, setCategory] = useState(() => {
+    const saved = localStorage.getItem('middleCategory');
+    return saved || 'integer';
+  });
+  const [type, setType] = useState(() => {
+    const saved = localStorage.getItem('middleType');
+    return saved || 'integer_lv1';
+  });
   const [useLimit, setUseLimit] = useState(false);
   const [limit, setLimit] = useState(5);
+  const [problemCount, setProblemCount] = useState(20);
 
   const handleGenerate = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const level = parseInt(type.split('_')[1].replace('lv', ''));
-    const problems = generateMiddleProblems(category, level);
+    const problems = generateMiddleProblems(category, level, problemCount);
     localStorage.setItem('problems', JSON.stringify(problems));
     localStorage.setItem('limit', useLimit ? String(limit * 60) : '');
+    // 현재 선택 상태 저장
+    localStorage.setItem('middleCategory', category);
+    localStorage.setItem('middleType', type);
     navigate('/middle/problems');
   };
 
@@ -431,6 +444,18 @@ const MiddlePage: React.FC<MiddlePageProps> = () => {
             {getFilteredMiddleProblemTypes(category, t).map(problemType => (
               <option key={problemType.value} value={problemType.value}>{problemType.label}</option>
             ))}
+          </select>
+        </div>
+        
+        {/* 문제 수 선택 */}
+        <div className="form-group">
+          <label className="form-label">문제 수:</label>
+          <select value={problemCount} onChange={e => setProblemCount(Number(e.target.value))} className="form-select">
+            <option value={20}>20문제</option>
+            <option value={40}>40문제</option>
+            <option value={60}>60문제</option>
+            <option value={80}>80문제</option>
+            <option value={100}>100문제</option>
           </select>
         </div>
         
