@@ -147,14 +147,15 @@ const ResultPage: React.FC<ResultPageProps> = () => {
             s++;
           }
         }
-        // 나눗셈 문제는 몫/나머지 모두 비교
+        // 나눗셈 문제는 몫/나머지 모두 비교 (나머지가 0일 때는 빈 값도 정답 처리)
         else if (prob.question.includes('÷')) {
           const user = alist[i];
           const ans = prob.answer as any;
           if (
             user && typeof user === 'object' && ans && typeof ans === 'object' &&
             String(user.q).trim() === String(ans.q) &&
-            String(user.r).trim() === String(ans.r)
+            (String(user.r).trim() === String(ans.r) || 
+             (String(ans.r) === '0' && (String(user.r).trim() === '0' || String(user.r).trim() === '')))
           ) {
             s++;
           }
@@ -227,7 +228,8 @@ const ResultPage: React.FC<ResultPageProps> = () => {
                     const ans = (p.answer as any);
                     isCorrect = user && typeof user === 'object' && ans && typeof ans === 'object' &&
                       String(user.q).trim() === String(ans.q) &&
-                      String(user.r).trim() === String(ans.r);
+                      (String(user.r).trim() === String(ans.r) || 
+                       (String(ans.r) === '0' && (String(user.r).trim() === '0' || String(user.r).trim() === '')));
                   } else {
                     isCorrect = typeof userAns === 'string' && compareAnswer(userAns, p.answer);
                   }
@@ -239,7 +241,7 @@ const ResultPage: React.FC<ResultPageProps> = () => {
                         {/* 정수 나눗셈만 몫/나머지, 소수 나눗셈은 소수 한 칸만 */}
                         {isIntDiv && !isDecimalDiv ? (
                           <span className="division-answer" style={{ fontSize: 15, minWidth: 0, wordBreak: 'break-all', whiteSpace: 'normal' }}>
-                            ({t('quotient')}: {(userAnswers[idx] as any)?.q ?? ''}, {t('remainder')}: {(userAnswers[idx] as any)?.r ?? ''})
+                            ({(userAnswers[idx] as any)?.q ?? ''}, {(userAnswers[idx] as any)?.r ?? ''})
                           </span>
                         ) : (
                           typeof userAns === 'string' && (
@@ -280,7 +282,7 @@ const ResultPage: React.FC<ResultPageProps> = () => {
                               (isIntDiv && !isDecimalDiv && typeof p.answer === 'object' && p.answer !== null ?
                                 (() => {
                                   const ans = p.answer as any;
-                                  return `(${t('quotient')}: ${ans.q}, ${t('remainder')}: ${ans.r})`;
+                                  return `(${ans.q}, ${ans.r})`;
                                 })()
                                 : p.question.includes('/')
                                   ? renderWithFraction(getDisplayAnswer(p.answer))

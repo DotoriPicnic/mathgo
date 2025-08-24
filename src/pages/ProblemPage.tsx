@@ -338,22 +338,18 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
                           <div className="division-input" style={{ 
                             display: 'flex', 
                             alignItems: 'center', 
-                            gap: '3px',
+                            gap: '4px',
                             flexShrink: 0,
-                            minWidth: '140px',
-                            padding: '2px 4px',
-                            backgroundColor: '#f8fafc',
-                            borderRadius: '6px',
-                            border: '1px solid #e2e8f0'
+                            minWidth: '120px'
                           }}>
-                            <span className="division-label" style={{ fontSize: '12px', fontWeight: '500' }}>({t('quotient')}:</span>
+                            <span className="division-label" style={{ fontSize: '12px', fontWeight: '500' }}>(</span>
                             <input
                               type="text"
                               value={answer.q || ''}
                               onChange={e => handleDivisionChange(idx, 'q', e.target.value)}
                               className="division-field"
                               style={{ 
-                                width: '38px', 
+                                width: '35px', 
                                 textAlign: 'center',
                                 fontSize: '14px',
                                 height: '26px',
@@ -361,15 +357,16 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
                                 borderRadius: '4px',
                                 backgroundColor: 'white'
                               }}
+                              placeholder="몫"
                             />
-                            <span className="division-label" style={{ fontSize: '12px', fontWeight: '500' }}>{t('remainder')}:</span>
+                            <span className="division-label" style={{ fontSize: '12px', fontWeight: '500' }}>,</span>
                             <input
                               type="text"
                               value={answer.r || ''}
                               onChange={e => handleDivisionChange(idx, 'r', e.target.value)}
                               className="division-field"
                               style={{ 
-                                width: '38px', 
+                                width: '35px', 
                                 textAlign: 'center',
                                 fontSize: '14px',
                                 height: '26px',
@@ -377,6 +374,7 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
                                 borderRadius: '4px',
                                 backgroundColor: 'white'
                               }}
+                              placeholder="나머지"
                             />
                             <span className="division-label" style={{ fontSize: '12px', fontWeight: '500' }}>)</span>
                           </div>
