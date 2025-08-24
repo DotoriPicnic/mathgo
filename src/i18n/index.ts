@@ -123,6 +123,15 @@ const ko = {
     // 비교 연산
     comparisonOperationType: 'A ㅁ B 비교 연산',
     
+    // 새로운 카테고리들
+    decimalOperation: '소수 연산',
+    mixedOperation: '혼합 연산',
+    factorMultiple: '약수와 배수',
+    unitConversion: '단위 변환',
+    
+    // 소수 연산 주의사항
+    decimalWarning: '⚠️ 주의사항: 소수 연산에서는 소수점 세자리에서 반올림하여 소수점 두자리까지만 표시됩니다.',
+    
     // ProblemPage
     problemWorkbook: '연산문제집',
     fractionOperation: '분수 연산',
@@ -274,6 +283,15 @@ const en = {
     // 비교 연산
     comparisonOperationType: 'A □ B Comparison',
     
+    // 새로운 카테고리들
+    decimalOperation: 'Decimal Operation',
+    mixedOperation: 'Mixed Operation',
+    factorMultiple: 'Factors and Multiples',
+    unitConversion: 'Unit Conversion',
+    
+    // 소수 연산 주의사항
+    decimalWarning: '⚠️ Note: In decimal operations, results are rounded to two decimal places from three decimal places.',
+    
     // ProblemPage
     problemWorkbook: 'Math Workbook',
     fractionOperation: 'Fraction Operation',
@@ -424,6 +442,15 @@ const zh = {
     
     // 비교 연산
     comparisonOperationType: 'A □ B 比较运算',
+    
+    // 새로운 카테고리들
+    decimalOperation: '小数运算',
+    mixedOperation: '混合运算',
+    factorMultiple: '因数和倍数',
+    unitConversion: '单位换算',
+    
+    // 소수 연산 주의사항
+    decimalWarning: '⚠️ 注意：小数运算中，结果从三位小数四舍五入到两位小数。',
     
     // ProblemPage
     problemWorkbook: '运算练习册',

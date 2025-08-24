@@ -1035,28 +1035,28 @@ const decimalTypes = [
 ];
 
 // 새로운 카테고리 문제 유형들
-const decimalCategoryTypes = [
-  { label: '소수 연산 Lv1', value: 'decimal_lv1' },
-  { label: '소수 연산 Lv2', value: 'decimal_lv2' },
-  { label: '소수 연산 Lv3', value: 'decimal_lv3' },
+const getDecimalCategoryTypes = (t: any) => [
+  { label: `${t('decimalOperation')} Lv1`, value: 'decimal_lv1' },
+  { label: `${t('decimalOperation')} Lv2`, value: 'decimal_lv2' },
+  { label: `${t('decimalOperation')} Lv3`, value: 'decimal_lv3' },
 ];
 
-const mixedCategoryTypes = [
-  { label: '혼합 연산 Lv1', value: 'mixed_lv1' },
-  { label: '혼합 연산 Lv2', value: 'mixed_lv2' },
-  { label: '혼합 연산 Lv3', value: 'mixed_lv3' },
+const getMixedCategoryTypes = (t: any) => [
+  { label: `${t('mixedOperation')} Lv1`, value: 'mixed_lv1' },
+  { label: `${t('mixedOperation')} Lv2`, value: 'mixed_lv2' },
+  { label: `${t('mixedOperation')} Lv3`, value: 'mixed_lv3' },
 ];
 
-const factorCategoryTypes = [
-  { label: '약수와 배수 Lv1', value: 'factor_lv1' },
-  { label: '약수와 배수 Lv2', value: 'factor_lv2' },
-  { label: '약수와 배수 Lv3', value: 'factor_lv3' },
+const getFactorCategoryTypes = (t: any) => [
+  { label: `${t('factorMultiple')} Lv1`, value: 'factor_lv1' },
+  { label: `${t('factorMultiple')} Lv2`, value: 'factor_lv2' },
+  { label: `${t('factorMultiple')} Lv3`, value: 'factor_lv3' },
 ];
 
-const unitCategoryTypes = [
-  { label: '단위 변환 Lv1', value: 'unit_lv1' },
-  { label: '단위 변환 Lv2', value: 'unit_lv2' },
-  { label: '단위 변환 Lv3', value: 'unit_lv3' },
+const getUnitCategoryTypes = (t: any) => [
+  { label: `${t('unitConversion')} Lv1`, value: 'unit_lv1' },
+  { label: `${t('unitConversion')} Lv2`, value: 'unit_lv2' },
+  { label: `${t('unitConversion')} Lv3`, value: 'unit_lv3' },
 ];
 
 function getFilteredProblemTypes(op: string, t: any) {
@@ -1276,10 +1276,10 @@ const ElemPage: React.FC<ElemPageProps> = () => {
     { label: t('multiplication'), value: '곱셈' },
     { label: t('division'), value: '나눗셈' },
     { label: t('fraction'), value: '분수' },
-    { label: '소수 연산', value: '소수연산' },
-    { label: '혼합 연산', value: '혼합연산' },
-    { label: '약수와 배수', value: '약수배수' },
-    { label: '단위 변환', value: '단위변환' },
+    { label: t('decimalOperation'), value: '소수연산' },
+    { label: t('mixedOperation'), value: '혼합연산' },
+    { label: t('factorMultiple'), value: '약수배수' },
+    { label: t('unitConversion'), value: '단위변환' },
   ];
 
   return (
@@ -1321,7 +1321,7 @@ const ElemPage: React.FC<ElemPageProps> = () => {
              fontSize: '14px',
              fontWeight: '500'
            }}>
-             ⚠️ <strong>주의사항:</strong> 소수 연산에서는 소수점 세자리에서 반올림하여 소수점 두자리까지만 표시됩니다.
+             {t('decimalWarning')}
            </div>
          )}
         {/* 연산 종류 */}
