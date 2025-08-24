@@ -270,17 +270,19 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
       
       // 페이지 캡처
       const canvas = await html2canvas(tempPdfRef, { 
-        scale: 2, 
+        scale: 1.5, 
         backgroundColor: '#fff',
         width: 794,
-        height: 1123
+        height: 1123,
+        useCORS: true,
+        allowTaint: true
       });
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL('image/jpeg', 0.8);
       const imgProps = pdf.getImageProperties(imgData);
       const pdfWidth = pageWidth;
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
       
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
       
       // 임시 요소 제거
       document.body.removeChild(tempPdfRef);
@@ -292,17 +294,19 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
       
       // 정답 페이지 캡처
       const answerCanvas = await html2canvas(pdfAnswerRef.current, { 
-        scale: 2, 
+        scale: 1.5, 
         backgroundColor: '#fff',
         width: 794,
-        height: 1123
+        height: 1123,
+        useCORS: true,
+        allowTaint: true
       });
-      const answerImg = answerCanvas.toDataURL('image/png');
+      const answerImg = answerCanvas.toDataURL('image/jpeg', 0.8);
       const answerImgProps = pdf.getImageProperties(answerImg);
       const answerPdfWidth = pageWidth;
       const answerPdfHeight = (answerImgProps.height * answerPdfWidth) / answerImgProps.width;
       
-      pdf.addImage(answerImg, 'PNG', 0, 0, answerPdfWidth, answerPdfHeight);
+      pdf.addImage(answerImg, 'JPEG', 0, 0, answerPdfWidth, answerPdfHeight);
     }
     
     // 파일명: Calcuri-연산명_YYYYMMDD-HHmmss.pdf
