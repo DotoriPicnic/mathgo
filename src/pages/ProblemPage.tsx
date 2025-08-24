@@ -294,8 +294,20 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
                 const isComparison = p.question.includes('□') && p.question.match(/\d+\s*□\s*\d+/);
 
                                                   return (
-                   <div key={i} className="problem-item">
-                                           <div className="problem-content" style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'nowrap', minWidth: 0, width: '100%', overflow: 'visible' }}>
+                                       <div key={i} className="problem-item" style={{ 
+                      minWidth: isDivision && !isDecimalDivision ? '280px' : '220px',
+                      maxWidth: isDivision && !isDecimalDivision ? '400px' : '360px'
+                    }}>
+                      <div className="problem-content" style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '8px', 
+                        flexWrap: 'nowrap', 
+                        minWidth: 0, 
+                        width: '100%', 
+                        overflow: 'visible',
+                        padding: isDivision && !isDecimalDivision ? '8px 4px' : '4px'
+                      }}>
                        <span style={{ 
                          backgroundColor: '#3b82f6', 
                          color: 'white', 
@@ -307,16 +319,17 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
                          Q{idx + 1}
                        </span>
                                                <span style={{ 
-                          fontSize: (isDivision && !isDecimalDivision) ? '13px' : 
+                          fontSize: (isDivision && !isDecimalDivision) ? '14px' : 
                                    (p.question.includes('의 배수 중') || p.question.includes('의 약수 중')) ? '13px' : '18px', 
                           fontWeight: p.question.includes('의 배수 중') || p.question.includes('의 약수 중') ? '500' : '600', 
                           color: '#1f2937',
                           letterSpacing: '0.025em',
                           whiteSpace: 'nowrap',
                           flexShrink: 1,
-                          maxWidth: (isDivision && !isDecimalDivision) ? '60%' : 
+                          maxWidth: (isDivision && !isDecimalDivision) ? '65%' : 
                                    (p.question.includes('의 배수 중') || p.question.includes('의 약수 중')) ? '70%' : 'none',
-                          lineHeight: '1.3'
+                          lineHeight: '1.4',
+                          marginRight: isDivision && !isDecimalDivision ? '4px' : '0'
                         }}>
                           {renderWithFraction(p.question)}
                         </span>
@@ -325,41 +338,47 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
                           <div className="division-input" style={{ 
                             display: 'flex', 
                             alignItems: 'center', 
-                            gap: '2px',
+                            gap: '3px',
                             flexShrink: 0,
-                            minWidth: '120px'
+                            minWidth: '140px',
+                            padding: '2px 4px',
+                            backgroundColor: '#f8fafc',
+                            borderRadius: '6px',
+                            border: '1px solid #e2e8f0'
                           }}>
-                            <span className="division-label" style={{ fontSize: '11px' }}>({t('quotient')}:</span>
+                            <span className="division-label" style={{ fontSize: '12px', fontWeight: '500' }}>({t('quotient')}:</span>
                             <input
                               type="text"
                               value={answer.q || ''}
                               onChange={e => handleDivisionChange(idx, 'q', e.target.value)}
                               className="division-field"
                               style={{ 
-                                width: '35px', 
+                                width: '38px', 
                                 textAlign: 'center',
-                                fontSize: '13px',
-                                height: '24px',
+                                fontSize: '14px',
+                                height: '26px',
                                 border: '1px solid #bcd0f7',
-                                borderRadius: '4px'
+                                borderRadius: '4px',
+                                backgroundColor: 'white'
                               }}
                             />
-                            <span className="division-label" style={{ fontSize: '11px' }}>{t('remainder')}:</span>
+                            <span className="division-label" style={{ fontSize: '12px', fontWeight: '500' }}>{t('remainder')}:</span>
                             <input
                               type="text"
                               value={answer.r || ''}
                               onChange={e => handleDivisionChange(idx, 'r', e.target.value)}
                               className="division-field"
                               style={{ 
-                                width: '35px', 
+                                width: '38px', 
                                 textAlign: 'center',
-                                fontSize: '13px',
-                                height: '24px',
+                                fontSize: '14px',
+                                height: '26px',
                                 border: '1px solid #bcd0f7',
-                                borderRadius: '4px'
+                                borderRadius: '4px',
+                                backgroundColor: 'white'
                               }}
                             />
-                            <span className="division-label" style={{ fontSize: '11px' }}>)</span>
+                            <span className="division-label" style={{ fontSize: '12px', fontWeight: '500' }}>)</span>
                           </div>
                         ) : (
                                                      <input
