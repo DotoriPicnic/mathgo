@@ -273,12 +273,11 @@ function generateProblems(
     } else if (type === '빈칸 문제 한자릿수(뺄셈)') {
       do {
         a = Math.floor(Math.random() * 9) + 1;
-        const answer = Math.floor(Math.random() * 9) + 1;
+        const answer = Math.floor(Math.random() * a) + 1; // a보다 작은 수
         const b = a - answer;
-        if (b < 0) continue;
         ans = answer;
         q = `${a} - □ = ${b}`;
-        hasCarry = a - ans < 0;
+        hasCarry = false; // 한자릿수 뺄셈에서는 내림이 없음
       } while (
         (carry === 'with' && !hasCarry) ||
         (carry === 'without' && hasCarry)
@@ -286,9 +285,8 @@ function generateProblems(
     } else if (type === '빈칸 문제 두자릿수(뺄셈)') {
       do {
         a = Math.floor(Math.random() * 90) + 10;
-        const answer = Math.floor(Math.random() * 99) + 1;
+        const answer = Math.floor(Math.random() * a) + 1; // a보다 작은 수
         const b = a - answer;
-        if (b < 0) continue;
         ans = answer;
         q = `${a} - □ = ${b}`;
         hasCarry = (a % 10) - (answer % 10) < 0;
@@ -299,9 +297,8 @@ function generateProblems(
     } else if (type === '빈칸 문제 세자릿수(뺄셈)') {
       do {
         a = Math.floor(Math.random() * 900) + 100;
-        const answer = Math.floor(Math.random() * 999) + 1;
+        const answer = Math.floor(Math.random() * a) + 1; // a보다 작은 수
         const b = a - answer;
-        if (b < 0) continue;
         ans = answer;
         q = `${a} - □ = ${b}`;
         hasCarry = (a % 10) - (answer % 10) < 0 || (Math.floor(a / 10) % 10) - (Math.floor(answer / 10) % 10) < 0;
