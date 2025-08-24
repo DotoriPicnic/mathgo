@@ -1035,25 +1035,25 @@ const decimalTypes = [
 ];
 
 // 새로운 카테고리 문제 유형들
-const getDecimalCategoryTypes = (t: any) => [
+const getDecimalCategoryTypes = (t: any): Array<{label: string, value: string}> => [
   { label: `${t('decimalOperation')} Lv1`, value: 'decimal_lv1' },
   { label: `${t('decimalOperation')} Lv2`, value: 'decimal_lv2' },
   { label: `${t('decimalOperation')} Lv3`, value: 'decimal_lv3' },
 ];
 
-const getMixedCategoryTypes = (t: any) => [
+const getMixedCategoryTypes = (t: any): Array<{label: string, value: string}> => [
   { label: `${t('mixedOperation')} Lv1`, value: 'mixed_lv1' },
   { label: `${t('mixedOperation')} Lv2`, value: 'mixed_lv2' },
   { label: `${t('mixedOperation')} Lv3`, value: 'mixed_lv3' },
 ];
 
-const getFactorCategoryTypes = (t: any) => [
+const getFactorCategoryTypes = (t: any): Array<{label: string, value: string}> => [
   { label: `${t('factorMultiple')} Lv1`, value: 'factor_lv1' },
   { label: `${t('factorMultiple')} Lv2`, value: 'factor_lv2' },
   { label: `${t('factorMultiple')} Lv3`, value: 'factor_lv3' },
 ];
 
-const getUnitCategoryTypes = (t: any) => [
+const getUnitCategoryTypes = (t: any): Array<{label: string, value: string}> => [
   { label: `${t('unitConversion')} Lv1`, value: 'unit_lv1' },
   { label: `${t('unitConversion')} Lv2`, value: 'unit_lv2' },
   { label: `${t('unitConversion')} Lv3`, value: 'unit_lv3' },
@@ -1125,25 +1125,25 @@ function getFilteredProblemTypes(op: string, t: any) {
     }));
   }
   if (op === '소수연산') {
-    return decimalCategoryTypes.map(type => ({
+    return getDecimalCategoryTypes(t).map((type: any) => ({
       label: type.label,
       value: type.value
     }));
   }
   if (op === '혼합연산') {
-    return mixedCategoryTypes.map(type => ({
+    return getMixedCategoryTypes(t).map((type: any) => ({
       label: type.label,
       value: type.value
     }));
   }
   if (op === '약수배수') {
-    return factorCategoryTypes.map(type => ({
+    return getFactorCategoryTypes(t).map((type: any) => ({
       label: type.label,
       value: type.value
     }));
   }
   if (op === '단위변환') {
-    return unitCategoryTypes.map(type => ({
+    return getUnitCategoryTypes(t).map((type: any) => ({
       label: type.label,
       value: type.value
     }));
@@ -1222,13 +1222,13 @@ const ElemPage: React.FC<ElemPageProps> = () => {
       if (op === '분수') {
         setType(fractionTypes[0].value);
       } else if (op === '소수연산') {
-        setType(decimalCategoryTypes[0].value);
+        setType(getDecimalCategoryTypes(t)[0].value);
       } else if (op === '혼합연산') {
-        setType(mixedCategoryTypes[0].value);
+        setType(getMixedCategoryTypes(t)[0].value);
       } else if (op === '약수배수') {
-        setType(factorCategoryTypes[0].value);
+        setType(getFactorCategoryTypes(t)[0].value);
       } else if (op === '단위변환') {
-        setType(unitCategoryTypes[0].value);
+        setType(getUnitCategoryTypes(t)[0].value);
       } else {
         setType(filtered[0].value);
       }
