@@ -130,7 +130,7 @@ const ko = {
     unitConversion: '단위 변환',
     
     // 소수 연산 주의사항
-    decimalWarning: '⚠️ 주의사항: 소수 연산에서는 소수점 세자리에서 반올림하여 소수점 두자리까지만 표시됩니다.',
+    decimalWarning: '⚠️ 주의사항: 소수 연산에서는 소수점 세자리에서 반올림하여\n소수점 두자리까지만 표시됩니다.',
     
     // 약수와 배수 문제 텍스트
     factorMultipleLv1: '의 배수 중 {multiple}보다 작은 가장 큰 수는?',
@@ -304,7 +304,7 @@ const en = {
     unitConversion: 'Unit Conversion',
     
     // 소수 연산 주의사항
-    decimalWarning: '⚠️ Note: In decimal operations, results are rounded to two decimal places from three decimal places.',
+    decimalWarning: '⚠️ Note: In decimal operations, results are rounded\nto two decimal places from three decimal places.',
     
     // 약수와 배수 문제 텍스트
     factorMultipleLv1: ' multiples < {multiple}?',
@@ -478,7 +478,7 @@ const zh = {
     unitConversion: '单位换算',
     
     // 소수 연산 주의사항
-    decimalWarning: '⚠️ 注意：小数运算中，结果从三位小数四舍五入到两位小数。',
+    decimalWarning: '⚠️ 注意：小数运算中，结果从三位小数\n四舍五入到两位小数。',
     
     // 약수와 배수 문제 텍스트
     factorMultipleLv1: '的倍数 < {multiple}?',

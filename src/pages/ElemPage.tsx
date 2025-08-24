@@ -1206,7 +1206,9 @@ const ElemPage: React.FC<ElemPageProps> = () => {
 
   // 연산 종류 변경 시 문제 유형도 자동 변경
   React.useEffect(() => {
+    console.log('useEffect triggered - op:', op, 't:', t);
     const filtered = getFilteredProblemTypes(op, t);
+    console.log('Filtered types in useEffect:', filtered);
     if (filtered.length > 0) {
       // 분수 연산일 때는 fractionTypes의 첫 번째 값으로 명확히 지정
       if (op === '분수') {
@@ -1309,7 +1311,11 @@ const ElemPage: React.FC<ElemPageProps> = () => {
              marginBottom: '16px',
              color: '#92400e',
              fontSize: '14px',
-             fontWeight: '500'
+             fontWeight: '500',
+             lineHeight: '1.5',
+             whiteSpace: 'normal',
+             wordWrap: 'break-word',
+             textAlign: 'left'
            }}>
              {t('decimalWarning')}
            </div>
@@ -1337,16 +1343,33 @@ const ElemPage: React.FC<ElemPageProps> = () => {
         {/* 문제 유형 (드롭다운) */}
         <div className="form-group">
           <label className="form-label">{t('problemType')}</label>
-          <select
-            className="form-select"
-            value={type}
-            onChange={e => setType(e.target.value)}
-            style={{ minWidth: 180 }}
-          >
-            {getFilteredProblemTypes(op, t).map(problemType => (
-              <option key={problemType.value} value={problemType.value}>{problemType.label}</option>
-            ))}
-          </select>
+          {(() => {
+            const filteredTypes = getFilteredProblemTypes(op, t);
+            console.log('Current op:', op);
+            console.log('Current type:', type);
+            console.log('Filtered types:', filteredTypes);
+            return (
+              <select
+                className="form-select"
+                value={type}
+                onChange={e => {
+                  console.log('Select changed to:', e.target.value);
+                  setType(e.target.value);
+                }}
+                style={{ 
+                  minWidth: 180,
+                  position: 'relative',
+                  zIndex: 1000,
+                  backgroundColor: 'white',
+                  border: '2px solid #2563eb'
+                }}
+              >
+                {filteredTypes.map(problemType => (
+                  <option key={problemType.value} value={problemType.value}>{problemType.label}</option>
+                ))}
+              </select>
+            );
+          })()}
         </div>
         {/* 올림/내림 옵션 (라디오 버튼처럼 동작) */}
         {(op === '덧셈' || op === '뺄셈') && !['소수연산', '혼합연산', '약수배수', '단위변환'].includes(op) ? (
