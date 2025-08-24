@@ -76,31 +76,92 @@ function generateIntegerProblems(level: number): { question: string; answer: num
 
 function generatePowerProblems(level: number): { question: string; answer: number; type: string; level: number } {
   if (level === 1) {
-    // Small integer powers
-    const base = Math.floor(Math.random() * 5) + 2; // 2-6
-    const exponent = Math.floor(Math.random() * 4) + 2; // 2-5
+    // Small integer powers - 더 다양한 문제 생성
+    const problems = [
+      { base: 2, exp: 2, answer: 4 },
+      { base: 2, exp: 3, answer: 8 },
+      { base: 2, exp: 4, answer: 16 },
+      { base: 3, exp: 2, answer: 9 },
+      { base: 3, exp: 3, answer: 27 },
+      { base: 4, exp: 2, answer: 16 },
+      { base: 4, exp: 3, answer: 64 },
+      { base: 5, exp: 2, answer: 25 },
+      { base: 5, exp: 3, answer: 125 },
+      { base: 6, exp: 2, answer: 36 },
+      { base: 7, exp: 2, answer: 49 },
+      { base: 8, exp: 2, answer: 64 },
+      { base: 9, exp: 2, answer: 81 },
+      { base: 10, exp: 2, answer: 100 },
+      { base: 2, exp: 5, answer: 32 },
+      { base: 3, exp: 4, answer: 81 },
+      { base: 4, exp: 4, answer: 256 },
+      { base: 5, exp: 4, answer: 625 },
+      { base: 6, exp: 3, answer: 216 },
+      { base: 7, exp: 3, answer: 343 }
+    ];
     
-    const question = `${base}^${exponent} =`;
-    const answer = Math.pow(base, exponent);
+    const selected = problems[Math.floor(Math.random() * problems.length)];
+    const question = `${selected.base}^${selected.exp} =`;
     
-    return { question, answer, type: 'power', level: 1 };
+    return { question, answer: selected.answer, type: 'power', level: 1 };
   } else if (level === 2) {
-    // Negative base with powers
-    const base = -(Math.floor(Math.random() * 5) + 1); // -1 to -5
-    const exponent = Math.floor(Math.random() * 3) + 2; // 2-4
+    // Negative base with powers - 더 다양한 문제 생성
+    const problems = [
+      { base: -1, exp: 2, answer: 1 },
+      { base: -1, exp: 3, answer: -1 },
+      { base: -1, exp: 4, answer: 1 },
+      { base: -2, exp: 2, answer: 4 },
+      { base: -2, exp: 3, answer: -8 },
+      { base: -2, exp: 4, answer: 16 },
+      { base: -3, exp: 2, answer: 9 },
+      { base: -3, exp: 3, answer: -27 },
+      { base: -3, exp: 4, answer: 81 },
+      { base: -4, exp: 2, answer: 16 },
+      { base: -4, exp: 3, answer: -64 },
+      { base: -5, exp: 2, answer: 25 },
+      { base: -5, exp: 3, answer: -125 },
+      { base: -6, exp: 2, answer: 36 },
+      { base: -7, exp: 2, answer: 49 },
+      { base: -8, exp: 2, answer: 64 },
+      { base: -9, exp: 2, answer: 81 },
+      { base: -10, exp: 2, answer: 100 },
+      { base: -2, exp: 5, answer: -32 },
+      { base: -3, exp: 4, answer: 81 }
+    ];
     
-    const question = `(${base})^${exponent} =`;
-    const answer = Math.pow(base, exponent);
+    const selected = problems[Math.floor(Math.random() * problems.length)];
+    const question = `(${selected.base})^${selected.exp} =`;
     
-    return { question, answer, type: 'power', level: 2 };
+    return { question, answer: selected.answer, type: 'power', level: 2 };
   } else {
-    // Square root of perfect squares
-    const perfectSquare = Math.pow(Math.floor(Math.random() * 10) + 1, 2); // 1^2 to 10^2
+    // Square root of perfect squares - 더 다양한 문제 생성
+    const problems = [
+      { square: 1, answer: 1 },
+      { square: 4, answer: 2 },
+      { square: 9, answer: 3 },
+      { square: 16, answer: 4 },
+      { square: 25, answer: 5 },
+      { square: 36, answer: 6 },
+      { square: 49, answer: 7 },
+      { square: 64, answer: 8 },
+      { square: 81, answer: 9 },
+      { square: 100, answer: 10 },
+      { square: 121, answer: 11 },
+      { square: 144, answer: 12 },
+      { square: 169, answer: 13 },
+      { square: 196, answer: 14 },
+      { square: 225, answer: 15 },
+      { square: 256, answer: 16 },
+      { square: 289, answer: 17 },
+      { square: 324, answer: 18 },
+      { square: 361, answer: 19 },
+      { square: 400, answer: 20 }
+    ];
     
-    const question = `√${perfectSquare} =`;
-    const answer = Math.sqrt(perfectSquare);
+    const selected = problems[Math.floor(Math.random() * problems.length)];
+    const question = `√${selected.square} =`;
     
-    return { question, answer, type: 'power', level: 3 };
+    return { question, answer: selected.answer, type: 'power', level: 3 };
   }
 }
 
@@ -111,7 +172,9 @@ function generateEquationProblems(level: number): { question: string; answer: nu
     const b = Math.floor(Math.random() * 10) + 1; // 1-10
     const c = Math.floor(Math.random() * 10) + 1; // 1-10
     
-    const question = `${a}x + ${b} = ${c}`;
+    // 1x를 x로 표시
+    const aDisplay = a === 1 ? 'x' : `${a}x`;
+    const question = `${aDisplay} + ${b} = ${c}`;
     const answer = (c - b) / a;
     
     return { question, answer, type: 'equation', level: 1 };
@@ -127,11 +190,14 @@ function generateEquationProblems(level: number): { question: string; answer: nu
     let question = '';
     let answer = 0;
     
+    // 1x를 x로 표시
+    const aDisplay = a === 1 ? 'x' : `${a}x`;
+    
     if (op === '-') {
-      question = `${a}x - ${b} = ${c}`;
+      question = `${aDisplay} - ${b} = ${c}`;
       answer = (c + b) / a;
     } else {
-      question = `${a}x ÷ ${b} = ${c}`;
+      question = `${aDisplay} ÷ ${b} = ${c}`;
       answer = c * b / a;
     }
     
@@ -142,7 +208,8 @@ function generateEquationProblems(level: number): { question: string; answer: nu
     const b = Math.floor(Math.random() * 5) + 1; // 1-5
     const c = Math.floor(Math.random() * 10) + 1; // 1-10
     
-    const question = `${a}(x + ${b}) = ${c}`;
+    // 계수가 1이면 괄호 앞의 1을 제거
+    const question = a === 1 ? `(x + ${b}) = ${c}` : `${a}(x + ${b}) = ${c}`;
     const answer = (c / a) - b;
     
     return { question, answer, type: 'equation', level: 3 };
@@ -219,27 +286,56 @@ function generateFunctionProblems(level: number): { question: string; answer: nu
 
 function generateProbabilityProblems(level: number): { question: string; answer: string; type: string; level: number } {
   if (level === 1) {
-    // Dice roll (basic event)
-    const multiples = [2, 3, 4, 6];
-    const multiple = multiples[Math.floor(Math.random() * multiples.length)];
-    const favorable = 6 / multiple;
+    // Dice roll (basic event) - 더 다양한 문제 생성
+    const problems = [
+      { question: '주사위에서 짝수가 나올 확률', answer: '3/6' },
+      { question: '주사위에서 홀수가 나올 확률', answer: '3/6' },
+      { question: '주사위에서 3의 배수가 나올 확률', answer: '2/6' },
+      { question: '주사위에서 2의 배수가 나올 확률', answer: '3/6' },
+      { question: '주사위에서 5보다 큰 수가 나올 확률', answer: '1/6' },
+      { question: '주사위에서 3보다 작은 수가 나올 확률', answer: '2/6' },
+      { question: '주사위에서 소수가 나올 확률', answer: '3/6' },
+      { question: '주사위에서 합성수가 나올 확률', answer: '2/6' },
+      { question: '주사위에서 완전제곱수가 나올 확률', answer: '2/6' },
+      { question: '주사위에서 완전세제곱수가 나올 확률', answer: '1/6' }
+    ];
     
-    const question = `주사위에서 ${multiple}의 배수가 나올 확률`;
-    const answer = `${favorable}/6`;
-    
-    return { question, answer, type: 'probability', level: 1 };
+    const selected = problems[Math.floor(Math.random() * problems.length)];
+    return { question: selected.question, answer: selected.answer, type: 'probability', level: 1 };
   } else if (level === 2) {
-    // Coin tosses
-    const question = `동전 2개를 던져 모두 앞면이 나올 확률`;
-    const answer = `1/4`;
+    // Coin tosses - 더 다양한 문제 생성
+    const problems = [
+      { question: '동전 2개 모두 앞면 확률', answer: '1/4' },
+      { question: '동전 2개 모두 뒷면 확률', answer: '1/4' },
+      { question: '동전 2개 앞뒤 확률', answer: '2/4' },
+      { question: '동전 3개 모두 앞면 확률', answer: '1/8' },
+      { question: '동전 3개 모두 뒷면 확률', answer: '1/8' },
+      { question: '동전 3개 앞면 2개 확률', answer: '3/8' },
+      { question: '동전 3개 앞면 1개 확률', answer: '3/8' },
+      { question: '동전 4개 모두 앞면 확률', answer: '1/16' },
+      { question: '동전 4개 모두 뒷면 확률', answer: '1/16' },
+      { question: '동전 4개 앞면 3개 확률', answer: '4/16' }
+    ];
     
-    return { question, answer, type: 'probability', level: 2 };
+    const selected = problems[Math.floor(Math.random() * problems.length)];
+    return { question: selected.question, answer: selected.answer, type: 'probability', level: 2 };
   } else {
-    // Dice + Coin
-    const question = `주사위에서 짝수가 나오고 동전에서 앞면이 나올 확률`;
-    const answer = `3/12`;
+    // Dice + Coin - 더 다양한 문제 생성
+    const problems = [
+      { question: '주사위 짝수 + 동전 앞면 확률', answer: '3/12' },
+      { question: '주사위 홀수 + 동전 뒷면 확률', answer: '3/12' },
+      { question: '주사위 3의 배수 + 동전 앞면 확률', answer: '2/12' },
+      { question: '주사위 5보다 큰 수 + 동전 뒷면 확률', answer: '1/12' },
+      { question: '주사위 소수 + 동전 앞면 확률', answer: '3/12' },
+      { question: '주사위 완전제곱수 + 동전 앞면 확률', answer: '2/12' },
+      { question: '주사위 2의 배수 + 동전 뒷면 확률', answer: '3/12' },
+      { question: '주사위 4보다 작은 수 + 동전 앞면 확률', answer: '3/12' },
+      { question: '주사위 6 + 동전 앞면 확률', answer: '1/12' },
+      { question: '주사위 1 + 동전 뒷면 확률', answer: '1/12' }
+    ];
     
-    return { question, answer, type: 'probability', level: 3 };
+    const selected = problems[Math.floor(Math.random() * problems.length)];
+    return { question: selected.question, answer: selected.answer, type: 'probability', level: 3 };
   }
 }
 
