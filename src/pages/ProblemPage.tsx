@@ -216,7 +216,7 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
       const endIdx = Math.min(startIdx + problemsPerPage, problems.length);
       const pageProblems = problems.slice(startIdx, endIdx);
       
-      // 임시 PDF 영역 생성
+      // 현재 페이지용 PDF 영역 생성 (기존 pdfRef와 동일한 구조)
       const tempPdfRef = document.createElement('div');
       tempPdfRef.style.position = 'absolute';
       tempPdfRef.style.left = '-9999px';
@@ -226,24 +226,23 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
       tempPdfRef.style.background = '#fff';
       tempPdfRef.style.padding = '32px 32px 0 32px';
       tempPdfRef.style.boxSizing = 'border-box';
-      tempPdfRef.style.fontFamily = 'Arial, sans-serif';
       
-      // 상단 제목
+      // 상단 제목 (기존과 동일)
       const titleDiv = document.createElement('div');
       titleDiv.style.display = 'flex';
       titleDiv.style.alignItems = 'center';
-      titleDiv.style.borderBottom = '2px solid #bbb';
-      titleDiv.style.paddingBottom = '6px';
-      titleDiv.style.marginBottom = '10px';
+      titleDiv.style.borderBottom = '3px solid #bbb';
+      titleDiv.style.paddingBottom = '10px';
+      titleDiv.style.marginBottom = '18px';
       titleDiv.innerHTML = `
-        <div style="font-weight: 900; font-size: 15px; background: #eee; border-radius: 6px; padding: 2px 10px; margin-right: 8px;">Caluri</div>
-        <div style="font-weight: 800; font-size: 20px; margin-right: 8px;">${t('problemWorkbook')}</div>
-        <div style="font-size: 12px; color: #666; margin-right: 8px;">${pageNum + 1} / ${totalPages}</div>
+        <div style="font-weight: 900; font-size: 18px; background: #eee; border-radius: 6px; padding: 2px 10px; margin-right: 12px;">Caluri</div>
+        <div style="font-weight: 800; font-size: 28px; margin-right: 12px;">${t('problemWorkbook')}</div>
+        <div style="font-size: 14px; color: #666; margin-right: 12px;">${pageNum + 1} / ${totalPages}</div>
         <div style="flex: 1;"></div>
       `;
       tempPdfRef.appendChild(titleDiv);
       
-      // 문제 2열 10행 배치
+      // 문제 2열 10행 배치 (기존과 동일한 구조)
       const problemsGrid = document.createElement('div');
       problemsGrid.style.display = 'flex';
       problemsGrid.style.flexDirection = 'row';
