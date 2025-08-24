@@ -10,7 +10,7 @@ const Navigation: React.FC = () => {
 
   const menuItems = [
     { path: '/elem', label: t('elementary'), icon: '📚', active: true },
-    { path: '/middle', label: t('middle'), icon: '📖', active: false },
+    { path: '/middle', label: t('middle'), icon: '📖', active: true },
     { path: '/high', label: t('high'), icon: '📘', active: false },
   ];
 

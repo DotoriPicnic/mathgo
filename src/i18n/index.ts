@@ -164,6 +164,16 @@ const ko = {
     retryProblems: '다시 풀기',
     goToMain: '메인으로',
     
+    // 중등 페이지
+    middleTitle: '중등학교 수학 문제 생성',
+    category: '카테고리:',
+    integers: '정수와 유리수',
+    exponents: '지수와 근호',
+    equations: '일차방정식',
+    systems: '연립방정식',
+    functions: '일차함수',
+    probability: '확률',
+    
     // 공통
     back: '뒤로',
     next: '다음',
@@ -338,6 +348,16 @@ const en = {
     retryProblems: 'Try Again',
     goToMain: 'Go to Main',
     
+    // Middle School Page
+    middleTitle: 'Middle School Math Problem Generator',
+    category: 'Category:',
+    integers: 'Integers & Rational Numbers',
+    exponents: 'Exponents & Roots',
+    equations: 'Linear Equations',
+    systems: 'Systems of Equations',
+    functions: 'Linear Functions',
+    probability: 'Probability',
+    
     // 공통
     back: 'Back',
     next: 'Next',
@@ -511,6 +531,16 @@ const zh = {
     correctAnswer: '正确答案',
     retryProblems: '重新练习',
     goToMain: '返回主页',
+    
+    // 중등 페이지
+    middleTitle: '中学数学题生成器',
+    category: '类别:',
+    integers: '整数与有理数',
+    exponents: '指数与根号',
+    equations: '一次方程',
+    systems: '方程组',
+    functions: '一次函数',
+    probability: '概率',
     
     // 공통
     back: '返回',
