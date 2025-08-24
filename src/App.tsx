@@ -10,11 +10,13 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import ConsentManager from './components/ConsentManager';
 import FloatingHomeButton from './components/FloatingHomeButton';
+import Navigation from './components/Navigation';
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
+        <Navigation />
         <main>
           <Routes>
             <Route path="/" element={<MainPage />} />

@@ -22,7 +22,6 @@ const Navigation: React.FC = () => {
     <>
       {/* Desktop Navigation */}
       <nav style={{
-        display: 'none',
         position: 'sticky',
         top: 0,
         zIndex: 40,
