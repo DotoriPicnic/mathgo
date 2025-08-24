@@ -1346,7 +1346,11 @@ const ElemPage: React.FC<ElemPageProps> = () => {
           </select>
         </div>
         {/* 문제 유형 (드롭다운) */}
-        <div className="form-group" ref={typeRef}>
+        <div
+          ref={typeRef}
+          className="custom-dropdown"
+          onClick={() => setShowTypeList(v => !v)}
+        >
           <label className="form-label">{t('problemType')}</label>
           {op === '비교 연산' ? (
             <select
@@ -1361,6 +1365,7 @@ const ElemPage: React.FC<ElemPageProps> = () => {
             </select>
           ) : (
             <div
+              ref={typeRef}
               className="custom-dropdown"
               onClick={() => setShowTypeList(v => !v)}
             >
