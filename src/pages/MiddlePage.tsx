@@ -286,7 +286,7 @@ function generateFunctionProblems(level: number): { question: string; answer: nu
 
 function generateProbabilityProblems(level: number): { question: string; answer: string; type: string; level: number } {
   if (level === 1) {
-    // Dice roll (basic event) - 동적으로 문제 생성
+    // Dice roll (basic event) - 훨씬 더 많은 문제 생성
     const diceEvents = [
       { type: '짝수', answer: '3/6' },
       { type: '홀수', answer: '3/6' },
@@ -299,10 +299,16 @@ function generateProbabilityProblems(level: number): { question: string; answer:
       { type: '완전제곱수', answer: '2/6' },
       { type: '완전세제곱수', answer: '1/6' },
       { type: '4의 배수', answer: '1/6' },
-      { type: '6의 배수', answer: '1/6' }
+      { type: '6의 배수', answer: '1/6' },
+      { type: '1보다 큰', answer: '5/6' },
+      { type: '6보다 작은', answer: '5/6' },
+      { type: '2보다 큰', answer: '4/6' },
+      { type: '5보다 작은', answer: '4/6' },
+      { type: '4보다 큰', answer: '2/6' },
+      { type: '3보다 큰', answer: '3/6' }
     ];
     
-    // 동적으로 조합 생성
+    // 동적으로 조합 생성 - 훨씬 더 많은 조합
     const combinations = [
       { type: '1 또는 6', answer: '2/6' },
       { type: '2 또는 5', answer: '2/6' },
@@ -319,7 +325,50 @@ function generateProbabilityProblems(level: number): { question: string; answer:
       { type: '3,6', answer: '2/6' },
       { type: '1,2', answer: '2/6' },
       { type: '3,4', answer: '2/6' },
-      { type: '5,6', answer: '2/6' }
+      { type: '5,6', answer: '2/6' },
+      { type: '1,3', answer: '2/6' },
+      { type: '2,4', answer: '2/6' },
+      { type: '3,5', answer: '2/6' },
+      { type: '1,5', answer: '2/6' },
+      { type: '2,6', answer: '2/6' },
+      { type: '1,2,4', answer: '3/6' },
+      { type: '2,3,5', answer: '3/6' },
+      { type: '3,4,6', answer: '3/6' },
+      { type: '1,3,4', answer: '3/6' },
+      { type: '2,4,5', answer: '3/6' },
+      { type: '1,2,5', answer: '3/6' },
+      { type: '2,3,6', answer: '3/6' },
+      { type: '1,4,5', answer: '3/6' },
+      { type: '2,5,6', answer: '3/6' },
+      { type: '1,3,6', answer: '3/6' },
+      { type: '1,2,6', answer: '3/6' },
+      { type: '1,4,6', answer: '3/6' },
+      { type: '2,3,4', answer: '3/6' },
+      { type: '3,5,6', answer: '3/6' },
+      { type: '1,5,6', answer: '3/6' },
+      { type: '2,4,6', answer: '3/6' },
+      { type: '1,2,3,4', answer: '4/6' },
+      { type: '2,3,4,5', answer: '4/6' },
+      { type: '3,4,5,6', answer: '4/6' },
+      { type: '1,2,4,5', answer: '4/6' },
+      { type: '2,3,5,6', answer: '4/6' },
+      { type: '1,3,4,6', answer: '4/6' },
+      { type: '1,2,5,6', answer: '4/6' },
+      { type: '1,2,3,5', answer: '4/6' },
+      { type: '2,4,5,6', answer: '4/6' },
+      { type: '1,3,5,6', answer: '4/6' },
+      { type: '1,2,4,6', answer: '4/6' },
+      { type: '2,3,4,6', answer: '4/6' },
+      { type: '1,2,3,6', answer: '4/6' },
+      { type: '1,3,4,5', answer: '4/6' },
+      { type: '1,4,5,6', answer: '4/6' },
+      { type: '2,3,4,5,6', answer: '5/6' },
+      { type: '1,2,3,4,5', answer: '5/6' },
+      { type: '1,2,3,4,6', answer: '5/6' },
+      { type: '1,2,3,5,6', answer: '5/6' },
+      { type: '1,2,4,5,6', answer: '5/6' },
+      { type: '1,3,4,5,6', answer: '5/6' },
+      { type: '2,3,4,5,6', answer: '5/6' }
     ];
     
     const allEvents = [...diceEvents, ...combinations];
@@ -328,7 +377,7 @@ function generateProbabilityProblems(level: number): { question: string; answer:
     
     return { question, answer: selected.answer, type: 'probability', level: 1 };
   } else if (level === 2) {
-    // Coin tosses - 동적으로 문제 생성
+    // Coin tosses - 훨씬 더 많은 문제 생성
     const coinEvents = [
       { coins: 2, heads: 2, answer: '1/4' },
       { coins: 2, heads: 0, answer: '1/4' },
@@ -354,7 +403,24 @@ function generateProbabilityProblems(level: number): { question: string; answer:
       { coins: 6, heads: 4, answer: '15/64' },
       { coins: 6, heads: 3, answer: '20/64' },
       { coins: 6, heads: 2, answer: '15/64' },
-      { coins: 6, heads: 1, answer: '6/64' }
+      { coins: 6, heads: 1, answer: '6/64' },
+      { coins: 7, heads: 7, answer: '1/128' },
+      { coins: 7, heads: 0, answer: '1/128' },
+      { coins: 7, heads: 6, answer: '7/128' },
+      { coins: 7, heads: 5, answer: '21/128' },
+      { coins: 7, heads: 4, answer: '35/128' },
+      { coins: 7, heads: 3, answer: '35/128' },
+      { coins: 7, heads: 2, answer: '21/128' },
+      { coins: 7, heads: 1, answer: '7/128' },
+      { coins: 8, heads: 8, answer: '1/256' },
+      { coins: 8, heads: 0, answer: '1/256' },
+      { coins: 8, heads: 7, answer: '8/256' },
+      { coins: 8, heads: 6, answer: '28/256' },
+      { coins: 8, heads: 5, answer: '56/256' },
+      { coins: 8, heads: 4, answer: '70/256' },
+      { coins: 8, heads: 3, answer: '56/256' },
+      { coins: 8, heads: 2, answer: '28/256' },
+      { coins: 8, heads: 1, answer: '8/256' }
     ];
     
     const selected = coinEvents[Math.floor(Math.random() * coinEvents.length)];
@@ -371,7 +437,7 @@ function generateProbabilityProblems(level: number): { question: string; answer:
     
     return { question, answer: selected.answer, type: 'probability', level: 2 };
   } else {
-    // Dice + Coin - 동적으로 문제 생성
+    // Dice + Coin - 훨씬 더 많은 문제 생성
     const diceCoinEvents = [
       { dice: '짝수', coin: '앞면', answer: '3/12' },
       { dice: '홀수', coin: '뒷면', answer: '3/12' },
@@ -396,7 +462,52 @@ function generateProbabilityProblems(level: number): { question: string; answer:
       { dice: '5,6', coin: '앞면', answer: '2/12' },
       { dice: '1,4', coin: '뒷면', answer: '2/12' },
       { dice: '2,5', coin: '앞면', answer: '2/12' },
-      { dice: '3,6', coin: '뒷면', answer: '2/12' }
+      { dice: '3,6', coin: '뒷면', answer: '2/12' },
+      { dice: '1,3', coin: '앞면', answer: '2/12' },
+      { dice: '2,4', coin: '뒷면', answer: '2/12' },
+      { dice: '3,5', coin: '앞면', answer: '2/12' },
+      { dice: '1,5', coin: '뒷면', answer: '2/12' },
+      { dice: '2,6', coin: '앞면', answer: '2/12' },
+      { dice: '1,2,3', coin: '앞면', answer: '3/12' },
+      { dice: '4,5,6', coin: '뒷면', answer: '3/12' },
+      { dice: '1,2,4', coin: '앞면', answer: '3/12' },
+      { dice: '3,5,6', coin: '뒷면', answer: '3/12' },
+      { dice: '1,3,4', coin: '앞면', answer: '3/12' },
+      { dice: '2,5,6', coin: '뒷면', answer: '3/12' },
+      { dice: '1,2,5', coin: '앞면', answer: '3/12' },
+      { dice: '3,4,6', coin: '뒷면', answer: '3/12' },
+      { dice: '1,4,5', coin: '앞면', answer: '3/12' },
+      { dice: '2,3,6', coin: '뒷면', answer: '3/12' },
+      { dice: '1,3,6', coin: '앞면', answer: '3/12' },
+      { dice: '2,4,5', coin: '뒷면', answer: '3/12' },
+      { dice: '1,2,6', coin: '앞면', answer: '3/12' },
+      { dice: '3,4,5', coin: '뒷면', answer: '3/12' },
+      { dice: '1,4,6', coin: '앞면', answer: '3/12' },
+      { dice: '2,3,5', coin: '뒷면', answer: '3/12' },
+      { dice: '1,5,6', coin: '앞면', answer: '3/12' },
+      { dice: '2,3,4', coin: '뒷면', answer: '3/12' },
+      { dice: '1,2,3,4', coin: '앞면', answer: '4/12' },
+      { dice: '3,4,5,6', coin: '뒷면', answer: '4/12' },
+      { dice: '1,2,4,5', coin: '앞면', answer: '4/12' },
+      { dice: '2,3,5,6', coin: '뒷면', answer: '4/12' },
+      { dice: '1,3,4,6', coin: '앞면', answer: '4/12' },
+      { dice: '2,4,5,6', coin: '뒷면', answer: '4/12' },
+      { dice: '1,2,5,6', coin: '앞면', answer: '4/12' },
+      { dice: '1,3,5,6', coin: '뒷면', answer: '4/12' },
+      { dice: '1,2,4,6', coin: '앞면', answer: '4/12' },
+      { dice: '2,3,4,6', coin: '뒷면', answer: '4/12' },
+      { dice: '1,2,3,5', coin: '앞면', answer: '4/12' },
+      { dice: '2,4,5,6', coin: '뒷면', answer: '4/12' },
+      { dice: '1,3,4,5', coin: '앞면', answer: '4/12' },
+      { dice: '2,3,5,6', coin: '뒷면', answer: '4/12' },
+      { dice: '1,4,5,6', coin: '앞면', answer: '4/12' },
+      { dice: '1,2,3,6', coin: '뒷면', answer: '4/12' },
+      { dice: '1,2,3,4,5', coin: '앞면', answer: '5/12' },
+      { dice: '2,3,4,5,6', coin: '뒷면', answer: '5/12' },
+      { dice: '1,2,3,4,6', coin: '앞면', answer: '5/12' },
+      { dice: '1,2,3,5,6', coin: '뒷면', answer: '5/12' },
+      { dice: '1,2,4,5,6', coin: '앞면', answer: '5/12' },
+      { dice: '1,3,4,5,6', coin: '뒷면', answer: '5/12' }
     ];
     
     const selected = diceCoinEvents[Math.floor(Math.random() * diceCoinEvents.length)];
