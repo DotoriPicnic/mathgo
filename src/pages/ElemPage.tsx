@@ -1346,11 +1346,7 @@ const ElemPage: React.FC<ElemPageProps> = () => {
           </select>
         </div>
         {/* 문제 유형 (드롭다운) */}
-        <div
-          ref={typeRef}
-          className="custom-dropdown"
-          onClick={() => setShowTypeList(v => !v)}
-        >
+        <div className="form-group">
           <label className="form-label">{t('problemType')}</label>
           {op === '비교 연산' ? (
             <select
@@ -1376,7 +1372,8 @@ const ElemPage: React.FC<ElemPageProps> = () => {
                   {getFilteredProblemTypes(op, t).map(problemType => (
                     <li
                       key={problemType.value}
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         setType(problemType.value);
                         setTimeout(() => setShowTypeList(false), 0);
                       }}
