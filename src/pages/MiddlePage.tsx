@@ -286,100 +286,123 @@ function generateFunctionProblems(level: number): { question: string; answer: nu
 
 function generateProbabilityProblems(level: number): { question: string; answer: string; type: string; level: number } {
   if (level === 1) {
-    // Dice roll (basic event) - 더 많은 문제 생성
-    const problems = [
-      { question: '주사위 짝수 확률', answer: '3/6' },
-      { question: '주사위 홀수 확률', answer: '3/6' },
-      { question: '주사위 3의 배수 확률', answer: '2/6' },
-      { question: '주사위 2의 배수 확률', answer: '3/6' },
-      { question: '주사위 5보다 큰 확률', answer: '1/6' },
-      { question: '주사위 3보다 작은 확률', answer: '2/6' },
-      { question: '주사위 소수 확률', answer: '3/6' },
-      { question: '주사위 합성수 확률', answer: '2/6' },
-      { question: '주사위 완전제곱수 확률', answer: '2/6' },
-      { question: '주사위 완전세제곱수 확률', answer: '1/6' },
-      { question: '주사위 4의 배수 확률', answer: '1/6' },
-      { question: '주사위 6의 배수 확률', answer: '1/6' },
-      { question: '주사위 1 또는 6 확률', answer: '2/6' },
-      { question: '주사위 2 또는 5 확률', answer: '2/6' },
-      { question: '주사위 3 또는 4 확률', answer: '2/6' },
-      { question: '주사위 1~3 확률', answer: '3/6' },
-      { question: '주사위 4~6 확률', answer: '3/6' },
-      { question: '주사위 2~4 확률', answer: '3/6' },
-      { question: '주사위 1,3,5 확률', answer: '3/6' },
-      { question: '주사위 2,4,6 확률', answer: '3/6' },
-      { question: '주사위 1,2,3 확률', answer: '3/6' },
-      { question: '주사위 4,5,6 확률', answer: '3/6' },
-      { question: '주사위 1,4 확률', answer: '2/6' },
-      { question: '주사위 2,5 확률', answer: '2/6' },
-      { question: '주사위 3,6 확률', answer: '2/6' }
+    // Dice roll (basic event) - 동적으로 문제 생성
+    const diceEvents = [
+      { type: '짝수', answer: '3/6' },
+      { type: '홀수', answer: '3/6' },
+      { type: '3의 배수', answer: '2/6' },
+      { type: '2의 배수', answer: '3/6' },
+      { type: '5보다 큰', answer: '1/6' },
+      { type: '3보다 작은', answer: '2/6' },
+      { type: '소수', answer: '3/6' },
+      { type: '합성수', answer: '2/6' },
+      { type: '완전제곱수', answer: '2/6' },
+      { type: '완전세제곱수', answer: '1/6' },
+      { type: '4의 배수', answer: '1/6' },
+      { type: '6의 배수', answer: '1/6' }
     ];
     
-    const selected = problems[Math.floor(Math.random() * problems.length)];
-    return { question: selected.question, answer: selected.answer, type: 'probability', level: 1 };
+    // 동적으로 조합 생성
+    const combinations = [
+      { type: '1 또는 6', answer: '2/6' },
+      { type: '2 또는 5', answer: '2/6' },
+      { type: '3 또는 4', answer: '2/6' },
+      { type: '1~3', answer: '3/6' },
+      { type: '4~6', answer: '3/6' },
+      { type: '2~4', answer: '3/6' },
+      { type: '1,3,5', answer: '3/6' },
+      { type: '2,4,6', answer: '3/6' },
+      { type: '1,2,3', answer: '3/6' },
+      { type: '4,5,6', answer: '3/6' },
+      { type: '1,4', answer: '2/6' },
+      { type: '2,5', answer: '2/6' },
+      { type: '3,6', answer: '2/6' },
+      { type: '1,2', answer: '2/6' },
+      { type: '3,4', answer: '2/6' },
+      { type: '5,6', answer: '2/6' }
+    ];
+    
+    const allEvents = [...diceEvents, ...combinations];
+    const selected = allEvents[Math.floor(Math.random() * allEvents.length)];
+    const question = `주사위 ${selected.type} 확률`;
+    
+    return { question, answer: selected.answer, type: 'probability', level: 1 };
   } else if (level === 2) {
-    // Coin tosses - 더 많은 문제 생성
-    const problems = [
-      { question: '동전 2개 모두 앞면', answer: '1/4' },
-      { question: '동전 2개 모두 뒷면', answer: '1/4' },
-      { question: '동전 2개 앞뒤', answer: '2/4' },
-      { question: '동전 3개 모두 앞면', answer: '1/8' },
-      { question: '동전 3개 모두 뒷면', answer: '1/8' },
-      { question: '동전 3개 앞면 2개', answer: '3/8' },
-      { question: '동전 3개 앞면 1개', answer: '3/8' },
-      { question: '동전 4개 모두 앞면', answer: '1/16' },
-      { question: '동전 4개 모두 뒷면', answer: '1/16' },
-      { question: '동전 4개 앞면 3개', answer: '4/16' },
-      { question: '동전 4개 앞면 2개', answer: '6/16' },
-      { question: '동전 4개 앞면 1개', answer: '4/16' },
-      { question: '동전 5개 모두 앞면', answer: '1/32' },
-      { question: '동전 5개 모두 뒷면', answer: '1/32' },
-      { question: '동전 5개 앞면 4개', answer: '5/32' },
-      { question: '동전 5개 앞면 3개', answer: '10/32' },
-      { question: '동전 5개 앞면 2개', answer: '10/32' },
-      { question: '동전 5개 앞면 1개', answer: '5/32' },
-      { question: '동전 6개 모두 앞면', answer: '1/64' },
-      { question: '동전 6개 모두 뒷면', answer: '1/64' },
-      { question: '동전 6개 앞면 5개', answer: '6/64' },
-      { question: '동전 6개 앞면 4개', answer: '15/64' },
-      { question: '동전 6개 앞면 3개', answer: '20/64' },
-      { question: '동전 6개 앞면 2개', answer: '15/64' },
-      { question: '동전 6개 앞면 1개', answer: '6/64' }
+    // Coin tosses - 동적으로 문제 생성
+    const coinEvents = [
+      { coins: 2, heads: 2, answer: '1/4' },
+      { coins: 2, heads: 0, answer: '1/4' },
+      { coins: 2, heads: 1, answer: '2/4' },
+      { coins: 3, heads: 3, answer: '1/8' },
+      { coins: 3, heads: 0, answer: '1/8' },
+      { coins: 3, heads: 2, answer: '3/8' },
+      { coins: 3, heads: 1, answer: '3/8' },
+      { coins: 4, heads: 4, answer: '1/16' },
+      { coins: 4, heads: 0, answer: '1/16' },
+      { coins: 4, heads: 3, answer: '4/16' },
+      { coins: 4, heads: 2, answer: '6/16' },
+      { coins: 4, heads: 1, answer: '4/16' },
+      { coins: 5, heads: 5, answer: '1/32' },
+      { coins: 5, heads: 0, answer: '1/32' },
+      { coins: 5, heads: 4, answer: '5/32' },
+      { coins: 5, heads: 3, answer: '10/32' },
+      { coins: 5, heads: 2, answer: '10/32' },
+      { coins: 5, heads: 1, answer: '5/32' },
+      { coins: 6, heads: 6, answer: '1/64' },
+      { coins: 6, heads: 0, answer: '1/64' },
+      { coins: 6, heads: 5, answer: '6/64' },
+      { coins: 6, heads: 4, answer: '15/64' },
+      { coins: 6, heads: 3, answer: '20/64' },
+      { coins: 6, heads: 2, answer: '15/64' },
+      { coins: 6, heads: 1, answer: '6/64' }
     ];
     
-    const selected = problems[Math.floor(Math.random() * problems.length)];
-    return { question: selected.question, answer: selected.answer, type: 'probability', level: 2 };
+    const selected = coinEvents[Math.floor(Math.random() * coinEvents.length)];
+    let question = '';
+    if (selected.heads === selected.coins) {
+      question = `동전 ${selected.coins}개 모두 앞면`;
+    } else if (selected.heads === 0) {
+      question = `동전 ${selected.coins}개 모두 뒷면`;
+    } else if (selected.heads === 1) {
+      question = `동전 ${selected.coins}개 앞면 1개`;
+    } else {
+      question = `동전 ${selected.coins}개 앞면 ${selected.heads}개`;
+    }
+    
+    return { question, answer: selected.answer, type: 'probability', level: 2 };
   } else {
-    // Dice + Coin - 더 많은 문제 생성
-    const problems = [
-      { question: '주사위 짝수+동전 앞면', answer: '3/12' },
-      { question: '주사위 홀수+동전 뒷면', answer: '3/12' },
-      { question: '주사위 3의 배수+동전 앞면', answer: '2/12' },
-      { question: '주사위 5보다 큰+동전 뒷면', answer: '1/12' },
-      { question: '주사위 소수+동전 앞면', answer: '3/12' },
-      { question: '주사위 완전제곱수+동전 앞면', answer: '2/12' },
-      { question: '주사위 2의 배수+동전 뒷면', answer: '3/12' },
-      { question: '주사위 4보다 작은+동전 앞면', answer: '3/12' },
-      { question: '주사위 6+동전 앞면', answer: '1/12' },
-      { question: '주사위 1+동전 뒷면', answer: '1/12' },
-      { question: '주사위 2+동전 앞면', answer: '1/12' },
-      { question: '주사위 3+동전 뒷면', answer: '1/12' },
-      { question: '주사위 4+동전 앞면', answer: '1/12' },
-      { question: '주사위 5+동전 뒷면', answer: '1/12' },
-      { question: '주사위 1~3+동전 앞면', answer: '3/12' },
-      { question: '주사위 4~6+동전 뒷면', answer: '3/12' },
-      { question: '주사위 1,3,5+동전 앞면', answer: '3/12' },
-      { question: '주사위 2,4,6+동전 뒷면', answer: '3/12' },
-      { question: '주사위 1,2+동전 앞면', answer: '2/12' },
-      { question: '주사위 3,4+동전 뒷면', answer: '2/12' },
-      { question: '주사위 5,6+동전 앞면', answer: '2/12' },
-      { question: '주사위 1,4+동전 뒷면', answer: '2/12' },
-      { question: '주사위 2,5+동전 앞면', answer: '2/12' },
-      { question: '주사위 3,6+동전 뒷면', answer: '2/12' }
+    // Dice + Coin - 동적으로 문제 생성
+    const diceCoinEvents = [
+      { dice: '짝수', coin: '앞면', answer: '3/12' },
+      { dice: '홀수', coin: '뒷면', answer: '3/12' },
+      { dice: '3의 배수', coin: '앞면', answer: '2/12' },
+      { dice: '5보다 큰', coin: '뒷면', answer: '1/12' },
+      { dice: '소수', coin: '앞면', answer: '3/12' },
+      { dice: '완전제곱수', coin: '앞면', answer: '2/12' },
+      { dice: '2의 배수', coin: '뒷면', answer: '3/12' },
+      { dice: '4보다 작은', coin: '앞면', answer: '3/12' },
+      { dice: '6', coin: '앞면', answer: '1/12' },
+      { dice: '1', coin: '뒷면', answer: '1/12' },
+      { dice: '2', coin: '앞면', answer: '1/12' },
+      { dice: '3', coin: '뒷면', answer: '1/12' },
+      { dice: '4', coin: '앞면', answer: '1/12' },
+      { dice: '5', coin: '뒷면', answer: '1/12' },
+      { dice: '1~3', coin: '앞면', answer: '3/12' },
+      { dice: '4~6', coin: '뒷면', answer: '3/12' },
+      { dice: '1,3,5', coin: '앞면', answer: '3/12' },
+      { dice: '2,4,6', coin: '뒷면', answer: '3/12' },
+      { dice: '1,2', coin: '앞면', answer: '2/12' },
+      { dice: '3,4', coin: '뒷면', answer: '2/12' },
+      { dice: '5,6', coin: '앞면', answer: '2/12' },
+      { dice: '1,4', coin: '뒷면', answer: '2/12' },
+      { dice: '2,5', coin: '앞면', answer: '2/12' },
+      { dice: '3,6', coin: '뒷면', answer: '2/12' }
     ];
     
-    const selected = problems[Math.floor(Math.random() * problems.length)];
-    return { question: selected.question, answer: selected.answer, type: 'probability', level: 3 };
+    const selected = diceCoinEvents[Math.floor(Math.random() * diceCoinEvents.length)];
+    const question = `주사위 ${selected.dice}+동전 ${selected.coin}`;
+    
+    return { question, answer: selected.answer, type: 'probability', level: 3 };
   }
 }
 
