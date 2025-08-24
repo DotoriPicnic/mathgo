@@ -56,12 +56,9 @@
   font-weight: 700;
   text-align: center;
   letter-spacing: 1px;
-  white-space: normal;
-  word-wrap: break-word;
-  word-break: break-word;
-  line-height: 1.4;
-  max-width: 100%;
-  overflow-wrap: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .form-group {
@@ -98,10 +95,9 @@
   min-height: 32px;
   position: relative;
   box-sizing: border-box;
-  white-space: normal;
-  word-wrap: break-word;
-  word-break: break-word;
-  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dropdown-arrow {
@@ -135,11 +131,9 @@
   display: flex;
   align-items: center;
   font-weight: 500;
-  white-space: normal;
-  word-wrap: break-word;
-  word-break: break-word;
-  line-height: 1.4;
-  min-height: 44px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dropdown-item.selected {
@@ -296,11 +290,9 @@
   .dropdown-item {
     padding: 10px;
     font-size: 15px;
-    white-space: normal;
-    word-wrap: break-word;
-    word-break: break-word;
-    line-height: 1.4;
-    min-height: 40px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   
   .radio-option {
