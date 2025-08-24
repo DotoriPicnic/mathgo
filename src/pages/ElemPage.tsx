@@ -1061,8 +1061,6 @@ const getUnitCategoryTypes = (t: any): Array<{label: string, value: string}> => 
 ];
 
 function getFilteredProblemTypes(op: string, t: any) {
-  console.log('getFilteredProblemTypes called with op:', op);
-  
   if (op === '비교 연산') {
     return [
       { label: getProblemTypeLabel(t, 'A ㅁ B 비교 연산'), value: 'A ㅁ B 비교 연산' }
@@ -1128,36 +1126,28 @@ function getFilteredProblemTypes(op: string, t: any) {
     }));
   }
   if (op === '소수연산') {
-    const result = getDecimalCategoryTypes(t).map((type: any) => ({
+    return getDecimalCategoryTypes(t).map((type: any) => ({
       label: type.label,
       value: type.value
     }));
-    console.log('소수연산 result:', result);
-    return result;
   }
   if (op === '혼합연산') {
-    const result = getMixedCategoryTypes(t).map((type: any) => ({
+    return getMixedCategoryTypes(t).map((type: any) => ({
       label: type.label,
       value: type.value
     }));
-    console.log('혼합연산 result:', result);
-    return result;
   }
   if (op === '약수배수') {
-    const result = getFactorCategoryTypes(t).map((type: any) => ({
+    return getFactorCategoryTypes(t).map((type: any) => ({
       label: type.label,
       value: type.value
     }));
-    console.log('약수배수 result:', result);
-    return result;
   }
   if (op === '단위변환') {
-    const result = getUnitCategoryTypes(t).map((type: any) => ({
+    return getUnitCategoryTypes(t).map((type: any) => ({
       label: type.label,
       value: type.value
     }));
-    console.log('단위변환 result:', result);
-    return result;
   }
   // 분수 등 기타 연산은 추후 확장
   return problemTypes.map(type => ({
@@ -1183,7 +1173,6 @@ const ElemPage: React.FC<ElemPageProps> = () => {
   const [useLimit, setUseLimit] = useState(false);
   // 제한 시간(분)
   const [limit, setLimit] = useState(5);
-  const [showTypeList, setShowTypeList] = useState(false);
   // [문제 유형 미리보기용 예시 상태]
   const [example, setExample] = useState('');
 
@@ -1205,17 +1194,7 @@ const ElemPage: React.FC<ElemPageProps> = () => {
     setLimit(prev => Math.max(1, prev + delta));
   };
 
-  // 커스텀 드롭다운 외부 클릭 닫기
-  React.useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      const target = e.target as Element;
-      if (!target.closest('.dropdown-container')) {
-        setShowTypeList(false);
-      }
-    }
-    if (showTypeList) document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [showTypeList]);
+
 
   React.useEffect(() => {
     if (type.startsWith('빈칸 문제') && !['소수연산', '혼합연산', '약수배수', '단위변환'].includes(op)) {
@@ -1358,52 +1337,16 @@ const ElemPage: React.FC<ElemPageProps> = () => {
         {/* 문제 유형 (드롭다운) */}
         <div className="form-group">
           <label className="form-label">{t('problemType')}</label>
-          {op === '비교 연산' ? (
-            <select
-              className="form-select"
-              value={type}
-              onChange={e => setType(e.target.value)}
-              style={{ minWidth: 180 }}
-            >
-              {getFilteredProblemTypes(op, t).map(problemType => (
-                <option key={problemType.value} value={problemType.value}>{problemType.label}</option>
-              ))}
-            </select>
-          ) : (
-            <div className="dropdown-container">
-              <div
-                className="custom-dropdown"
-                onClick={() => {
-                  console.log('Dropdown clicked, current showTypeList:', showTypeList);
-                  console.log('Current op:', op);
-                  console.log('Filtered types:', getFilteredProblemTypes(op, t));
-                  setShowTypeList(!showTypeList);
-                }}
-              >
-                <span>{getProblemTypeLabel(t, type)}</span>
-                <span className="dropdown-arrow">▼</span>
-              </div>
-              {showTypeList && (
-                <div className="dropdown-list-container">
-                  <ul className="dropdown-list">
-                    {getFilteredProblemTypes(op, t).map(problemType => (
-                      <li
-                        key={problemType.value}
-                        className={`dropdown-item ${problemType.value === type ? 'selected' : ''}`}
-                        onClick={() => {
-                          console.log('Item clicked:', problemType.value);
-                          setType(problemType.value);
-                          setShowTypeList(false);
-                        }}
-                      >
-                        {problemType.label}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          )}
+          <select
+            className="form-select"
+            value={type}
+            onChange={e => setType(e.target.value)}
+            style={{ minWidth: 180 }}
+          >
+            {getFilteredProblemTypes(op, t).map(problemType => (
+              <option key={problemType.value} value={problemType.value}>{problemType.label}</option>
+            ))}
+          </select>
         </div>
         {/* 올림/내림 옵션 (라디오 버튼처럼 동작) */}
         {(op === '덧셈' || op === '뺄셈') && !['소수연산', '혼합연산', '약수배수', '단위변환'].includes(op) ? (
