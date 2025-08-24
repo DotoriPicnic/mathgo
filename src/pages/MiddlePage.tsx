@@ -286,52 +286,96 @@ function generateFunctionProblems(level: number): { question: string; answer: nu
 
 function generateProbabilityProblems(level: number): { question: string; answer: string; type: string; level: number } {
   if (level === 1) {
-    // Dice roll (basic event) - 더 다양한 문제 생성
+    // Dice roll (basic event) - 더 많은 문제 생성
     const problems = [
-      { question: '주사위에서 짝수가 나올 확률', answer: '3/6' },
-      { question: '주사위에서 홀수가 나올 확률', answer: '3/6' },
-      { question: '주사위에서 3의 배수가 나올 확률', answer: '2/6' },
-      { question: '주사위에서 2의 배수가 나올 확률', answer: '3/6' },
-      { question: '주사위에서 5보다 큰 수가 나올 확률', answer: '1/6' },
-      { question: '주사위에서 3보다 작은 수가 나올 확률', answer: '2/6' },
-      { question: '주사위에서 소수가 나올 확률', answer: '3/6' },
-      { question: '주사위에서 합성수가 나올 확률', answer: '2/6' },
-      { question: '주사위에서 완전제곱수가 나올 확률', answer: '2/6' },
-      { question: '주사위에서 완전세제곱수가 나올 확률', answer: '1/6' }
+      { question: '주사위 짝수 확률', answer: '3/6' },
+      { question: '주사위 홀수 확률', answer: '3/6' },
+      { question: '주사위 3의 배수 확률', answer: '2/6' },
+      { question: '주사위 2의 배수 확률', answer: '3/6' },
+      { question: '주사위 5보다 큰 확률', answer: '1/6' },
+      { question: '주사위 3보다 작은 확률', answer: '2/6' },
+      { question: '주사위 소수 확률', answer: '3/6' },
+      { question: '주사위 합성수 확률', answer: '2/6' },
+      { question: '주사위 완전제곱수 확률', answer: '2/6' },
+      { question: '주사위 완전세제곱수 확률', answer: '1/6' },
+      { question: '주사위 4의 배수 확률', answer: '1/6' },
+      { question: '주사위 6의 배수 확률', answer: '1/6' },
+      { question: '주사위 1 또는 6 확률', answer: '2/6' },
+      { question: '주사위 2 또는 5 확률', answer: '2/6' },
+      { question: '주사위 3 또는 4 확률', answer: '2/6' },
+      { question: '주사위 1~3 확률', answer: '3/6' },
+      { question: '주사위 4~6 확률', answer: '3/6' },
+      { question: '주사위 2~4 확률', answer: '3/6' },
+      { question: '주사위 1,3,5 확률', answer: '3/6' },
+      { question: '주사위 2,4,6 확률', answer: '3/6' },
+      { question: '주사위 1,2,3 확률', answer: '3/6' },
+      { question: '주사위 4,5,6 확률', answer: '3/6' },
+      { question: '주사위 1,4 확률', answer: '2/6' },
+      { question: '주사위 2,5 확률', answer: '2/6' },
+      { question: '주사위 3,6 확률', answer: '2/6' }
     ];
     
     const selected = problems[Math.floor(Math.random() * problems.length)];
     return { question: selected.question, answer: selected.answer, type: 'probability', level: 1 };
   } else if (level === 2) {
-    // Coin tosses - 더 다양한 문제 생성
+    // Coin tosses - 더 많은 문제 생성
     const problems = [
-      { question: '동전 2개 모두 앞면 확률', answer: '1/4' },
-      { question: '동전 2개 모두 뒷면 확률', answer: '1/4' },
-      { question: '동전 2개 앞뒤 확률', answer: '2/4' },
-      { question: '동전 3개 모두 앞면 확률', answer: '1/8' },
-      { question: '동전 3개 모두 뒷면 확률', answer: '1/8' },
-      { question: '동전 3개 앞면 2개 확률', answer: '3/8' },
-      { question: '동전 3개 앞면 1개 확률', answer: '3/8' },
-      { question: '동전 4개 모두 앞면 확률', answer: '1/16' },
-      { question: '동전 4개 모두 뒷면 확률', answer: '1/16' },
-      { question: '동전 4개 앞면 3개 확률', answer: '4/16' }
+      { question: '동전 2개 모두 앞면', answer: '1/4' },
+      { question: '동전 2개 모두 뒷면', answer: '1/4' },
+      { question: '동전 2개 앞뒤', answer: '2/4' },
+      { question: '동전 3개 모두 앞면', answer: '1/8' },
+      { question: '동전 3개 모두 뒷면', answer: '1/8' },
+      { question: '동전 3개 앞면 2개', answer: '3/8' },
+      { question: '동전 3개 앞면 1개', answer: '3/8' },
+      { question: '동전 4개 모두 앞면', answer: '1/16' },
+      { question: '동전 4개 모두 뒷면', answer: '1/16' },
+      { question: '동전 4개 앞면 3개', answer: '4/16' },
+      { question: '동전 4개 앞면 2개', answer: '6/16' },
+      { question: '동전 4개 앞면 1개', answer: '4/16' },
+      { question: '동전 5개 모두 앞면', answer: '1/32' },
+      { question: '동전 5개 모두 뒷면', answer: '1/32' },
+      { question: '동전 5개 앞면 4개', answer: '5/32' },
+      { question: '동전 5개 앞면 3개', answer: '10/32' },
+      { question: '동전 5개 앞면 2개', answer: '10/32' },
+      { question: '동전 5개 앞면 1개', answer: '5/32' },
+      { question: '동전 6개 모두 앞면', answer: '1/64' },
+      { question: '동전 6개 모두 뒷면', answer: '1/64' },
+      { question: '동전 6개 앞면 5개', answer: '6/64' },
+      { question: '동전 6개 앞면 4개', answer: '15/64' },
+      { question: '동전 6개 앞면 3개', answer: '20/64' },
+      { question: '동전 6개 앞면 2개', answer: '15/64' },
+      { question: '동전 6개 앞면 1개', answer: '6/64' }
     ];
     
     const selected = problems[Math.floor(Math.random() * problems.length)];
     return { question: selected.question, answer: selected.answer, type: 'probability', level: 2 };
   } else {
-    // Dice + Coin - 더 다양한 문제 생성
+    // Dice + Coin - 더 많은 문제 생성
     const problems = [
-      { question: '주사위 짝수 + 동전 앞면 확률', answer: '3/12' },
-      { question: '주사위 홀수 + 동전 뒷면 확률', answer: '3/12' },
-      { question: '주사위 3의 배수 + 동전 앞면 확률', answer: '2/12' },
-      { question: '주사위 5보다 큰 수 + 동전 뒷면 확률', answer: '1/12' },
-      { question: '주사위 소수 + 동전 앞면 확률', answer: '3/12' },
-      { question: '주사위 완전제곱수 + 동전 앞면 확률', answer: '2/12' },
-      { question: '주사위 2의 배수 + 동전 뒷면 확률', answer: '3/12' },
-      { question: '주사위 4보다 작은 수 + 동전 앞면 확률', answer: '3/12' },
-      { question: '주사위 6 + 동전 앞면 확률', answer: '1/12' },
-      { question: '주사위 1 + 동전 뒷면 확률', answer: '1/12' }
+      { question: '주사위 짝수+동전 앞면', answer: '3/12' },
+      { question: '주사위 홀수+동전 뒷면', answer: '3/12' },
+      { question: '주사위 3의 배수+동전 앞면', answer: '2/12' },
+      { question: '주사위 5보다 큰+동전 뒷면', answer: '1/12' },
+      { question: '주사위 소수+동전 앞면', answer: '3/12' },
+      { question: '주사위 완전제곱수+동전 앞면', answer: '2/12' },
+      { question: '주사위 2의 배수+동전 뒷면', answer: '3/12' },
+      { question: '주사위 4보다 작은+동전 앞면', answer: '3/12' },
+      { question: '주사위 6+동전 앞면', answer: '1/12' },
+      { question: '주사위 1+동전 뒷면', answer: '1/12' },
+      { question: '주사위 2+동전 앞면', answer: '1/12' },
+      { question: '주사위 3+동전 뒷면', answer: '1/12' },
+      { question: '주사위 4+동전 앞면', answer: '1/12' },
+      { question: '주사위 5+동전 뒷면', answer: '1/12' },
+      { question: '주사위 1~3+동전 앞면', answer: '3/12' },
+      { question: '주사위 4~6+동전 뒷면', answer: '3/12' },
+      { question: '주사위 1,3,5+동전 앞면', answer: '3/12' },
+      { question: '주사위 2,4,6+동전 뒷면', answer: '3/12' },
+      { question: '주사위 1,2+동전 앞면', answer: '2/12' },
+      { question: '주사위 3,4+동전 뒷면', answer: '2/12' },
+      { question: '주사위 5,6+동전 앞면', answer: '2/12' },
+      { question: '주사위 1,4+동전 뒷면', answer: '2/12' },
+      { question: '주사위 2,5+동전 앞면', answer: '2/12' },
+      { question: '주사위 3,6+동전 뒷면', answer: '2/12' }
     ];
     
     const selected = problems[Math.floor(Math.random() * problems.length)];
