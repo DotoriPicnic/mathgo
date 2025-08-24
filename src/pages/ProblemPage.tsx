@@ -404,7 +404,7 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
 
   // PDF용 문제 rows (2열 10행, 입력란 없이)
   const pdfRows: Problem[][] = [];
-  for (let i = 0; i < Math.min(problems.length, 20); i += 2) {
+  for (let i = 0; i < problems.length; i += 2) {
     pdfRows.push(problems.slice(i, i + 2));
   }
 
