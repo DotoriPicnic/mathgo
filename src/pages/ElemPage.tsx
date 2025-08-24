@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import HomeButton from '../components/HomeButton';
@@ -1061,6 +1061,8 @@ const getUnitCategoryTypes = (t: any): Array<{label: string, value: string}> => 
 ];
 
 function getFilteredProblemTypes(op: string, t: any) {
+  console.log('getFilteredProblemTypes called with op:', op);
+  
   if (op === '비교 연산') {
     return [
       { label: getProblemTypeLabel(t, 'A ㅁ B 비교 연산'), value: 'A ㅁ B 비교 연산' }
@@ -1126,28 +1128,36 @@ function getFilteredProblemTypes(op: string, t: any) {
     }));
   }
   if (op === '소수연산') {
-    return getDecimalCategoryTypes(t).map((type: any) => ({
+    const result = getDecimalCategoryTypes(t).map((type: any) => ({
       label: type.label,
       value: type.value
     }));
+    console.log('소수연산 result:', result);
+    return result;
   }
   if (op === '혼합연산') {
-    return getMixedCategoryTypes(t).map((type: any) => ({
+    const result = getMixedCategoryTypes(t).map((type: any) => ({
       label: type.label,
       value: type.value
     }));
+    console.log('혼합연산 result:', result);
+    return result;
   }
   if (op === '약수배수') {
-    return getFactorCategoryTypes(t).map((type: any) => ({
+    const result = getFactorCategoryTypes(t).map((type: any) => ({
       label: type.label,
       value: type.value
     }));
+    console.log('약수배수 result:', result);
+    return result;
   }
   if (op === '단위변환') {
-    return getUnitCategoryTypes(t).map((type: any) => ({
+    const result = getUnitCategoryTypes(t).map((type: any) => ({
       label: type.label,
       value: type.value
     }));
+    console.log('단위변환 result:', result);
+    return result;
   }
   // 분수 등 기타 연산은 추후 확장
   return problemTypes.map(type => ({
@@ -1174,7 +1184,6 @@ const ElemPage: React.FC<ElemPageProps> = () => {
   // 제한 시간(분)
   const [limit, setLimit] = useState(5);
   const [showTypeList, setShowTypeList] = useState(false);
-  const typeRef = useRef<HTMLDivElement>(null);
   // [문제 유형 미리보기용 예시 상태]
   const [example, setExample] = useState('');
 
@@ -1199,7 +1208,8 @@ const ElemPage: React.FC<ElemPageProps> = () => {
   // 커스텀 드롭다운 외부 클릭 닫기
   React.useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (typeRef.current && !typeRef.current.contains(e.target as Node)) {
+      const target = e.target as Element;
+      if (!target.closest('.dropdown-container')) {
         setShowTypeList(false);
       }
     }
@@ -1360,29 +1370,37 @@ const ElemPage: React.FC<ElemPageProps> = () => {
               ))}
             </select>
           ) : (
-            <div
-              ref={typeRef}
-              className="custom-dropdown"
-              onClick={() => setShowTypeList(v => !v)}
-            >
-              {getProblemTypeLabel(t, type)}
-              <span className="dropdown-arrow">▼</span>
+            <div className="dropdown-container">
+              <div
+                className="custom-dropdown"
+                onClick={() => {
+                  console.log('Dropdown clicked, current showTypeList:', showTypeList);
+                  console.log('Current op:', op);
+                  console.log('Filtered types:', getFilteredProblemTypes(op, t));
+                  setShowTypeList(!showTypeList);
+                }}
+              >
+                <span>{getProblemTypeLabel(t, type)}</span>
+                <span className="dropdown-arrow">▼</span>
+              </div>
               {showTypeList && (
-                <ul className="dropdown-list">
-                  {getFilteredProblemTypes(op, t).map(problemType => (
-                    <li
-                      key={problemType.value}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setType(problemType.value);
-                        setTimeout(() => setShowTypeList(false), 0);
-                      }}
-                      className={`dropdown-item ${problemType.value === type ? 'selected' : ''}`}
-                    >
-                      {problemType.label}
-                    </li>
-                  ))}
-                </ul>
+                <div className="dropdown-list-container">
+                  <ul className="dropdown-list">
+                    {getFilteredProblemTypes(op, t).map(problemType => (
+                      <li
+                        key={problemType.value}
+                        className={`dropdown-item ${problemType.value === type ? 'selected' : ''}`}
+                        onClick={() => {
+                          console.log('Item clicked:', problemType.value);
+                          setType(problemType.value);
+                          setShowTypeList(false);
+                        }}
+                      >
+                        {problemType.label}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               )}
             </div>
           )}

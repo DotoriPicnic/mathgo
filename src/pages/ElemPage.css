@@ -142,6 +142,19 @@
   font-weight: 700;
 }
 
+.dropdown-container {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-list-container {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
 .radio-group {
   width: 100%;
   margin-bottom: 18px;
