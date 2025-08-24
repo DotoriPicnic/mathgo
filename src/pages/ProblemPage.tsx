@@ -12,7 +12,9 @@ import './ProblemPage.css';
 
 interface Problem {
   question: string;
-  answer: number;
+  answer: number | string;
+  type?: string;
+  level?: number;
 }
 
 // [Question 컴포넌트 - 칩 스타일 문제 번호]
@@ -174,6 +176,17 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
   const getPdfTitle = () => {
     if (problems.length === 0) return 'Calcuri-문제지';
     const q = problems[0].question;
+    const type = problems[0].type;
+    
+    // 중학교 문제 유형 확인
+    if (type === 'integer') return 'Calcuri-정수유리수';
+    if (type === 'power') return 'Calcuri-지수근호';
+    if (type === 'equation') return 'Calcuri-일차방정식';
+    if (type === 'system') return 'Calcuri-연립방정식';
+    if (type === 'function') return 'Calcuri-일차함수';
+    if (type === 'probability') return 'Calcuri-확률';
+    
+    // 초등학교 문제 유형 확인
     if (q.includes('/')) return 'Calcuri-분수';
     if (q.includes('+')) return 'Calcuri-덧셈';
     if (q.includes('-')) return 'Calcuri-뺄셈';
@@ -185,23 +198,198 @@ const ProblemPage: React.FC<ProblemPageProps> = () => {
   // PDF 저장 기능 (문제만/정답 포함)
   const handlePdf = async () => {
     if (!pdfRef.current) return;
-    // 문제 페이지 캡처
-    const element = pdfRef.current;
-    const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#fff' });
-    const imgData = canvas.toDataURL('image/png');
+    
     const pdf = new jsPDF({ unit: 'mm', format: 'a4' });
     const pageWidth = pdf.internal.pageSize.getWidth();
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pageWidth;
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    if (includeAnswer && pdfAnswerRef.current) {
-      // 정답 페이지 캡처
-      const answerCanvas = await html2canvas(pdfAnswerRef.current, { scale: 2, backgroundColor: '#fff' });
-      const answerImg = answerCanvas.toDataURL('image/png');
-      pdf.addPage();
-      pdf.addImage(answerImg, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    
+    // 문제 페이지들을 생성 (20문제씩)
+    const problemsPerPage = 20;
+    const totalPages = Math.ceil(problems.length / problemsPerPage);
+    
+    for (let pageNum = 0; pageNum < totalPages; pageNum++) {
+      if (pageNum > 0) {
+        pdf.addPage();
+      }
+      
+      // 현재 페이지의 문제들
+      const startIdx = pageNum * problemsPerPage;
+      const endIdx = Math.min(startIdx + problemsPerPage, problems.length);
+      const pageProblems = problems.slice(startIdx, endIdx);
+      
+      // PDF용 문제 rows (2열 10행, 입력란 없이)
+      const pdfRows: Problem[][] = [];
+      for (let i = 0; i < pageProblems.length; i += 2) {
+        pdfRows.push(pageProblems.slice(i, i + 2));
+      }
+      
+      // 현재 페이지용 PDF 영역 생성
+      const pageElement = document.createElement('div');
+      pageElement.style.position = 'absolute';
+      pageElement.style.left = '-9999px';
+      pageElement.style.top = '0';
+      pageElement.style.width = '210mm';
+      pageElement.style.backgroundColor = '#fff';
+      pageElement.style.padding = '20mm';
+      pageElement.style.fontFamily = 'Arial, sans-serif';
+      pageElement.style.fontSize = '12px';
+      pageElement.style.lineHeight = '1.4';
+      
+      // 페이지 제목
+      const titleDiv = document.createElement('div');
+      titleDiv.style.textAlign = 'center';
+      titleDiv.style.marginBottom = '10mm';
+      titleDiv.style.fontSize = '16px';
+      titleDiv.style.fontWeight = 'bold';
+      titleDiv.innerHTML = `
+        <div style="font-size: 18px; margin-bottom: 5px;">Caluri</div>
+        <div style="font-size: 14px; margin-bottom: 5px;">${t('problemWorkbook')}</div>
+        <div style="font-size: 12px; color: #666;">${pageNum + 1} / ${totalPages}</div>
+      `;
+      pageElement.appendChild(titleDiv);
+      
+      // 문제들 추가
+      pdfRows.forEach((row, rowIdx) => {
+        const rowDiv = document.createElement('div');
+        rowDiv.style.display = 'flex';
+        rowDiv.style.justifyContent = 'space-between';
+        rowDiv.style.marginBottom = '8mm';
+        rowDiv.style.gap = '10mm';
+        
+        row.forEach((problem, colIdx) => {
+          const problemDiv = document.createElement('div');
+          problemDiv.style.flex = '1';
+          problemDiv.style.border = '1px solid #ccc';
+          problemDiv.style.padding = '5mm';
+          problemDiv.style.borderRadius = '3mm';
+          problemDiv.style.minHeight = '15mm';
+          problemDiv.style.display = 'flex';
+          problemDiv.style.alignItems = 'center';
+          problemDiv.style.justifyContent = 'space-between';
+          
+          const questionSpan = document.createElement('span');
+          questionSpan.style.fontSize = '14px';
+          questionSpan.style.fontWeight = 'bold';
+          questionSpan.textContent = `${startIdx + rowIdx * 2 + colIdx + 1}. ${problem.question}`;
+          
+          const answerBox = document.createElement('div');
+          answerBox.style.width = '20mm';
+          answerBox.style.height = '8mm';
+          answerBox.style.border = '1px solid #000';
+          answerBox.style.borderRadius = '2mm';
+          answerBox.style.marginLeft = '5mm';
+          
+          problemDiv.appendChild(questionSpan);
+          problemDiv.appendChild(answerBox);
+          rowDiv.appendChild(problemDiv);
+        });
+        
+        pageElement.appendChild(rowDiv);
+      });
+      
+      document.body.appendChild(pageElement);
+      
+      // 페이지 캡처
+      const canvas = await html2canvas(pageElement, { 
+        scale: 2, 
+        backgroundColor: '#fff',
+        width: 210,
+        height: 297
+      });
+      const imgData = canvas.toDataURL('image/png');
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pageWidth;
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      
+      // 임시 요소 제거
+      document.body.removeChild(pageElement);
     }
+    
+    // 정답 페이지 추가
+    if (includeAnswer && pdfAnswerRef.current) {
+      pdf.addPage();
+      
+      // 정답 페이지용 PDF 영역 생성
+      const answerElement = document.createElement('div');
+      answerElement.style.position = 'absolute';
+      answerElement.style.left = '-9999px';
+      answerElement.style.top = '0';
+      answerElement.style.width = '210mm';
+      answerElement.style.backgroundColor = '#fff';
+      answerElement.style.padding = '20mm';
+      answerElement.style.fontFamily = 'Arial, sans-serif';
+      answerElement.style.fontSize = '12px';
+      answerElement.style.lineHeight = '1.4';
+      
+      // 정답 페이지 제목
+      const answerTitleDiv = document.createElement('div');
+      answerTitleDiv.style.textAlign = 'center';
+      answerTitleDiv.style.marginBottom = '10mm';
+      answerTitleDiv.style.fontSize = '16px';
+      answerTitleDiv.style.fontWeight = 'bold';
+      answerTitleDiv.innerHTML = `
+        <div style="font-size: 18px; margin-bottom: 5px;">Caluri</div>
+        <div style="font-size: 14px; margin-bottom: 5px;">${t('answerSheet')}</div>
+      `;
+      answerElement.appendChild(answerTitleDiv);
+      
+      // 정답들을 4열로 배치
+      const answersPerRow = 4;
+      for (let i = 0; i < problems.length; i += answersPerRow) {
+        const rowDiv = document.createElement('div');
+        rowDiv.style.display = 'flex';
+        rowDiv.style.justifyContent = 'space-between';
+        rowDiv.style.marginBottom = '8mm';
+        rowDiv.style.gap = '5mm';
+        
+        for (let j = 0; j < answersPerRow && i + j < problems.length; j++) {
+          const answerDiv = document.createElement('div');
+          answerDiv.style.flex = '1';
+          answerDiv.style.textAlign = 'center';
+          answerDiv.style.padding = '3mm';
+          answerDiv.style.border = '1px solid #ccc';
+          answerDiv.style.borderRadius = '2mm';
+          
+          const problemNum = document.createElement('div');
+          problemNum.style.fontSize = '10px';
+          problemNum.style.color = '#666';
+          problemNum.style.marginBottom = '2mm';
+          problemNum.textContent = `${i + j + 1}`;
+          
+          const answerText = document.createElement('div');
+          answerText.style.fontSize = '14px';
+          answerText.style.fontWeight = 'bold';
+          answerText.textContent = String(problems[i + j].answer);
+          
+          answerDiv.appendChild(problemNum);
+          answerDiv.appendChild(answerText);
+          rowDiv.appendChild(answerDiv);
+        }
+        
+        answerElement.appendChild(rowDiv);
+      }
+      
+      document.body.appendChild(answerElement);
+      
+      // 정답 페이지 캡처
+      const answerCanvas = await html2canvas(answerElement, { 
+        scale: 2, 
+        backgroundColor: '#fff',
+        width: 210,
+        height: 297
+      });
+      const answerImg = answerCanvas.toDataURL('image/png');
+      const answerImgProps = pdf.getImageProperties(answerImg);
+      const answerPdfWidth = pageWidth;
+      const answerPdfHeight = (answerImgProps.height * answerPdfWidth) / answerImgProps.width;
+      
+      pdf.addImage(answerImg, 'PNG', 0, 0, answerPdfWidth, answerPdfHeight);
+      
+      // 임시 요소 제거
+      document.body.removeChild(answerElement);
+    }
+    
     // 파일명: Calcuri-연산명_YYYYMMDD-HHmmss.pdf
     const now = new Date();
     const y = now.getFullYear();
