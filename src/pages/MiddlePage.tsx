@@ -286,234 +286,137 @@ function generateFunctionProblems(level: number): { question: string; answer: nu
 
 function generateProbabilityProblems(level: number): { question: string; answer: string; type: string; level: number } {
   if (level === 1) {
-    // Dice roll (basic event) - 훨씬 더 많은 문제 생성
-    const diceEvents = [
-      { type: '짝수', answer: '3/6' },
-      { type: '홀수', answer: '3/6' },
-      { type: '3의 배수', answer: '2/6' },
-      { type: '2의 배수', answer: '3/6' },
-      { type: '5보다 큰', answer: '1/6' },
-      { type: '3보다 작은', answer: '2/6' },
-      { type: '소수', answer: '3/6' },
-      { type: '합성수', answer: '2/6' },
-      { type: '완전제곱수', answer: '2/6' },
-      { type: '완전세제곱수', answer: '1/6' },
-      { type: '4의 배수', answer: '1/6' },
-      { type: '6의 배수', answer: '1/6' },
-      { type: '1보다 큰', answer: '5/6' },
-      { type: '6보다 작은', answer: '5/6' },
-      { type: '2보다 큰', answer: '4/6' },
-      { type: '5보다 작은', answer: '4/6' },
-      { type: '4보다 큰', answer: '2/6' },
-      { type: '3보다 큰', answer: '3/6' }
+    // 하: 단순 사건 (주사위 1개, 공 1개 뽑기 등)
+    const simpleEvents = [
+      // 주사위 문제
+      { question: '주사위 1개를 던졌을 때 3이 나올 확률은?', answer: '1/6' },
+      { question: '주사위 1개를 던졌을 때 짝수가 나올 확률은?', answer: '3/6' },
+      { question: '주사위 1개를 던졌을 때 홀수가 나올 확률은?', answer: '3/6' },
+      { question: '주사위 1개를 던졌을 때 5보다 큰 수가 나올 확률은?', answer: '1/6' },
+      { question: '주사위 1개를 던졌을 때 3의 배수가 나올 확률은?', answer: '2/6' },
+      { question: '주사위 1개를 던졌을 때 소수가 나올 확률은?', answer: '3/6' },
+      { question: '주사위 1개를 던졌을 때 완전제곱수가 나올 확률은?', answer: '2/6' },
+      
+      // 동전 문제
+      { question: '동전 1개를 던졌을 때 앞면이 나올 확률은?', answer: '1/2' },
+      { question: '동전 1개를 던졌을 때 뒷면이 나올 확률은?', answer: '1/2' },
+      
+      // 색 공 뽑기 문제
+      { question: '빨간 공 3개, 파란 공 2개가 들어있는 주머니에서 공 1개를 뽑았을 때 빨간 공이 나올 확률은?', answer: '3/5' },
+      { question: '빨간 공 3개, 파란 공 2개가 들어있는 주머니에서 공 1개를 뽑았을 때 파란 공이 나올 확률은?', answer: '2/5' },
+      { question: '노란 공 4개, 초록 공 1개가 들어있는 주머니에서 공 1개를 뽑았을 때 노란 공이 나올 확률은?', answer: '4/5' },
+      { question: '흰 공 2개, 검은 공 3개가 들어있는 주머니에서 공 1개를 뽑았을 때 흰 공이 나올 확률은?', answer: '2/5' },
+      { question: '빨간 공 1개, 파란 공 1개, 노란 공 1개가 들어있는 주머니에서 공 1개를 뽑았을 때 빨간 공이 나올 확률은?', answer: '1/3' },
+      
+      // 카드 문제
+      { question: '하트 13장, 다이아몬드 13장, 스페이드 13장, 클럽 13장이 있는 카드 한 벌에서 카드 1장을 뽑았을 때 하트가 나올 확률은?', answer: '13/52' },
+      { question: '카드 한 벌에서 카드 1장을 뽑았을 때 에이스가 나올 확률은?', answer: '4/52' },
+      { question: '카드 한 벌에서 카드 1장을 뽑았을 때 킹이 나올 확률은?', answer: '4/52' },
+      { question: '카드 한 벌에서 카드 1장을 뽑았을 때 그림카드(J, Q, K)가 나올 확률은?', answer: '12/52' },
+      { question: '카드 한 벌에서 카드 1장을 뽑았을 때 숫자카드(2~10)가 나올 확률은?', answer: '36/52' },
+      
+      // 생활형 문제
+      { question: '학급에 남학생 15명, 여학생 20명이 있을 때 무작위로 한 명을 뽑았을 때 남학생이 나올 확률은?', answer: '15/35' },
+      { question: '학급에 남학생 15명, 여학생 20명이 있을 때 무작위로 한 명을 뽑았을 때 여학생이 나올 확률은?', answer: '20/35' },
+      { question: '가챠에서 특별 아이템이 나올 확률이 5%일 때, 소수로 나타내면?', answer: '0.05' },
+      { question: '가챠에서 희귀 아이템이 나올 확률이 10%일 때, 소수로 나타내면?', answer: '0.1' }
     ];
     
-    // 동적으로 조합 생성 - 훨씬 더 많은 조합
-    const combinations = [
-      { type: '1 또는 6', answer: '2/6' },
-      { type: '2 또는 5', answer: '2/6' },
-      { type: '3 또는 4', answer: '2/6' },
-      { type: '1~3', answer: '3/6' },
-      { type: '4~6', answer: '3/6' },
-      { type: '2~4', answer: '3/6' },
-      { type: '1,3,5', answer: '3/6' },
-      { type: '2,4,6', answer: '3/6' },
-      { type: '1,2,3', answer: '3/6' },
-      { type: '4,5,6', answer: '3/6' },
-      { type: '1,4', answer: '2/6' },
-      { type: '2,5', answer: '2/6' },
-      { type: '3,6', answer: '2/6' },
-      { type: '1,2', answer: '2/6' },
-      { type: '3,4', answer: '2/6' },
-      { type: '5,6', answer: '2/6' },
-      { type: '1,3', answer: '2/6' },
-      { type: '2,4', answer: '2/6' },
-      { type: '3,5', answer: '2/6' },
-      { type: '1,5', answer: '2/6' },
-      { type: '2,6', answer: '2/6' },
-      { type: '1,2,4', answer: '3/6' },
-      { type: '2,3,5', answer: '3/6' },
-      { type: '3,4,6', answer: '3/6' },
-      { type: '1,3,4', answer: '3/6' },
-      { type: '2,4,5', answer: '3/6' },
-      { type: '1,2,5', answer: '3/6' },
-      { type: '2,3,6', answer: '3/6' },
-      { type: '1,4,5', answer: '3/6' },
-      { type: '2,5,6', answer: '3/6' },
-      { type: '1,3,6', answer: '3/6' },
-      { type: '1,2,6', answer: '3/6' },
-      { type: '1,4,6', answer: '3/6' },
-      { type: '2,3,4', answer: '3/6' },
-      { type: '3,5,6', answer: '3/6' },
-      { type: '1,5,6', answer: '3/6' },
-      { type: '2,4,6', answer: '3/6' },
-      { type: '1,2,3,4', answer: '4/6' },
-      { type: '2,3,4,5', answer: '4/6' },
-      { type: '3,4,5,6', answer: '4/6' },
-      { type: '1,2,4,5', answer: '4/6' },
-      { type: '2,3,5,6', answer: '4/6' },
-      { type: '1,3,4,6', answer: '4/6' },
-      { type: '1,2,5,6', answer: '4/6' },
-      { type: '1,2,3,5', answer: '4/6' },
-      { type: '2,4,5,6', answer: '4/6' },
-      { type: '1,3,5,6', answer: '4/6' },
-      { type: '1,2,4,6', answer: '4/6' },
-      { type: '2,3,4,6', answer: '4/6' },
-      { type: '1,2,3,6', answer: '4/6' },
-      { type: '1,3,4,5', answer: '4/6' },
-      { type: '1,4,5,6', answer: '4/6' },
-      { type: '2,3,4,5,6', answer: '5/6' },
-      { type: '1,2,3,4,5', answer: '5/6' },
-      { type: '1,2,3,4,6', answer: '5/6' },
-      { type: '1,2,3,5,6', answer: '5/6' },
-      { type: '1,2,4,5,6', answer: '5/6' },
-      { type: '1,3,4,5,6', answer: '5/6' },
-      { type: '2,3,4,5,6', answer: '5/6' }
-    ];
-    
-    const allEvents = [...diceEvents, ...combinations];
-    const selected = allEvents[Math.floor(Math.random() * allEvents.length)];
-    const question = `주사위 ${selected.type} 확률`;
-    
-    return { question, answer: selected.answer, type: 'probability', level: 1 };
+    const selected = simpleEvents[Math.floor(Math.random() * simpleEvents.length)];
+    return { question: selected.question, answer: selected.answer, type: 'probability', level: 1 };
   } else if (level === 2) {
-    // Coin tosses - 훨씬 더 많은 문제 생성
-    const coinEvents = [
-      { coins: 2, heads: 2, answer: '1/4' },
-      { coins: 2, heads: 0, answer: '1/4' },
-      { coins: 2, heads: 1, answer: '2/4' },
-      { coins: 3, heads: 3, answer: '1/8' },
-      { coins: 3, heads: 0, answer: '1/8' },
-      { coins: 3, heads: 2, answer: '3/8' },
-      { coins: 3, heads: 1, answer: '3/8' },
-      { coins: 4, heads: 4, answer: '1/16' },
-      { coins: 4, heads: 0, answer: '1/16' },
-      { coins: 4, heads: 3, answer: '4/16' },
-      { coins: 4, heads: 2, answer: '6/16' },
-      { coins: 4, heads: 1, answer: '4/16' },
-      { coins: 5, heads: 5, answer: '1/32' },
-      { coins: 5, heads: 0, answer: '1/32' },
-      { coins: 5, heads: 4, answer: '5/32' },
-      { coins: 5, heads: 3, answer: '10/32' },
-      { coins: 5, heads: 2, answer: '10/32' },
-      { coins: 5, heads: 1, answer: '5/32' },
-      { coins: 6, heads: 6, answer: '1/64' },
-      { coins: 6, heads: 0, answer: '1/64' },
-      { coins: 6, heads: 5, answer: '6/64' },
-      { coins: 6, heads: 4, answer: '15/64' },
-      { coins: 6, heads: 3, answer: '20/64' },
-      { coins: 6, heads: 2, answer: '15/64' },
-      { coins: 6, heads: 1, answer: '6/64' },
-      { coins: 7, heads: 7, answer: '1/128' },
-      { coins: 7, heads: 0, answer: '1/128' },
-      { coins: 7, heads: 6, answer: '7/128' },
-      { coins: 7, heads: 5, answer: '21/128' },
-      { coins: 7, heads: 4, answer: '35/128' },
-      { coins: 7, heads: 3, answer: '35/128' },
-      { coins: 7, heads: 2, answer: '21/128' },
-      { coins: 7, heads: 1, answer: '7/128' },
-      { coins: 8, heads: 8, answer: '1/256' },
-      { coins: 8, heads: 0, answer: '1/256' },
-      { coins: 8, heads: 7, answer: '8/256' },
-      { coins: 8, heads: 6, answer: '28/256' },
-      { coins: 8, heads: 5, answer: '56/256' },
-      { coins: 8, heads: 4, answer: '70/256' },
-      { coins: 8, heads: 3, answer: '56/256' },
-      { coins: 8, heads: 2, answer: '28/256' },
-      { coins: 8, heads: 1, answer: '8/256' }
+    // 중: 복합 사건 (2번 뽑기, 합 구하기, 순서 상관 없음)
+    const compoundEvents = [
+      // 주사위 복합 문제
+      { question: '주사위 2개를 던졌을 때 두 눈의 합이 7이 나올 확률은?', answer: '6/36' },
+      { question: '주사위 2개를 던졌을 때 두 눈의 합이 6이 나올 확률은?', answer: '5/36' },
+      { question: '주사위 2개를 던졌을 때 두 눈의 합이 8이 나올 확률은?', answer: '5/36' },
+      { question: '주사위 2개를 던졌을 때 두 눈의 합이 5이 나올 확률은?', answer: '4/36' },
+      { question: '주사위 2개를 던졌을 때 두 눈의 합이 9이 나올 확률은?', answer: '4/36' },
+      { question: '주사위 2개를 던졌을 때 두 눈의 합이 4이 나올 확률은?', answer: '3/36' },
+      { question: '주사위 2개를 던졌을 때 두 눈의 합이 10이 나올 확률은?', answer: '3/36' },
+      { question: '주사위 2개를 던졌을 때 두 눈의 합이 3이 나올 확률은?', answer: '2/36' },
+      { question: '주사위 2개를 던졌을 때 두 눈의 합이 11이 나올 확률은?', answer: '2/36' },
+      { question: '주사위 2개를 던졌을 때 두 눈의 합이 2이 나올 확률은?', answer: '1/36' },
+      { question: '주사위 2개를 던졌을 때 두 눈의 합이 12이 나올 확률은?', answer: '1/36' },
+      
+      // 동전 복합 문제
+      { question: '동전 2개를 던졌을 때 모두 앞면이 나올 확률은?', answer: '1/4' },
+      { question: '동전 2개를 던졌을 때 모두 뒷면이 나올 확률은?', answer: '1/4' },
+      { question: '동전 2개를 던졌을 때 앞면과 뒷면이 나올 확률은?', answer: '2/4' },
+      { question: '동전 3개를 던졌을 때 모두 앞면이 나올 확률은?', answer: '1/8' },
+      { question: '동전 3개를 던졌을 때 모두 뒷면이 나올 확률은?', answer: '1/8' },
+      { question: '동전 3개를 던졌을 때 앞면이 2개 나올 확률은?', answer: '3/8' },
+      { question: '동전 3개를 던졌을 때 앞면이 1개 나올 확률은?', answer: '3/8' },
+      
+      // 색 공 복합 문제 (복원 추출)
+      { question: '빨간 공 3개, 파란 공 2개가 들어있는 주머니에서 공을 2번 뽑을 때(뽑은 공을 다시 넣고 뽑기) 모두 빨간 공이 나올 확률은?', answer: '9/25' },
+      { question: '빨간 공 3개, 파란 공 2개가 들어있는 주머니에서 공을 2번 뽑을 때(뽑은 공을 다시 넣고 뽑기) 모두 파란 공이 나올 확률은?', answer: '4/25' },
+      { question: '빨간 공 3개, 파란 공 2개가 들어있는 주머니에서 공을 2번 뽑을 때(뽑은 공을 다시 넣고 뽑기) 빨간 공과 파란 공이 각각 1개씩 나올 확률은?', answer: '12/25' },
+      { question: '노란 공 4개, 초록 공 1개가 들어있는 주머니에서 공을 2번 뽑을 때(뽑은 공을 다시 넣고 뽑기) 모두 노란 공이 나올 확률은?', answer: '16/25' },
+      { question: '노란 공 4개, 초록 공 1개가 들어있는 주머니에서 공을 2번 뽑을 때(뽑은 공을 다시 넣고 뽑기) 모두 초록 공이 나올 확률은?', answer: '1/25' },
+      
+      // 카드 복합 문제
+      { question: '카드 한 벌에서 카드를 2장 뽑을 때(뽑은 카드를 다시 넣고 뽑기) 모두 하트가 나올 확률은?', answer: '169/2704' },
+      { question: '카드 한 벌에서 카드를 2장 뽑을 때(뽑은 카드를 다시 넣고 뽑기) 모두 에이스가 나올 확률은?', answer: '16/2704' },
+      { question: '카드 한 벌에서 카드를 2장 뽑을 때(뽑은 카드를 다시 넣고 뽑기) 모두 그림카드가 나올 확률은?', answer: '144/2704' },
+      
+      // 생활형 복합 문제
+      { question: '학급에 남학생 15명, 여학생 20명이 있을 때 무작위로 2명을 뽑을 때(뽑은 사람을 다시 넣고 뽑기) 모두 남학생이 나올 확률은?', answer: '225/1225' },
+      { question: '학급에 남학생 15명, 여학생 20명이 있을 때 무작위로 2명을 뽑을 때(뽑은 사람을 다시 넣고 뽑기) 모두 여학생이 나올 확률은?', answer: '400/1225' },
+      { question: '가챠에서 특별 아이템이 나올 확률이 5%일 때, 2번 뽑을 때 모두 특별 아이템이 나올 확률은?', answer: '0.0025' },
+      { question: '가챠에서 희귀 아이템이 나올 확률이 10%일 때, 2번 뽑을 때 모두 희귀 아이템이 나올 확률은?', answer: '0.01' }
     ];
     
-    const selected = coinEvents[Math.floor(Math.random() * coinEvents.length)];
-    let question = '';
-    if (selected.heads === selected.coins) {
-      question = `동전 ${selected.coins}개 모두 앞면`;
-    } else if (selected.heads === 0) {
-      question = `동전 ${selected.coins}개 모두 뒷면`;
-    } else if (selected.heads === 1) {
-      question = `동전 ${selected.coins}개 앞면 1개`;
-    } else {
-      question = `동전 ${selected.coins}개 앞면 ${selected.heads}개`;
-    }
-    
-    return { question, answer: selected.answer, type: 'probability', level: 2 };
+    const selected = compoundEvents[Math.floor(Math.random() * compoundEvents.length)];
+    return { question: selected.question, answer: selected.answer, type: 'probability', level: 2 };
   } else {
-    // Dice + Coin - 훨씬 더 많은 문제 생성
-    const diceCoinEvents = [
-      { dice: '짝수', coin: '앞면', answer: '3/12' },
-      { dice: '홀수', coin: '뒷면', answer: '3/12' },
-      { dice: '3의 배수', coin: '앞면', answer: '2/12' },
-      { dice: '5보다 큰', coin: '뒷면', answer: '1/12' },
-      { dice: '소수', coin: '앞면', answer: '3/12' },
-      { dice: '완전제곱수', coin: '앞면', answer: '2/12' },
-      { dice: '2의 배수', coin: '뒷면', answer: '3/12' },
-      { dice: '4보다 작은', coin: '앞면', answer: '3/12' },
-      { dice: '6', coin: '앞면', answer: '1/12' },
-      { dice: '1', coin: '뒷면', answer: '1/12' },
-      { dice: '2', coin: '앞면', answer: '1/12' },
-      { dice: '3', coin: '뒷면', answer: '1/12' },
-      { dice: '4', coin: '앞면', answer: '1/12' },
-      { dice: '5', coin: '뒷면', answer: '1/12' },
-      { dice: '1~3', coin: '앞면', answer: '3/12' },
-      { dice: '4~6', coin: '뒷면', answer: '3/12' },
-      { dice: '1,3,5', coin: '앞면', answer: '3/12' },
-      { dice: '2,4,6', coin: '뒷면', answer: '3/12' },
-      { dice: '1,2', coin: '앞면', answer: '2/12' },
-      { dice: '3,4', coin: '뒷면', answer: '2/12' },
-      { dice: '5,6', coin: '앞면', answer: '2/12' },
-      { dice: '1,4', coin: '뒷면', answer: '2/12' },
-      { dice: '2,5', coin: '앞면', answer: '2/12' },
-      { dice: '3,6', coin: '뒷면', answer: '2/12' },
-      { dice: '1,3', coin: '앞면', answer: '2/12' },
-      { dice: '2,4', coin: '뒷면', answer: '2/12' },
-      { dice: '3,5', coin: '앞면', answer: '2/12' },
-      { dice: '1,5', coin: '뒷면', answer: '2/12' },
-      { dice: '2,6', coin: '앞면', answer: '2/12' },
-      { dice: '1,2,3', coin: '앞면', answer: '3/12' },
-      { dice: '4,5,6', coin: '뒷면', answer: '3/12' },
-      { dice: '1,2,4', coin: '앞면', answer: '3/12' },
-      { dice: '3,5,6', coin: '뒷면', answer: '3/12' },
-      { dice: '1,3,4', coin: '앞면', answer: '3/12' },
-      { dice: '2,5,6', coin: '뒷면', answer: '3/12' },
-      { dice: '1,2,5', coin: '앞면', answer: '3/12' },
-      { dice: '3,4,6', coin: '뒷면', answer: '3/12' },
-      { dice: '1,4,5', coin: '앞면', answer: '3/12' },
-      { dice: '2,3,6', coin: '뒷면', answer: '3/12' },
-      { dice: '1,3,6', coin: '앞면', answer: '3/12' },
-      { dice: '2,4,5', coin: '뒷면', answer: '3/12' },
-      { dice: '1,2,6', coin: '앞면', answer: '3/12' },
-      { dice: '3,4,5', coin: '뒷면', answer: '3/12' },
-      { dice: '1,4,6', coin: '앞면', answer: '3/12' },
-      { dice: '2,3,5', coin: '뒷면', answer: '3/12' },
-      { dice: '1,5,6', coin: '앞면', answer: '3/12' },
-      { dice: '2,3,4', coin: '뒷면', answer: '3/12' },
-      { dice: '1,2,3,4', coin: '앞면', answer: '4/12' },
-      { dice: '3,4,5,6', coin: '뒷면', answer: '4/12' },
-      { dice: '1,2,4,5', coin: '앞면', answer: '4/12' },
-      { dice: '2,3,5,6', coin: '뒷면', answer: '4/12' },
-      { dice: '1,3,4,6', coin: '앞면', answer: '4/12' },
-      { dice: '2,4,5,6', coin: '뒷면', answer: '4/12' },
-      { dice: '1,2,5,6', coin: '앞면', answer: '4/12' },
-      { dice: '1,3,5,6', coin: '뒷면', answer: '4/12' },
-      { dice: '1,2,4,6', coin: '앞면', answer: '4/12' },
-      { dice: '2,3,4,6', coin: '뒷면', answer: '4/12' },
-      { dice: '1,2,3,5', coin: '앞면', answer: '4/12' },
-      { dice: '2,4,5,6', coin: '뒷면', answer: '4/12' },
-      { dice: '1,3,4,5', coin: '앞면', answer: '4/12' },
-      { dice: '2,3,5,6', coin: '뒷면', answer: '4/12' },
-      { dice: '1,4,5,6', coin: '앞면', answer: '4/12' },
-      { dice: '1,2,3,6', coin: '뒷면', answer: '4/12' },
-      { dice: '1,2,3,4,5', coin: '앞면', answer: '5/12' },
-      { dice: '2,3,4,5,6', coin: '뒷면', answer: '5/12' },
-      { dice: '1,2,3,4,6', coin: '앞면', answer: '5/12' },
-      { dice: '1,2,3,5,6', coin: '뒷면', answer: '5/12' },
-      { dice: '1,2,4,5,6', coin: '앞면', answer: '5/12' },
-      { dice: '1,3,4,5,6', coin: '뒷면', answer: '5/12' }
+    // 상: 조건부 사건 (순서 고려, 적어도 1번 등)
+    const conditionalEvents = [
+      // 주사위 조건부 문제
+      { question: '주사위 2개를 던졌을 때 첫 번째 주사위가 3이고 두 번째 주사위가 4가 나올 확률은?', answer: '1/36' },
+      { question: '주사위 2개를 던졌을 때 첫 번째 주사위가 1이고 두 번째 주사위가 6이 나올 확률은?', answer: '1/36' },
+      { question: '주사위 2개를 던졌을 때 첫 번째 주사위가 2이고 두 번째 주사위가 5가 나올 확률은?', answer: '1/36' },
+      { question: '주사위 3개를 던졌을 때 적어도 하나가 6이 나올 확률은?', answer: '91/216' },
+      { question: '주사위 3개를 던졌을 때 적어도 하나가 1이 나올 확률은?', answer: '91/216' },
+      { question: '주사위 3개를 던졌을 때 모두 짝수가 나올 확률은?', answer: '27/216' },
+      { question: '주사위 3개를 던졌을 때 모두 홀수가 나올 확률은?', answer: '27/216' },
+      { question: '주사위 3개를 던졌을 때 정확히 2개가 짝수가 나올 확률은?', answer: '81/216' },
+      { question: '주사위 3개를 던졌을 때 정확히 2개가 홀수가 나올 확률은?', answer: '81/216' },
+      
+      // 동전 조건부 문제
+      { question: '동전 3개를 던졌을 때 첫 번째가 앞면, 두 번째가 뒷면, 세 번째가 앞면이 나올 확률은?', answer: '1/8' },
+      { question: '동전 4개를 던졌을 때 적어도 하나가 앞면이 나올 확률은?', answer: '15/16' },
+      { question: '동전 4개를 던졌을 때 적어도 하나가 뒷면이 나올 확률은?', answer: '15/16' },
+      { question: '동전 4개를 던졌을 때 모두 앞면이 나올 확률은?', answer: '1/16' },
+      { question: '동전 4개를 던졌을 때 모두 뒷면이 나올 확률은?', answer: '1/16' },
+      { question: '동전 4개를 던졌을 때 정확히 3개가 앞면이 나올 확률은?', answer: '4/16' },
+      { question: '동전 4개를 던졌을 때 정확히 3개가 뒷면이 나올 확률은?', answer: '4/16' },
+      { question: '동전 4개를 던졌을 때 정확히 2개가 앞면이 나올 확률은?', answer: '6/16' },
+      
+      // 색 공 조건부 문제 (비복원 추출)
+      { question: '빨간 공 3개, 파란 공 2개가 들어있는 주머니에서 공을 2번 뽑을 때(뽑은 공을 다시 넣지 않고 뽑기) 모두 빨간 공이 나올 확률은?', answer: '6/20' },
+      { question: '빨간 공 3개, 파란 공 2개가 들어있는 주머니에서 공을 2번 뽑을 때(뽑은 공을 다시 넣지 않고 뽑기) 모두 파란 공이 나올 확률은?', answer: '2/20' },
+      { question: '빨간 공 3개, 파란 공 2개가 들어있는 주머니에서 공을 2번 뽑을 때(뽑은 공을 다시 넣지 않고 뽑기) 빨간 공과 파란 공이 각각 1개씩 나올 확률은?', answer: '12/20' },
+      { question: '노란 공 4개, 초록 공 1개가 들어있는 주머니에서 공을 2번 뽑을 때(뽑은 공을 다시 넣지 않고 뽑기) 모두 노란 공이 나올 확률은?', answer: '12/20' },
+      { question: '노란 공 4개, 초록 공 1개가 들어있는 주머니에서 공을 2번 뽑을 때(뽑은 공을 다시 넣지 않고 뽑기) 노란 공과 초록 공이 각각 1개씩 나올 확률은?', answer: '8/20' },
+      
+      // 카드 조건부 문제 (비복원 추출)
+      { question: '카드 한 벌에서 카드를 2장 뽑을 때(뽑은 카드를 다시 넣지 않고 뽑기) 모두 하트가 나올 확률은?', answer: '156/2652' },
+      { question: '카드 한 벌에서 카드를 2장 뽑을 때(뽑은 카드를 다시 넣지 않고 뽑기) 모두 에이스가 나올 확률은?', answer: '12/2652' },
+      { question: '카드 한 벌에서 카드를 2장 뽑을 때(뽑은 카드를 다시 넣지 않고 뽑기) 모두 그림카드가 나올 확률은?', answer: '132/2652' },
+      { question: '카드 한 벌에서 카드를 2장 뽑을 때(뽑은 카드를 다시 넣지 않고 뽑기) 첫 번째는 하트, 두 번째는 다이아몬드가 나올 확률은?', answer: '169/2652' },
+      
+      // 생활형 조건부 문제
+      { question: '학급에 남학생 15명, 여학생 20명이 있을 때 무작위로 2명을 뽑을 때(뽑은 사람을 다시 넣지 않고 뽑기) 모두 남학생이 나올 확률은?', answer: '210/1190' },
+      { question: '학급에 남학생 15명, 여학생 20명이 있을 때 무작위로 2명을 뽑을 때(뽑은 사람을 다시 넣지 않고 뽑기) 모두 여학생이 나올 확률은?', answer: '380/1190' },
+      { question: '학급에 남학생 15명, 여학생 20명이 있을 때 무작위로 2명을 뽑을 때(뽑은 사람을 다시 넣지 않고 뽑기) 남학생과 여학생이 각각 1명씩 나올 확률은?', answer: '600/1190' },
+      { question: '가챠에서 특별 아이템이 나올 확률이 5%일 때, 3번 뽑을 때 적어도 하나가 특별 아이템이 나올 확률은?', answer: '0.142625' },
+      { question: '가챠에서 희귀 아이템이 나올 확률이 10%일 때, 3번 뽑을 때 적어도 하나가 희귀 아이템이 나올 확률은?', answer: '0.271' }
     ];
     
-    const selected = diceCoinEvents[Math.floor(Math.random() * diceCoinEvents.length)];
-    const question = `주사위 ${selected.dice}+동전 ${selected.coin}`;
-    
-    return { question, answer: selected.answer, type: 'probability', level: 3 };
+    const selected = conditionalEvents[Math.floor(Math.random() * conditionalEvents.length)];
+    return { question: selected.question, answer: selected.answer, type: 'probability', level: 3 };
   }
 }
 
